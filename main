@@ -1,0 +1,52 @@
+import pygame
+import src
+from pygame.locals import (
+    K_UP,
+    K_DOWN,
+    K_LEFT,
+    K_RIGHT,
+    K_ESCAPE,
+    KEYDOWN,
+    QUIT,
+)
+
+# Инициализация pygame
+pygame.init()
+
+# Разрешение приложения
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 600
+
+# Название приложения и иконка
+pygame.display.set_caption('tamagotchi')
+pygame.display.set_icon(pygame.image.load("src\icon.png"))
+
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+
+# Процесс игры
+running = True
+while running:
+    for event in pygame.event.get(): # Во время работы считываются события выхода (escape и "крестик")
+        if event.type == pygame.QUIT:
+            running = False
+        elif event.type == pygame.KEYDOWN:
+            if event.key == K_ESCAPE:
+                running = False
+                pygame.quit()
+                break
+
+    # Фон приложения
+    BackGround = src.Background('background.jpg', [0, 0])
+    screen.fill((255, 255, 255))
+    screen.blit(BackGround.image, BackGround.rect)
+
+    # Иконка питомца
+    surf = pygame.Surface((200, 300))
+    icon_of_animal = src.Background('poop.jpg', [0, 0])
+    surf.fill((255, 255, 255))
+    screen.blit(icon_of_animal.image, icon_of_animal.rect)
+
+
+    pygame.display.flip()
+pygame.quit()
+
