@@ -14,9 +14,11 @@ class Dog:
             self.sound = 'гав-гав'
         print(self.sound)
 
-
 dog1 = Dog('Шарик')
 while dog1.age < 7:
     print(dog1.age)
     dog1.bark(dog1.age)
     dog1.age += 1
+
+    
+    УДОЛИ!!!
