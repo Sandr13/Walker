@@ -1,3 +1,5 @@
+import time
+
 import pygame
 import math
 
@@ -27,6 +29,7 @@ class Enemy(pygame.sprite.Sprite):
         self.image = pygame.image.load('resources\\enemy\\ghost_left.png')
         self.rect = self.image.get_rect()
         self.rect.center = (display_width / 2, display_height / 2)
+        self.speed = 2
 
 ################################################################################
 class Chest(pygame.sprite.Sprite):
@@ -57,6 +60,7 @@ def run_game():   # Основная функция игры
     all_sprites = pygame.sprite.Group()  # Группа спрайтов
     walls = pygame.sprite.Group()   # Группа стен
     chests = pygame.sprite.Group()   # Группа сундуков
+    all_enemy = pygame.sprite.Group()  # Группа монстров
 
     chest = Chest()  # Создаём сундук
     all_sprites.add(chest)
@@ -68,6 +72,9 @@ def run_game():   # Основная функция игры
 
     ghost = Enemy()   # Создаём противника
     all_sprites.add(ghost)
+    all_enemy.add(ghost)
+    ghost.rect.center = (1100, 500)
+
 
     ############################# Создаём стены ##############################
     wall_top_1 = Wall_Horizontal()
@@ -325,6 +332,24 @@ def run_game():   # Основная функция игры
         index_of_room %= 4
 
         pygame.sprite.spritecollide(user, chests, True)
+        # if not pygame.sprite.spritecollide(user, all_enemy, False):
+        if math.fabs(user.rect.center[0] - ghost.rect.center[0]) >= 50 or math.fabs(user.rect.center[1] - ghost.rect.center[1]) >= 50:
+            # ghost.rect.x = ghost.rect.x + (user.rect.x - ghost.rect.x) / 100
+            # ghost.rect.y = ghost.rect.y + (user.rect.y - ghost.rect.y) / 100
+            if user.rect.x - ghost.rect.x > 0:
+                ghost.rect.x = ghost.rect.x + ghost.speed
+            if user.rect.x - ghost.rect.x < 0:
+                ghost.rect.x = ghost.rect.x - ghost.speed
+
+            if user.rect.y - ghost.rect.y > 0:
+                ghost.rect.y = ghost.rect.y + ghost.speed
+            if user.rect.y - ghost.rect.y < 0:
+                ghost.rect.y = ghost.rect.y - ghost.speed
+
+
+
+        else:
+            pygame.sprite.spritecollide(user, all_enemy, True)
 
         if front:
             user.image = pygame.image.load('resources\knight\\front.png')  # Переменная-картинка игрока
