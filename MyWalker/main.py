@@ -16,28 +16,36 @@ clock = pygame.time.Clock()  # Переменная для подсчёта ти
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('knight\\front.png')
+        self.image = pygame.image.load('resources\\knight\\front.png')
         self.rect = self.image.get_rect()
         self.rect.center = (display_width / 2, display_height / 2)
 
 ################################ Класс сундука ##################################
+class Enemy(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('resources\\enemy\\ghost_left.png')
+        self.rect = self.image.get_rect()
+        self.rect.center = (display_width / 2, display_height / 2)
+
+################################################################################
 class Chest(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('chest.png')
+        self.image = pygame.image.load('resources\chest.png')
         self.rect = self.image.get_rect()
 
 ############################# Класс объекта-стены ##############################
 class Wall_Horizontal(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('wall_horizontal.jpg')
+        self.image = pygame.image.load('resources\wall_horizontal.jpg')
         self.rect = self.image.get_rect()
 
 class Wall_Vertical(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('wall_horizontal.jpg')
+        self.image = pygame.image.load('resources\wall_horizontal.jpg')
         self.rect = self.image.get_rect()
         self.image = pygame.transform.rotate(self.image, 90)
 
@@ -58,6 +66,8 @@ def run_game():   # Основная функция игры
     user = Player()   # Создаём игрока
     all_sprites.add(user)
 
+    ghost = Enemy()   # Создаём противника
+    all_sprites.add(ghost)
 
     ############################# Создаём стены ##############################
     wall_top_1 = Wall_Horizontal()
@@ -317,13 +327,13 @@ def run_game():   # Основная функция игры
         pygame.sprite.spritecollide(user, chests, True)
 
         if front:
-            user.image = pygame.image.load('knight\\front.png')  # Переменная-картинка игрока
+            user.image = pygame.image.load('resources\knight\\front.png')  # Переменная-картинка игрока
         elif back:
-            user.image = pygame.image.load('knight\\back.png')  # Переменная-картинка игрока
+            user.image = pygame.image.load('resources\knight\\back.png')  # Переменная-картинка игрока
         elif right:
-            user.image = pygame.image.load('knight\\right.png')  # Переменная-картинка игрока
+            user.image = pygame.image.load('resources\knight\\right.png')  # Переменная-картинка игрока
         elif left:
-            user.image = pygame.image.load('knight\\left.png')  # Переменная-картинка игрока
+            user.image = pygame.image.load('resources\knight\\left.png')  # Переменная-картинка игрока
 
         if index_of_room % 4 == 0:
             display.fill((179, 179, 179))
