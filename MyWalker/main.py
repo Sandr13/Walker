@@ -1,5 +1,4 @@
 import time
-
 import pygame
 import math
 
@@ -332,13 +331,18 @@ def run_game():   # Основная функция игры
         index_of_room %= 4
 
         pygame.sprite.spritecollide(user, chests, True)
-        # if not pygame.sprite.spritecollide(user, all_enemy, False):
+
+        ghost_right = True
+        ghost_left = False
+
         if math.fabs(user.rect.center[0] - ghost.rect.center[0]) >= 50 or math.fabs(user.rect.center[1] - ghost.rect.center[1]) >= 50:
-            # ghost.rect.x = ghost.rect.x + (user.rect.x - ghost.rect.x) / 100
-            # ghost.rect.y = ghost.rect.y + (user.rect.y - ghost.rect.y) / 100
             if user.rect.x - ghost.rect.x > 0:
                 ghost.rect.x = ghost.rect.x + ghost.speed
+                ghost_right = True
+                ghost_left = False
             if user.rect.x - ghost.rect.x < 0:
+                ghost_right = False
+                ghost_left = True
                 ghost.rect.x = ghost.rect.x - ghost.speed
 
             if user.rect.y - ghost.rect.y > 0:
@@ -346,7 +350,10 @@ def run_game():   # Основная функция игры
             if user.rect.y - ghost.rect.y < 0:
                 ghost.rect.y = ghost.rect.y - ghost.speed
 
-
+            if ghost_right:
+                ghost.image = pygame.image.load('resources\enemy\ghost_right.png')
+            elif ghost_left:
+                ghost.image = pygame.image.load('resources\enemy\ghost_left.png')
 
         else:
             pygame.sprite.spritecollide(user, all_enemy, True)
