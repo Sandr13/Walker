@@ -1,6 +1,7 @@
 import time
 import pygame
 import math
+import functions
 
 pygame.init()  # Инициализация pygame
 
@@ -21,7 +22,7 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = (display_width / 2, display_height / 2)
 
-################################ Класс сундука ##################################
+################################ Класс Противника ##################################
 class Enemy(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
@@ -30,24 +31,25 @@ class Enemy(pygame.sprite.Sprite):
         self.rect.center = (display_width / 2, display_height / 2)
         self.speed = 2
 
-################################################################################
+################################ Класс сундука ##################################
 class Chest(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load('resources\chest.png')
         self.rect = self.image.get_rect()
 
-############################# Класс объекта-стены ##############################
+############################# Класс гозизонтальной стены ##############################
 class Wall_Horizontal(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('resources\wall_horizontal.jpg')
+        self.image = pygame.image.load('resources/wall.jpg')
         self.rect = self.image.get_rect()
 
+############################# Класс вертикальной стены ##############################
 class Wall_Vertical(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('resources\wall_horizontal.jpg')
+        self.image = pygame.image.load('resources/wall.jpg')
         self.rect = self.image.get_rect()
         self.image = pygame.transform.rotate(self.image, 90)
 
@@ -56,24 +58,30 @@ def run_game():   # Основная функция игры
     game = True
     first = True
 
+    ############################# Создаём группы объектов на карте ##############################
     all_sprites = pygame.sprite.Group()  # Группа спрайтов
     walls = pygame.sprite.Group()   # Группа стен
     chests = pygame.sprite.Group()   # Группа сундуков
     all_enemy = pygame.sprite.Group()  # Группа монстров
 
+    ############################# Сундуки ##############################
     chest = Chest()  # Создаём сундук
     all_sprites.add(chest)
     chests.add(chest)
     chest.rect.center = (500, 100)
 
+    ############################# Игрок ##############################
     user = Player()   # Создаём игрока
     all_sprites.add(user)
 
-    ghost = Enemy()   # Создаём противника
-    all_sprites.add(ghost)
-    all_enemy.add(ghost)
-    ghost.rect.center = (1100, 500)
+    ############################# Противники ##############################
+    number_of_enemy = functions.chanse_to_spawn_the_enemy()
 
+    for i in range(number_of_enemy):
+        ghost = Enemy()
+        all_sprites.add(ghost)
+        all_enemy.add(ghost)
+        ghost.rect.center = functions.random_position_of_spawn(display_width, display_height)
 
     ############################# Создаём стены ##############################
     wall_top_1 = Wall_Horizontal()
@@ -143,11 +151,15 @@ def run_game():   # Основная функция игры
 
         ############################# Движение игрока ##############################
 
+        ghost_right = True   # Напривления, куда смотрит призрак
+        ghost_left = False
+
         if first:
             back = False   # Направления, куда смотрит игрок
             front = True
             right = False
             left = False
+
             first = False
 
         if keys[pygame.K_w] and keys[pygame.K_a]:
@@ -289,7 +301,7 @@ def run_game():   # Основная функция игры
                 right = False
                 left = True
 
-
+        ############################# Границы карты ##############################
         if user.rect.right > display_width - 50:
             if 200 <= user.rect.y <= 400:
                 pass
@@ -311,8 +323,7 @@ def run_game():   # Основная функция игры
             else:
                 user.rect.bottom = display_height - 50
 
-
-
+        ############################# Смена уровня ##############################
         if user.rect.right >= display_width + 150:
             user.rect.left = -150
             index_of_room += 1
@@ -330,43 +341,6 @@ def run_game():   # Основная функция игры
 
         index_of_room %= 4
 
-        pygame.sprite.spritecollide(user, chests, True)
-
-        ghost_right = True
-        ghost_left = False
-
-        if math.fabs(user.rect.center[0] - ghost.rect.center[0]) >= 50 or math.fabs(user.rect.center[1] - ghost.rect.center[1]) >= 50:
-            if user.rect.x - ghost.rect.x > 0:
-                ghost.rect.x = ghost.rect.x + ghost.speed
-                ghost_right = True
-                ghost_left = False
-            if user.rect.x - ghost.rect.x < 0:
-                ghost_right = False
-                ghost_left = True
-                ghost.rect.x = ghost.rect.x - ghost.speed
-
-            if user.rect.y - ghost.rect.y > 0:
-                ghost.rect.y = ghost.rect.y + ghost.speed
-            if user.rect.y - ghost.rect.y < 0:
-                ghost.rect.y = ghost.rect.y - ghost.speed
-
-            if ghost_right:
-                ghost.image = pygame.image.load('resources\enemy\ghost_right.png')
-            elif ghost_left:
-                ghost.image = pygame.image.load('resources\enemy\ghost_left.png')
-
-        else:
-            pygame.sprite.spritecollide(user, all_enemy, True)
-
-        if front:
-            user.image = pygame.image.load('resources\knight\\front.png')  # Переменная-картинка игрока
-        elif back:
-            user.image = pygame.image.load('resources\knight\\back.png')  # Переменная-картинка игрока
-        elif right:
-            user.image = pygame.image.load('resources\knight\\right.png')  # Переменная-картинка игрока
-        elif left:
-            user.image = pygame.image.load('resources\knight\\left.png')  # Переменная-картинка игрока
-
         if index_of_room % 4 == 0:
             display.fill((179, 179, 179))
         elif index_of_room % 4 == 1:
@@ -376,12 +350,48 @@ def run_game():   # Основная функция игры
         elif index_of_room % 4 == 3:
             display.fill((101, 161, 151))
 
+        ############################# Движение Призрака ##############################
+        for ghost in all_enemy:
+            if math.fabs(user.rect.center[0] - ghost.rect.center[0]) >= 50 or math.fabs(user.rect.center[1] - ghost.rect.center[1]) >= 50:
+                if user.rect.x - ghost.rect.x > 0:
+                    ghost.rect.x = ghost.rect.x + ghost.speed
+                    ghost_right = True
+                    ghost_left = False
+                if user.rect.x - ghost.rect.x < 0:
+                    ghost_right = False
+                    ghost_left = True
+                    ghost.rect.x = ghost.rect.x - ghost.speed
+
+                if user.rect.y - ghost.rect.y > 0:
+                    ghost.rect.y = ghost.rect.y + ghost.speed
+                if user.rect.y - ghost.rect.y < 0:
+                    ghost.rect.y = ghost.rect.y - ghost.speed
+            else:
+                pygame.sprite.spritecollide(user, all_enemy, True)
+
+
+            ############################# Отрисовка призрака ##############################
+            if ghost_right:
+                ghost.image = pygame.image.load('resources\enemy\ghost_right.png')
+            elif ghost_left:
+                ghost.image = pygame.image.load('resources\enemy\ghost_left.png')
+
+
+        ############################# Отрисовка игрока ##############################
+        if front:
+            user.image = pygame.image.load('resources\knight\\front.png')  # Переменная-картинка игрока
+        elif back:
+            user.image = pygame.image.load('resources\knight\\back.png')  # Переменная-картинка игрока
+        elif right:
+            user.image = pygame.image.load('resources\knight\\right.png')  # Переменная-картинка игрока
+        elif left:
+            user.image = pygame.image.load('resources\knight\\left.png')  # Переменная-картинка игрока
+
 
         all_sprites.update()   # Обновление спрайтов
         all_sprites.draw(display)  # Прорисовка всех спрайтов
         pygame.display.flip()   # Переворчиваем экран
         clock.tick(60)   # FPS
-
 
 
 run_game()
