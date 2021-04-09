@@ -42,21 +42,21 @@ class Enemy(pygame.sprite.Sprite):
 class Chest(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('resources\chest.png')
+        self.image = pygame.image.load('resources\\objects\\chest.png')
         self.rect = self.image.get_rect()
 
 ############################# Класс гозизонтальной стены ##############################
 class Wall_Horizontal(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('resources/wall.jpg')
+        self.image = pygame.image.load('resources\\level elements\\wall.jpg')
         self.rect = self.image.get_rect()
 
 ############################# Класс вертикальной стены ##############################
 class Wall_Vertical(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('resources/wall.jpg')
+        self.image = pygame.image.load('resources\\level elements\\wall.jpg')
         self.rect = self.image.get_rect()
         self.image = pygame.transform.rotate(self.image, 90)
 
@@ -440,10 +440,7 @@ def run_game():   # Основная функция игры
             bar.image = pygame.image.load('resources\\health\\1.png')
         elif user.hp <= 0:
             bar.image = pygame.image.load('resources\\health\\0.png')
-
-        ############################# Отрисовка уровня ##############################
-
-
+            exit()
 
         all_sprites.update()   # Обновление спрайтов
         all_sprites.draw(display)  # Прорисовка всех спрайтов
