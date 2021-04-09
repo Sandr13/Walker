@@ -35,7 +35,6 @@ class Enemy(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load('resources\\enemy\\ghost_left.png')
         self.rect = self.image.get_rect()
-        self.rect.center = (display_width / 2, display_height / 2)
         self.speed = 2
 
 ################################ Класс сундука ##################################
@@ -353,39 +352,46 @@ def run_game():   # Основная функция игры
                 user.rect.bottom = display_height - 50
 
         ############################# Смена уровня ##############################
+        def time_pause():
+            pass
+
         if user.rect.right >= display_width + 150:
-            user.rect.left = -150
+            user.rect.left = -100
             index_of_room = 1
             background.change_the_room(index_of_room)
             for sprite in all_enemy:
                 sprite.kill()
             generate_ghosts()
+            time_pause()
 
         elif user.rect.left <= -150:
-            user.rect.right = display_width + 150
+            user.rect.right = display_width + 100
             index_of_room = 2
             background.change_the_room(index_of_room)
             for sprite in all_enemy:
                 sprite.kill()
             generate_ghosts()
+            time_pause()
 
         elif user.rect.top <= -150:
-            user.rect.bottom = display_height + 150
+            user.rect.bottom = display_height + 100
             user.rect.x = 500
             index_of_room = 3
             background.change_the_room(index_of_room)
             for sprite in all_enemy:
                 sprite.kill()
             generate_ghosts()
+            time_pause()
 
         elif user.rect.bottom >= display_height + 150:
-            user.rect.top = -150
+            user.rect.top = -100
             user.rect.x = 835
             index_of_room = 4
             background.change_the_room(index_of_room)
             for sprite in all_enemy:
                 sprite.kill()
             generate_ghosts()
+            time_pause()
 
 
 
