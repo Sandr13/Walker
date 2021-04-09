@@ -10,8 +10,6 @@ display_width = 1400
 display_height = 700
 display = pygame.display.set_mode((display_width, display_height))
 pygame.display.set_caption("My Walker")
-first_room = True
-
 clock = pygame.time.Clock()  # Переменная для подсчёта тиков
 
 ############################# Класс объекта-игрока ##############################
@@ -21,6 +19,15 @@ class Player(pygame.sprite.Sprite):
         self.image = pygame.image.load('resources\\knight\\front.png')
         self.rect = self.image.get_rect()
         self.rect.center = (display_width / 2, display_height / 2)
+        self.hp = 5
+
+############################# Класс объекта-бара хп ##############################
+class Bar_HP(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('resources\\health\\5.png')
+        self.rect = self.image.get_rect()
+        self.rect.center = (1215,675)
 
 ################################ Класс Противника ##################################
 class Enemy(pygame.sprite.Sprite):
@@ -53,6 +60,17 @@ class Wall_Vertical(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.image = pygame.transform.rotate(self.image, 90)
 
+################################ Класс заднего фона ##################################
+class Background(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('resources\\level elements\\background-1.png')
+        self.rect = self.image.get_rect()
+        self.index_of_room = 1
+
+    def change_the_room(self, index_of_room):
+        directory = 'resources\\level elements\\background-' + str(index_of_room) + '.png'
+        self.image = pygame.image.load(directory)
 
 def run_game():   # Основная функция игры
     game = True
@@ -64,24 +82,32 @@ def run_game():   # Основная функция игры
     chests = pygame.sprite.Group()   # Группа сундуков
     all_enemy = pygame.sprite.Group()  # Группа монстров
 
+    ############################# Задний фон ##############################
+    background = Background()
+    all_sprites.add(background)
+
     ############################# Сундуки ##############################
-    chest = Chest()  # Создаём сундук
-    all_sprites.add(chest)
-    chests.add(chest)
-    chest.rect.center = (500, 100)
+    def generate_chests():
+        chest = Chest()  # Создаём сундук
+        all_sprites.add(chest)
+        chests.add(chest)
+        chest.rect.center = (500, 100)
 
     ############################# Игрок ##############################
     user = Player()   # Создаём игрока
     all_sprites.add(user)
 
     ############################# Противники ##############################
-    number_of_enemy = functions.chanse_to_spawn_the_enemy()
+    def generate_ghosts():
+        number_of_enemy = functions.chanse_to_spawn_the_enemy()
+        for i in range(number_of_enemy):
+            ghost = Enemy()
+            all_sprites.add(ghost)
+            all_enemy.add(ghost)
+            ghost.rect.center = functions.random_position_of_spawn(display_width, display_height)
 
-    for i in range(number_of_enemy):
-        ghost = Enemy()
-        all_sprites.add(ghost)
-        all_enemy.add(ghost)
-        ghost.rect.center = functions.random_position_of_spawn(display_width, display_height)
+    ############################# Генерация противников ##############################
+    generate_ghosts()
 
     ############################# Создаём стены ##############################
     wall_top_1 = Wall_Horizontal()
@@ -139,7 +165,10 @@ def run_game():   # Основная функция игры
     wall_top_10.rect.right = 1700
     wall_top_10.rect.top = 500
 
-    index_of_room = 0
+    ############################# Бар-хп ##############################
+    bar = Bar_HP()   # бар
+    all_sprites.add(bar)
+    index_of_room = 1
 
     while game:   # Пока сеанс игры запущен:
         for event in pygame.event.get():   # Считываем все события
@@ -326,29 +355,39 @@ def run_game():   # Основная функция игры
         ############################# Смена уровня ##############################
         if user.rect.right >= display_width + 150:
             user.rect.left = -150
-            index_of_room += 1
+            index_of_room = 1
+            background.change_the_room(index_of_room)
+            for sprite in all_enemy:
+                sprite.kill()
+            generate_ghosts()
+
         elif user.rect.left <= -150:
             user.rect.right = display_width + 150
-            index_of_room += 1
+            index_of_room = 2
+            background.change_the_room(index_of_room)
+            for sprite in all_enemy:
+                sprite.kill()
+            generate_ghosts()
+
         elif user.rect.top <= -150:
             user.rect.bottom = display_height + 150
             user.rect.x = 500
-            index_of_room += 1
+            index_of_room = 3
+            background.change_the_room(index_of_room)
+            for sprite in all_enemy:
+                sprite.kill()
+            generate_ghosts()
+
         elif user.rect.bottom >= display_height + 150:
             user.rect.top = -150
             user.rect.x = 835
-            index_of_room += 1
+            index_of_room = 4
+            background.change_the_room(index_of_room)
+            for sprite in all_enemy:
+                sprite.kill()
+            generate_ghosts()
 
-        index_of_room %= 4
 
-        if index_of_room % 4 == 0:
-            display.fill((179, 179, 179))
-        elif index_of_room % 4 == 1:
-            display.fill((127, 118, 121))
-        elif index_of_room % 4 == 2:
-            display.fill((79, 79, 70))
-        elif index_of_room % 4 == 3:
-            display.fill((101, 161, 151))
 
         ############################# Движение Призрака ##############################
         for ghost in all_enemy:
@@ -367,7 +406,8 @@ def run_game():   # Основная функция игры
                 if user.rect.y - ghost.rect.y < 0:
                     ghost.rect.y = ghost.rect.y - ghost.speed
             else:
-                pygame.sprite.spritecollide(user, all_enemy, True)
+                count_of_detected_colide = len(pygame.sprite.spritecollide(user, all_enemy, True))
+                user.hp -= count_of_detected_colide
 
 
             ############################# Отрисовка призрака ##############################
@@ -386,6 +426,23 @@ def run_game():   # Основная функция игры
             user.image = pygame.image.load('resources\knight\\right.png')  # Переменная-картинка игрока
         elif left:
             user.image = pygame.image.load('resources\knight\\left.png')  # Переменная-картинка игрока
+
+        ############################# Отрисовка hp игрока ##############################
+        if user.hp == 5:
+            bar.image = pygame.image.load('resources\\health\\5.png')
+        elif user.hp == 4:
+            bar.image = pygame.image.load('resources\\health\\4.png')
+        elif user.hp == 3:
+            bar.image = pygame.image.load('resources\\health\\3.png')
+        elif user.hp == 2:
+            bar.image = pygame.image.load('resources\\health\\2.png')
+        elif user.hp == 1:
+            bar.image = pygame.image.load('resources\\health\\1.png')
+        elif user.hp <= 0:
+            bar.image = pygame.image.load('resources\\health\\0.png')
+
+        ############################# Отрисовка уровня ##############################
+
 
 
         all_sprites.update()   # Обновление спрайтов
