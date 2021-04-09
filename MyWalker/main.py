@@ -99,7 +99,7 @@ def run_game():   # Основная функция игры
     ############################# Противники ##############################
     def generate_ghosts():
         number_of_enemy = functions.chanse_to_spawn_the_enemy()
-        for i in range(0):
+        for i in range(number_of_enemy):
             ghost = Enemy()
             all_sprites.add(ghost)
             all_enemy.add(ghost)
