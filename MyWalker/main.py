@@ -99,7 +99,7 @@ def run_game():   # Основная функция игры
     ############################# Противники ##############################
     def generate_ghosts():
         number_of_enemy = functions.chanse_to_spawn_the_enemy()
-        for i in range(number_of_enemy):
+        for i in range(0):
             ghost = Enemy()
             all_sprites.add(ghost)
             all_enemy.add(ghost)
@@ -167,7 +167,7 @@ def run_game():   # Основная функция игры
     ############################# Бар-хп ##############################
     bar = Bar_HP()   # бар
     all_sprites.add(bar)
-    index_of_room = 1
+    index_of_room = 0
 
     while game:   # Пока сеанс игры запущен:
         for event in pygame.event.get():   # Считываем все события
@@ -199,6 +199,10 @@ def run_game():   # Основная функция игры
                 pass
             elif 700 <= user.rect.x <= 705 and user.rect.top < 50:
                 pass
+            elif user.rect.left <= -100 and 200 <= user.rect.y <= 400 and index_of_room == 1:
+                pass
+            elif user.rect.top <= -100 and 700 <= user.rect.x <= 975 and index_of_room == 4:
+                pass
             else:
                 user.rect.y -= 2
                 user.rect.x -= 2
@@ -206,6 +210,8 @@ def run_game():   # Основная функция игры
             if user.rect.x <= 50 and 200 <= user.rect.y <= 205:
                 pass
             elif user.rect.right >= display_width - 50 and 200 <= user.rect.y <= 205:
+                pass
+            elif user.rect.top <= -100 and 700 <= user.rect.x <= 975 and index_of_room == 4:
                 pass
             else:
                 user.rect.y -= 4
@@ -217,6 +223,8 @@ def run_game():   # Основная функция игры
             if 339 <= user.rect.left <= 350 and user.rect.bottom > 650:
                 pass
             elif 700 <= user.rect.x <= 705 and user.rect.top < 50:
+                pass
+            elif user.rect.left <= -100 and 200 <= user.rect.y <= 400 and index_of_room == 1:
                 pass
             else:
                 user.rect.x -= 4
@@ -234,6 +242,10 @@ def run_game():   # Основная функция игры
                 pass
             elif 970 <= user.rect.x <= 975 and user.rect.top < 50:
                 pass
+            elif user.rect.right > display_width + 100 and 200 <= user.rect.y <= 400 and index_of_room == 2:
+                pass
+            elif user.rect.top <= -100 and 700 <= user.rect.x <= 975 and index_of_room == 4:
+                pass
             else:
                 user.rect.y -= 2
                 user.rect.x += 2
@@ -241,6 +253,8 @@ def run_game():   # Основная функция игры
             if user.rect.x <= 50 and 200 <= user.rect.y <= 205:
                 pass
             elif user.rect.right >= display_width - 50 and 200 <= user.rect.y <= 205:
+                pass
+            elif user.rect.top <= -100 and 700 <= user.rect.x <= 975 and index_of_room == 4:
                 pass
             else:
                 user.rect.y -= 4
@@ -252,6 +266,8 @@ def run_game():   # Основная функция игры
             if 669 <= user.rect.x <= 675 and user.rect.bottom > 650:
                 pass
             elif 970 <= user.rect.x <= 975 and user.rect.top < 50:
+                pass
+            elif user.rect.right > display_width + 100 and 200 <= user.rect.y <= 400 and index_of_room == 2:
                 pass
             else:
                 user.rect.x += 4
@@ -269,6 +285,10 @@ def run_game():   # Основная функция игры
                 pass
             elif 970 <= user.rect.x <= 975 and user.rect.top < 50:
                 pass
+            elif user.rect.right > display_width + 100 and 200 <= user.rect.y <= 400 and index_of_room == 2:
+                pass
+            elif user.rect.bottom > display_height + 100 and 345 <= user.rect.x <= 675 and index_of_room == 3:
+                pass
             else:
                 user.rect.x += 2
                 user.rect.y += 2
@@ -276,6 +296,8 @@ def run_game():   # Основная функция игры
             if 669 <= user.rect.x <= 675 and user.rect.bottom > 650:
                 pass
             elif 970 <= user.rect.x <= 975 and user.rect.top < 50:
+                pass
+            elif user.rect.right > display_width + 100 and 200 <= user.rect.y <= 400 and index_of_room == 2:
                 pass
             else:
                 user.rect.x += 4
@@ -287,6 +309,8 @@ def run_game():   # Основная функция игры
             if user.rect.x <= 50 and 495 <= user.rect.bottom <= 500:
                 pass
             elif user.rect.right >= display_width - 50 and 500 <= user.rect.bottom <= 505:
+                pass
+            elif user.rect.bottom > display_height + 100 and 345 <= user.rect.x <= 675 and index_of_room == 3:
                 pass
             else:
                 user.rect.y += 4
@@ -303,6 +327,10 @@ def run_game():   # Основная функция игры
                 pass
             elif 700 <= user.rect.x <= 705 and user.rect.top < 50:
                 pass
+            elif user.rect.left <= -100 and 200 <= user.rect.y <= 400 and index_of_room == 1:
+                pass
+            elif user.rect.bottom > display_height + 100 and 345 <= user.rect.x <= 675 and index_of_room == 3:
+                pass
             else:
                 user.rect.y += 2
                 user.rect.x -= 2
@@ -310,6 +338,8 @@ def run_game():   # Основная функция игры
             if user.rect.x <= 50 and 490 <= user.rect.bottom <= 500:
                 pass
             elif user.rect.right >= display_width - 50 and 500 <= user.rect.bottom <= 505:
+                pass
+            elif user.rect.bottom > display_height + 100 and 345 <= user.rect.x <= 675 and index_of_room == 3:
                 pass
             else:
                 user.rect.y += 4
@@ -321,6 +351,8 @@ def run_game():   # Основная функция игры
             if 339 <= user.rect.left <= 350 and user.rect.bottom > 650:
                 pass
             elif 700 <= user.rect.x <= 705 and user.rect.top < 50:
+                pass
+            elif user.rect.left <= -100 and 200 <= user.rect.y <= 400 and index_of_room == 1:
                 pass
             else:
                 user.rect.x -= 4
@@ -352,49 +384,48 @@ def run_game():   # Основная функция игры
                 user.rect.bottom = display_height - 50
 
         ############################# Смена уровня ##############################
-        def time_pause():
-            pass
+        def pause():
+            pygame.time.delay(500)
 
         if user.rect.right >= display_width + 150:
             user.rect.left = -100
             index_of_room = 1
+            pause()
             background.change_the_room(index_of_room)
             for sprite in all_enemy:
                 sprite.kill()
             generate_ghosts()
-            time_pause()
 
         elif user.rect.left <= -150:
             user.rect.right = display_width + 100
             index_of_room = 2
+            pause()
             background.change_the_room(index_of_room)
             for sprite in all_enemy:
                 sprite.kill()
             generate_ghosts()
-            time_pause()
 
         elif user.rect.top <= -150:
             user.rect.bottom = display_height + 100
             user.rect.x = 500
             index_of_room = 3
+            pause()
             background.change_the_room(index_of_room)
             for sprite in all_enemy:
                 sprite.kill()
             generate_ghosts()
-            time_pause()
 
         elif user.rect.bottom >= display_height + 150:
             user.rect.top = -100
             user.rect.x = 835
             index_of_room = 4
+            pause()
             background.change_the_room(index_of_room)
             for sprite in all_enemy:
                 sprite.kill()
             generate_ghosts()
-            time_pause()
 
-
-
+        print(index_of_room)
         ############################# Движение Призрака ##############################
         for ghost in all_enemy:
             if math.fabs(user.rect.center[0] - ghost.rect.center[0]) >= 50 or math.fabs(user.rect.center[1] - ghost.rect.center[1]) >= 50:
