@@ -67,8 +67,8 @@ class Background(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.index_of_room = 1
 
-    def change_the_room(self, index_of_room):
-        directory = 'resources\\level elements\\background-' + str(index_of_room) + '.png'
+    def change_the_room(self, count_of_room):
+        directory = 'resources\\level elements\\background-' + str(count_of_room + 1) + '.png'
         self.image = pygame.image.load(directory)
 
 def run_game():   # Основная функция игры
@@ -168,6 +168,7 @@ def run_game():   # Основная функция игры
     bar = Bar_HP()   # бар
     all_sprites.add(bar)
     index_of_room = 0
+    count_of_room = 1
 
     while game:   # Пока сеанс игры запущен:
         for event in pygame.event.get():   # Считываем все события
@@ -391,7 +392,9 @@ def run_game():   # Основная функция игры
             user.rect.left = -100
             index_of_room = 1
             pause()
-            background.change_the_room(index_of_room)
+            count_of_room += 1
+            count_of_room %= 4
+            background.change_the_room(count_of_room)
             for sprite in all_enemy:
                 sprite.kill()
             generate_ghosts()
@@ -400,7 +403,9 @@ def run_game():   # Основная функция игры
             user.rect.right = display_width + 100
             index_of_room = 2
             pause()
-            background.change_the_room(index_of_room)
+            count_of_room += 1
+            count_of_room %= 4
+            background.change_the_room(count_of_room)
             for sprite in all_enemy:
                 sprite.kill()
             generate_ghosts()
@@ -410,7 +415,9 @@ def run_game():   # Основная функция игры
             user.rect.x = 500
             index_of_room = 3
             pause()
-            background.change_the_room(index_of_room)
+            count_of_room += 1
+            count_of_room %= 4
+            background.change_the_room(count_of_room)
             for sprite in all_enemy:
                 sprite.kill()
             generate_ghosts()
@@ -420,12 +427,12 @@ def run_game():   # Основная функция игры
             user.rect.x = 835
             index_of_room = 4
             pause()
-            background.change_the_room(index_of_room)
+            count_of_room += 1
+            count_of_room %= 4
+            background.change_the_room(count_of_room)
             for sprite in all_enemy:
                 sprite.kill()
             generate_ghosts()
-
-        print(index_of_room)
         ############################# Движение Призрака ##############################
         for ghost in all_enemy:
             if math.fabs(user.rect.center[0] - ghost.rect.center[0]) >= 50 or math.fabs(user.rect.center[1] - ghost.rect.center[1]) >= 50:
