@@ -20,6 +20,12 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = (display_width / 2, display_height / 2)
         self.hp = 5
+        self.items = []
+
+############################# Класс инвентаря ##############################
+class Inventory:
+    def __init__(self):
+        self.items = []
 
 ############################# Класс объекта-бара хп ##############################
 class Bar_HP(pygame.sprite.Sprite):
@@ -37,6 +43,22 @@ class Enemy(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.speed = 2
 
+################################ Класс ячейки инвентаря ##################################
+class Ceil_of_inventory(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('resources\\inventory\\ceil_of_inventory.png')
+        self.rect = self.image.get_rect()
+        self.is_empty = True
+
+
+################################ Класс места для предмета в ячейке инвентаря ##################################
+class Place_for_item_in_ceil(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('resources\\inventory\\items\\empty_slot.png')
+        self.rect = self.image.get_rect()
+
 ################################ Класс сундука ##################################
 class Chest(pygame.sprite.Sprite):
     def __init__(self):
@@ -48,16 +70,39 @@ class Chest(pygame.sprite.Sprite):
 class Wall_Horizontal(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('resources\\level elements\\wall.jpg')
+        self.image = pygame.image.load('resources\\level elements\\wall.png')
         self.rect = self.image.get_rect()
 
 ############################# Класс вертикальной стены ##############################
 class Wall_Vertical(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('resources\\level elements\\wall.jpg')
+        self.image = pygame.image.load('resources\\level elements\\wall.png')
         self.rect = self.image.get_rect()
         self.image = pygame.transform.rotate(self.image, 90)
+
+############################# Класс хилки ##############################
+class Heal_bottle(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('resources/inventory/items/heal_bottle.png')
+        self.rect = self.image.get_rect()
+        self.name = 'heal_bottle'
+
+############################# Класс лука ##############################
+class Bow(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('resources/inventory/items/bow.png')
+        self.rect = self.image.get_rect()
+        self.name = 'bow'
+
+############################# Класс снаряда ##############################
+class Bullet(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('resources\\attacking\\arrow.png')
+        self.rect = self.image.get_rect()
 
 ################################ Класс заднего фона ##################################
 class Background(pygame.sprite.Sprite):
@@ -78,8 +123,8 @@ def run_game():   # Основная функция игры
     ############################# Создаём группы объектов на карте ##############################
     all_sprites = pygame.sprite.Group()  # Группа спрайтов
     walls = pygame.sprite.Group()   # Группа стен
-    chests = pygame.sprite.Group()   # Группа сундуков
     all_enemy = pygame.sprite.Group()  # Группа монстров
+    all_items_ont_the_ground = pygame.sprite.Group()   # Группа предметов на земле
 
     ############################# Задний фон ##############################
     background = Background()
@@ -96,6 +141,40 @@ def run_game():   # Основная функция игры
     user = Player()   # Создаём игрока
     all_sprites.add(user)
 
+    ############################# Стрельба ##############################
+    def bullet_move(arrow, direction):
+        pass
+
+    def shoot():
+        arrow = Bullet()
+        all_sprites.add(arrow)
+        arrow.rect.center = user.rect.center
+        if right:
+            direction = 'right'
+        elif left:
+            direction = 'left'
+        elif back:
+            direction = 'top'
+        elif front:
+            direction = 'bottom'
+
+        bullet_move(arrow, direction)
+
+    ############################# Предметы ##############################
+    def generate_items():
+        number_of_items = functions.chanse_to_spawn_the_enemy()
+
+        for i in range(number_of_items):
+            type = functions.check_for_item(['heal_bottle', 'bow'])
+            if type == 'heal_bottle':
+                item = Heal_bottle()
+            elif type == 'bow':
+                item = Bow()
+
+            all_sprites.add(item)
+            all_items_ont_the_ground.add(item)
+            item.rect.center = functions.random_position_of_spawn(display_width, display_height)
+
     ############################# Противники ##############################
     def generate_ghosts():
         number_of_enemy = functions.chanse_to_spawn_the_enemy()
@@ -107,7 +186,8 @@ def run_game():   # Основная функция игры
 
     ############################# Генерация противников ##############################
     generate_ghosts()
-
+    ############################# Генерация предметов ##############################
+    generate_items()
     ############################# Создаём стены ##############################
     wall_top_1 = Wall_Horizontal()
     all_sprites.add(wall_top_1)
@@ -170,13 +250,70 @@ def run_game():   # Основная функция игры
     index_of_room = 0
     count_of_room = 1
 
+    ############################# Инвентарь ##############################
+    inventory = Inventory()
+
+    block_1 = Ceil_of_inventory()
+    all_sprites.add(block_1)
+    block_1.rect.center = (75,25)
+    inventory.items.append(block_1)
+
+    empty_1 = Place_for_item_in_ceil()
+    all_sprites.add(empty_1)
+    empty_1.rect.center = (75,25)
+
+
+    block_2 = Ceil_of_inventory()
+    all_sprites.add(block_2)
+    block_2.rect.center = (125,25)
+    inventory.items.append(block_2)
+
+    empty_2 = Place_for_item_in_ceil()
+    all_sprites.add(empty_2)
+    empty_2.rect.center = (125, 25)
+
+
+    block_3 = Ceil_of_inventory()
+    all_sprites.add(block_3)
+    block_3.rect.center = (175,25)
+    inventory.items.append(block_3)
+
+    empty_3 = Place_for_item_in_ceil()
+    all_sprites.add(empty_3)
+    empty_3.rect.center = (175, 25)
+
+
+    block_4 = Ceil_of_inventory()
+    all_sprites.add(block_4)
+    block_4.rect.center = (225,25)
+    inventory.items.append(block_4)
+
+    empty_4 = Place_for_item_in_ceil()
+    all_sprites.add(empty_4)
+    empty_4.rect.center = (225, 25)
+
+
+    block_5 = Ceil_of_inventory()
+    all_sprites.add(block_5)
+    block_5.rect.center = (275,25)
+    inventory.items.append(block_5)
+
+    empty_5 = Place_for_item_in_ceil()
+    all_sprites.add(empty_5)
+    empty_5.rect.center = (275, 25)
+
     while game:   # Пока сеанс игры запущен:
         for event in pygame.event.get():   # Считываем все события
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    shoot()
 
         keys = pygame.key.get_pressed()   # Инициализируем клавиатуру
+        ############################# Стрельба ##############################
+
 
         ############################# Движение игрока ##############################
 
@@ -386,8 +523,8 @@ def run_game():   # Основная функция игры
 
         ############################# Смена уровня ##############################
         def pause():
-            pygame.time.delay(500)
-
+            #pygame.time.delay(500)
+            pass
         if user.rect.right >= display_width + 150:
             user.rect.left = -100
             index_of_room = 1
@@ -397,7 +534,10 @@ def run_game():   # Основная функция игры
             background.change_the_room(count_of_room)
             for sprite in all_enemy:
                 sprite.kill()
+            for sprite in all_items_ont_the_ground:
+                sprite.kill()
             generate_ghosts()
+            generate_items()
 
         elif user.rect.left <= -150:
             user.rect.right = display_width + 100
@@ -408,7 +548,10 @@ def run_game():   # Основная функция игры
             background.change_the_room(count_of_room)
             for sprite in all_enemy:
                 sprite.kill()
+            for sprite in all_items_ont_the_ground:
+                sprite.kill()
             generate_ghosts()
+            generate_items()
 
         elif user.rect.top <= -150:
             user.rect.bottom = display_height + 100
@@ -420,7 +563,10 @@ def run_game():   # Основная функция игры
             background.change_the_room(count_of_room)
             for sprite in all_enemy:
                 sprite.kill()
+            for sprite in all_items_ont_the_ground:
+                sprite.kill()
             generate_ghosts()
+            generate_items()
 
         elif user.rect.bottom >= display_height + 150:
             user.rect.top = -100
@@ -432,7 +578,11 @@ def run_game():   # Основная функция игры
             background.change_the_room(count_of_room)
             for sprite in all_enemy:
                 sprite.kill()
+            for sprite in all_items_ont_the_ground:
+                sprite.kill()
             generate_ghosts()
+            generate_items()
+
         ############################# Движение Призрака ##############################
         for ghost in all_enemy:
             if math.fabs(user.rect.center[0] - ghost.rect.center[0]) >= 50 or math.fabs(user.rect.center[1] - ghost.rect.center[1]) >= 50:
@@ -460,6 +610,63 @@ def run_game():   # Основная функция игры
             elif ghost_left:
                 ghost.image = pygame.image.load('resources\enemy\ghost_left.png')
 
+        ############################# Предметы и взаимодействие с ними ##############################
+        def pick_up():
+            if len(user.items) < 5:
+                list = pygame.sprite.spritecollide(user, all_items_ont_the_ground, True)
+                for i in range(len(list)):
+                    if len(user.items) < 5:
+                        user.items.append(list[i].name)
+                print_items()
+
+        if pygame.sprite.spritecollide(user, all_items_ont_the_ground, False):
+            pick_up()
+
+        ############################# Отрисовка предметов из инвентаря ##############################
+        def print_items():
+            for i in range(5):
+                inventory.items[i].is_empty = True
+
+            for item in user.items:
+                if item == 'heal_bottle':
+
+                    directory = 'resources\\inventory\\items\\heal_bottle.png'
+
+                    if inventory.items[0].is_empty:
+                        empty_1.image = pygame.image.load(directory)
+                        inventory.items[0].is_empty = False
+                    elif inventory.items[1].is_empty:
+                        empty_2.image = pygame.image.load(directory)
+                        inventory.items[1].is_empty = False
+                    elif inventory.items[2].is_empty:
+                        empty_3.image = pygame.image.load(directory)
+                        inventory.items[2].is_empty = False
+                    elif inventory.items[3].is_empty:
+                        empty_4.image = pygame.image.load(directory)
+                        inventory.items[3].is_empty = False
+                    elif inventory.items[4].is_empty:
+                        empty_5.image = pygame.image.load(directory)
+                        inventory.items[4].is_empty = False
+
+                elif item == 'bow':
+
+                    directory = 'resources\\inventory\\items\\bow.png'
+
+                    if inventory.items[0].is_empty:
+                        empty_1.image = pygame.image.load(directory)
+                        inventory.items[0].is_empty = False
+                    elif inventory.items[1].is_empty:
+                        empty_2.image = pygame.image.load(directory)
+                        inventory.items[1].is_empty = False
+                    elif inventory.items[2].is_empty:
+                        empty_3.image = pygame.image.load(directory)
+                        inventory.items[2].is_empty = False
+                    elif inventory.items[3].is_empty:
+                        empty_4.image = pygame.image.load(directory)
+                        inventory.items[3].is_empty = False
+                    elif inventory.items[4].is_empty:
+                        empty_5.image = pygame.image.load(directory)
+                        inventory.items[4].is_empty = False
 
         ############################# Отрисовка игрока ##############################
         if front:

@@ -16,3 +16,6 @@ def random_position_of_spawn(display_width, display_height):   # Генерац�
     y = random.choice(range(65, display_height - 65))
 
     return (x, y)
+
+def check_for_item(list):
+    return random.choice(list)
