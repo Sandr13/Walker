@@ -103,6 +103,7 @@ class Bullet(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load('resources\\attacking\\arrow.png')
         self.rect = self.image.get_rect()
+        self.direction = 0
 
 ################################ Класс заднего фона ##################################
 class Background(pygame.sprite.Sprite):
@@ -125,6 +126,7 @@ def run_game():   # Основная функция игры
     walls = pygame.sprite.Group()   # Группа стен
     all_enemy = pygame.sprite.Group()  # Группа монстров
     all_items_ont_the_ground = pygame.sprite.Group()   # Группа предметов на земле
+    all_bullets = pygame.sprite.Group()   # Группа снарядов
 
     ############################# Задний фон ##############################
     background = Background()
@@ -143,22 +145,34 @@ def run_game():   # Основная функция игры
 
     ############################# Стрельба ##############################
     def bullet_move(arrow, direction):
-        pass
+        if direction == 'right':
+            if arrow.rect.right <= display_width - 50:
+                arrow.rect.right += 1
+        elif direction == 'left':
+            if arrow.rect.left >= 50:
+                arrow.rect.right += 1
+        elif direction == 'top':
+            if arrow.rect.top >= 50:
+                arrow.rect.right += 1
+        elif direction == 'bottom':
+            if arrow.rect.bottom <= display_height - 50:
+                arrow.rect.right += 1
 
     def shoot():
         arrow = Bullet()
         all_sprites.add(arrow)
+        all_bullets.add(arrow)
         arrow.rect.center = user.rect.center
         if right:
-            direction = 'right'
+            arrow.direction = 'right'
         elif left:
-            direction = 'left'
+            arrow.direction = 'left'
         elif back:
-            direction = 'top'
+            arrow.direction = 'top'
         elif front:
-            direction = 'bottom'
+            arrow.direction = 'bottom'
 
-        bullet_move(arrow, direction)
+        # bullet_move(arrow, direction)
 
     ############################# Предметы ##############################
     def generate_items():
@@ -582,6 +596,33 @@ def run_game():   # Основная функция игры
                 sprite.kill()
             generate_ghosts()
             generate_items()
+
+        for bullet in all_bullets:
+            ### Направление движения ###
+            if bullet.direction == 'right':
+                if bullet.rect.right <= display_width - 50:
+                    bullet.rect.right += 5
+                else:
+                    bullet.kill()
+            elif bullet.direction == 'left':
+                if bullet.rect.left >= 50:
+                    bullet.rect.left -= 5
+                else:
+                    bullet.kill()
+            elif bullet.direction == 'top':
+                if bullet.rect.top >= 50:
+                    bullet.rect.top -= 5
+                else:
+                    bullet.kill()
+            elif bullet.direction == 'bottom':
+                if bullet.rect.bottom <= display_height - 50:
+                    bullet.rect.bottom += 5
+                else:
+                    bullet.kill()
+
+            if pygame.sprite.spritecollide(bullet, all_enemy, True):
+                #bullet.remove(all_bullets)
+                bullet.kill()
 
         ############################# Движение Призрака ##############################
         for ghost in all_enemy:
