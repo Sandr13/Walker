@@ -550,8 +550,11 @@ def run_game():   # Основная функция игры
                 sprite.kill()
             for sprite in all_items_ont_the_ground:
                 sprite.kill()
+            for sprite in all_bullets:
+                sprite.kill()
             generate_ghosts()
             generate_items()
+
 
         elif user.rect.left <= -150:
             user.rect.right = display_width + 100
@@ -563,6 +566,8 @@ def run_game():   # Основная функция игры
             for sprite in all_enemy:
                 sprite.kill()
             for sprite in all_items_ont_the_ground:
+                sprite.kill()
+            for sprite in all_bullets:
                 sprite.kill()
             generate_ghosts()
             generate_items()
@@ -579,6 +584,8 @@ def run_game():   # Основная функция игры
                 sprite.kill()
             for sprite in all_items_ont_the_ground:
                 sprite.kill()
+            for sprite in all_bullets:
+                sprite.kill()
             generate_ghosts()
             generate_items()
 
@@ -593,6 +600,8 @@ def run_game():   # Основная функция игры
             for sprite in all_enemy:
                 sprite.kill()
             for sprite in all_items_ont_the_ground:
+                sprite.kill()
+            for sprite in all_bullets:
                 sprite.kill()
             generate_ghosts()
             generate_items()
