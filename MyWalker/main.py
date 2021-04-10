@@ -48,14 +48,14 @@ class Chest(pygame.sprite.Sprite):
 class Wall_Horizontal(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('resources\\level elements\\wall.jpg')
+        self.image = pygame.image.load('resources\\level elements\\wall.png')
         self.rect = self.image.get_rect()
 
 ############################# Класс вертикальной стены ##############################
 class Wall_Vertical(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('resources\\level elements\\wall.jpg')
+        self.image = pygame.image.load('resources\\level elements\\wall.png')
         self.rect = self.image.get_rect()
         self.image = pygame.transform.rotate(self.image, 90)
 
