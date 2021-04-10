@@ -81,6 +81,21 @@ class Wall_Vertical(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.image = pygame.transform.rotate(self.image, 90)
 
+############################# Класс гозизонтального блока ##############################
+class Blockage_Horizontal(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('resources\\level elements\\wall_blockage.png')
+        self.rect = self.image.get_rect()
+
+############################# Класс вертикального блока ##############################
+class Blockage_Vertical(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('resources\\level elements\\wall_blockage.png')
+        self.rect = self.image.get_rect()
+        self.image = pygame.transform.rotate(self.image, 90)
+
 ############################# Класс хилки ##############################
 class Heal_bottle(pygame.sprite.Sprite):
     def __init__(self):
@@ -336,7 +351,7 @@ def run_game():   # Основная функция игры
 
         ############################# Движение игрока ##############################
 
-        ghost_right = True   # Напривления, куда смотрит призрак
+        ghost_right = True   # Направления, куда смотрит призрак
         ghost_left = False
 
         if first:
@@ -559,6 +574,11 @@ def run_game():   # Основная функция игры
                 sprite.kill()
             generate_ghosts()
             generate_items()
+            wall_blockage = Blockage_Vertical()
+            all_sprites.add(wall_blockage)
+            walls.add(wall_blockage)
+            wall_blockage.rect.top = 200
+
 
 
         elif user.rect.left <= -150:
@@ -576,6 +596,12 @@ def run_game():   # Основная функция игры
                 sprite.kill()
             generate_ghosts()
             generate_items()
+            wall_blockage = Blockage_Vertical()
+            all_sprites.add(wall_blockage)
+            walls.add(wall_blockage)
+            wall_blockage.rect.top = 200
+            wall_blockage.rect.right = display_width-400 ### что-то не так с определением координат
+
 
         elif user.rect.top <= -150:
             user.rect.bottom = display_height + 100
@@ -593,6 +619,12 @@ def run_game():   # Основная функция игры
                 sprite.kill()
             generate_ghosts()
             generate_items()
+            wall_blockage = Blockage_Horizontal()
+            all_sprites.add(wall_blockage)
+            walls.add(wall_blockage)
+            wall_blockage.rect.bottom = display_height
+            wall_blockage.rect.left = 400
+
 
         elif user.rect.bottom >= display_height + 150:
             user.rect.top = -100
@@ -610,6 +642,11 @@ def run_game():   # Основная функция игры
                 sprite.kill()
             generate_ghosts()
             generate_items()
+            wall_blockage = Blockage_Horizontal()
+            all_sprites.add(wall_blockage)
+            walls.add(wall_blockage)
+            wall_blockage.rect.left = 400
+
 
         for bullet in all_bullets:
             ### Направление движения ###
