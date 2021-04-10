@@ -159,18 +159,23 @@ def run_game():   # Основная функция игры
                 arrow.rect.right += 1
 
     def shoot():
-        arrow = Bullet()
-        all_sprites.add(arrow)
-        all_bullets.add(arrow)
-        arrow.rect.center = user.rect.center
-        if right:
-            arrow.direction = 'right'
-        elif left:
-            arrow.direction = 'left'
-        elif back:
-            arrow.direction = 'top'
-        elif front:
-            arrow.direction = 'bottom'
+        can_we_shoot = False
+        for item in user.items:
+            if item == 'bow':
+                can_we_shoot = True
+        if can_we_shoot:
+            arrow = Bullet()
+            all_sprites.add(arrow)
+            all_bullets.add(arrow)
+            arrow.rect.center = user.rect.center
+            if right:
+                arrow.direction = 'right'
+            elif left:
+                arrow.direction = 'left'
+            elif back:
+                arrow.direction = 'top'
+            elif front:
+                arrow.direction = 'bottom'
 
         # bullet_move(arrow, direction)
 
@@ -699,7 +704,6 @@ def run_game():   # Основная функция игры
                         inventory.items[4].is_empty = False
 
                 elif item == 'bow':
-
                     directory = 'resources\\inventory\\items\\bow.png'
 
                     if inventory.items[0].is_empty:
