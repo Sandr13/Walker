@@ -21,6 +21,7 @@ class Player(pygame.sprite.Sprite):
         self.rect.center = (display_width / 2, display_height / 2)
         self.hp = 5
         self.items = []
+        self.scores = 0
 
 ############################# Класс инвентаря ##############################
 class Inventory:
@@ -126,6 +127,7 @@ class Background(pygame.sprite.Sprite):
     def change_the_room(self, count_of_room):
         directory = 'resources\\level elements\\background-' + str(count_of_room + 1) + '.png'
         self.image = pygame.image.load(directory)
+
 
 def run_game():   # Основная функция игры
     game = True
@@ -292,6 +294,12 @@ def run_game():   # Основная функция игры
     index_of_room = 0
     count_of_room = 1
 
+    ######################### Отрисовка очков ############################
+    def draw_scores():
+        font = pygame.font.Font(None, 72)
+        text_scores = font.render(str(user.scores), True, (192, 192, 192))
+        display.blit(text_scores, (display_width-70, 7))
+
     ############################# Инвентарь ##############################
     def use_heal():
         have_heal = False
@@ -424,7 +432,12 @@ def run_game():   # Основная функция игры
     all_sprites.add(empty_5)
     empty_5.rect.center = (275, 25)
 
+    sound = pygame.mixer.Sound("resources\\sound.wav")
+    sound.play()
+
     while game:   # Пока сеанс игры запущен:
+        print(user.scores)
+
         for event in pygame.event.get():   # Считываем все события
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -819,6 +832,7 @@ def run_game():   # Основная функция игры
                 if bars.follow.hp <= 0:
                     bars.follow.kill()
                     bars.kill()
+                    user.scores+=1
             ############################# Отрисовка призрака ##############################
             if ghost_right:
                 ghost.image = pygame.image.load('resources\enemy\ghost_right.png')
@@ -910,11 +924,13 @@ def run_game():   # Основная функция игры
         elif user.hp > 5:
             user.hp = 5
 
+        draw_scores()
+        pygame.display.update()
         all_sprites.update()   # Обновление спрайтов
         all_sprites.draw(display)  # Прорисовка всех спрайтов
         pygame.display.flip()   # Переворчиваем экран
         clock.tick(60)   # FPS
 
-        print(user.items)
+        #print(user.items)
 
 run_game()
