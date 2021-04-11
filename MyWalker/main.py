@@ -115,6 +115,14 @@ class Heal_bottle(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.name = 'heal_bottle'
 
+############################# Класс чёрного фона ##############################
+class Black(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('resources/level elements/black.png')
+        self.rect = self.image.get_rect()
+        self.image.set_alpha(1)
+
 ############################# Класс лука ##############################
 class Bow(pygame.sprite.Sprite):
     def __init__(self):
@@ -148,6 +156,8 @@ class Background(pygame.sprite.Sprite):
 def run_game():   # Основная функция игры
     game = True
     first = True
+    stop = True
+    we_are_drawing = False
 
     ############################# Создаём группы объектов на карте ##############################
     all_sprites = pygame.sprite.Group()  # Группа спрайтов
@@ -157,6 +167,7 @@ def run_game():   # Основная функция игры
     all_bullets = pygame.sprite.Group()   # Группа снарядов
     all_enemy_bars = pygame.sprite.Group()   # Группа баров противников
     all_temporary_walls = pygame.sprite.Group()   # Группа временных стен
+    all_black_elements = pygame.sprite.Group()   # Группа чёрных фонов
 
     ############################# Задний фон ##############################
     background = Background()
@@ -455,584 +466,604 @@ def run_game():   # Основная функция игры
     empty_5.rect.center = (275, 25)
 
     while game:   # Пока сеанс игры запущен:
-        print(user.scores)
+        if not we_are_drawing:
+            for event in pygame.event.get():   # Считываем все события
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    quit()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE:
+                        shoot()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_e:
+                        use_heal()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_KP1:
+                        try:
+                            drop(1, user.items[0])
+                        except:
+                            pass
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_KP2:
+                        try:
+                            drop(2, user.items[1])
+                        except:
+                            pass
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_KP3:
+                        try:
+                            drop(3, user.items[2])
+                        except:
+                            pass
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_KP4:
+                        try:
+                            drop(4, user.items[3])
+                        except:
+                            pass
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_KP5:
+                        try:
+                            drop(5, user.items[4])
+                        except:
+                            pass
 
-        for event in pygame.event.get():   # Считываем все события
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                quit()
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
-                    shoot()
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_e:
-                    use_heal()
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_KP1:
-                    try:
-                        drop(1, user.items[0])
-                    except:
-                        pass
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_KP2:
-                    try:
-                        drop(2, user.items[1])
-                    except:
-                        pass
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_KP3:
-                    try:
-                        drop(3, user.items[2])
-                    except:
-                        pass
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_KP4:
-                    try:
-                        drop(4, user.items[3])
-                    except:
-                        pass
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_KP5:
-                    try:
-                        drop(5, user.items[4])
-                    except:
-                        pass
-
-        keys = pygame.key.get_pressed()   # Инициализируем клавиатуру
-        ############################# Стрельба ##############################
+            keys = pygame.key.get_pressed()   # Инициализируем клавиатуру
+            ############################# Стрельба ##############################
 
 
-        ############################# Движение игрока ##############################
+            ############################# Движение игрока ##############################
 
-        ghost_right = True   # Направления, куда смотрит призрак
-        ghost_left = False
+            ghost_right = True   # Направления, куда смотрит призрак
+            ghost_left = False
 
-        if first:
-            back = False   # Направления, куда смотрит игрок
-            front = True
-            right = False
-            left = False
-
-            first = False
-
-        if keys[pygame.K_w] and keys[pygame.K_a]:
-            if user.rect.x <= 50 and 200 <= user.rect.y <= 205:
-                pass
-            elif user.rect.right >= display_width - 50 and 300 <= user.rect.bottom <= 500:
-                pass
-            elif 339 <= user.rect.left <= 350 and user.rect.bottom > 650:
-                pass
-            elif 700 <= user.rect.x <= 705 and user.rect.top < 50:
-                pass
-            elif user.rect.left <= -100 and 200 <= user.rect.y <= 400 and index_of_room == 1:
-                pass
-            elif user.rect.top <= -100 and 700 <= user.rect.x <= 975 and index_of_room == 4:
-                pass
-            else:
-                user.rect.y -= 2
-                user.rect.x -= 2
-        elif keys[pygame.K_w]:
-            if user.rect.x <= 50 and 200 <= user.rect.y <= 205:
-                pass
-            elif user.rect.right > display_width - 50 and 200 <= user.rect.y <= 205:
-                pass
-            elif user.rect.top <= -100 and 700 <= user.rect.x <= 975 and index_of_room == 4:
-                pass
-            else:
-                user.rect.y -= 4
-                back = True
-                front = False
-                right = False
-                left = False
-        elif keys[pygame.K_a]:
-            if 339 <= user.rect.left <= 350 and user.rect.bottom > 650:
-                pass
-            elif 700 <= user.rect.x <= 705 and user.rect.top < 50:
-                pass
-            elif user.rect.left <= -100 and 200 <= user.rect.y <= 400 and index_of_room == 1:
-                pass
-            else:
-                user.rect.x -= 4
-                back = False
-                front = False
-                right = False
-                left = True
-
-        if keys[pygame.K_w] and keys[pygame.K_d]:
-            if user.rect.x <= 50 and 200 <= user.rect.y <= 205:
-                pass
-            elif user.rect.right >= display_width - 50 and 200 <= user.rect.y <= 205:
-                pass
-            elif 669 <= user.rect.x <= 675 and user.rect.bottom > 650:
-                pass
-            elif 970 <= user.rect.x <= 975 and user.rect.top < 50:
-                pass
-            elif user.rect.right > display_width + 100 and 200 <= user.rect.y <= 400 and index_of_room == 2:
-                pass
-            elif user.rect.top <= -100 and 700 <= user.rect.x <= 975 and index_of_room == 4:
-                pass
-            else:
-                user.rect.y -= 2
-                user.rect.x += 2
-        elif keys[pygame.K_w]:
-            if user.rect.x <= 50 and 200 <= user.rect.y <= 205:
-                pass
-            elif user.rect.right > display_width - 50 and 200 <= user.rect.y <= 205:
-                pass
-            elif user.rect.top <= -100 and 700 <= user.rect.x <= 975 and index_of_room == 4:
-                pass
-            else:
-                user.rect.y -= 4
-                back = True
-                front = False
-                right = False
-                left = False
-        elif keys[pygame.K_d]:
-            if 669 <= user.rect.x <= 675 and user.rect.bottom > 650:
-                pass
-            elif 970 <= user.rect.x <= 975 and user.rect.top < 50:
-                pass
-            elif user.rect.right > display_width + 100 and 200 <= user.rect.y <= 400 and index_of_room == 2:
-                pass
-            else:
-                user.rect.x += 4
-                back = False
-                front = False
-                right = True
-                left = False
-
-        if keys[pygame.K_d] and keys[pygame.K_s]:
-            if user.rect.x <= 50 and 495 <= user.rect.bottom <= 500:
-                pass
-            elif user.rect.right > display_width - 50 and 500 <= user.rect.bottom <= 505:
-                pass
-            elif 669 <= user.rect.x <= 675 and user.rect.bottom > 650:
-                pass
-            elif 970 <= user.rect.x <= 975 and user.rect.top < 50:
-                pass
-            elif user.rect.right > display_width + 100 and 200 <= user.rect.y <= 400 and index_of_room == 2:
-                pass
-            elif user.rect.bottom > display_height + 100 and 345 <= user.rect.x <= 675 and index_of_room == 3:
-                pass
-            else:
-                user.rect.x += 2
-                user.rect.y += 2
-        elif keys[pygame.K_d]:
-            if 669 <= user.rect.x <= 675 and user.rect.bottom > 650:
-                pass
-            elif 970 <= user.rect.x <= 975 and user.rect.top < 50:
-                pass
-            elif user.rect.right > display_width + 100 and 200 <= user.rect.y <= 400 and index_of_room == 2:
-                pass
-            else:
-                user.rect.x += 4
-                back = False
-                front = False
-                right = True
-                left = False
-        elif keys[pygame.K_s]:
-            if user.rect.x <= 50 and 495 <= user.rect.bottom <= 500:
-                pass
-            elif user.rect.right > display_width - 50 and 500 <= user.rect.bottom <= 505:
-                pass
-            elif user.rect.bottom > display_height + 100 and 345 <= user.rect.x <= 675 and index_of_room == 3:
-                pass
-            else:
-                user.rect.y += 4
-                back = False
+            if first:
+                back = False   # Направления, куда смотрит игрок
                 front = True
                 right = False
                 left = False
-        if keys[pygame.K_s] and keys[pygame.K_a]:
-            if user.rect.x <= 50 and 495 <= user.rect.bottom <= 500:
-                pass
-            elif user.rect.right >= display_width - 50 and 495 <= user.rect.bottom <= 501:
-                pass
-            elif 339 <= user.rect.left <= 350 and user.rect.bottom > 650:
-                pass
-            elif 700 <= user.rect.x <= 705 and user.rect.top < 50:
-                pass
-            elif user.rect.left <= -100 and 200 <= user.rect.y <= 400 and index_of_room == 1:
-                pass
-            elif user.rect.bottom > display_height + 100 and 345 <= user.rect.x <= 675 and index_of_room == 3:
-                pass
-            else:
-                user.rect.y += 2
-                user.rect.x -= 2
-        elif keys[pygame.K_s]:
-            if user.rect.x <= 50 and 490 <= user.rect.bottom <= 500:
-                pass
-            elif user.rect.right > display_width - 50 and 500 <= user.rect.bottom <= 505:
-                pass
-            elif user.rect.bottom > display_height + 100 and 345 <= user.rect.x <= 675 and index_of_room == 3:
-                pass
-            else:
-                user.rect.y += 4
-                back = False
-                front = True
-                right = False
-                left = False
-        elif keys[pygame.K_a]:
-            if 339 <= user.rect.left <= 350 and user.rect.bottom > 650:
-                pass
-            elif 700 <= user.rect.x <= 705 and user.rect.top < 50:
-                pass
-            elif user.rect.left <= -100 and 200 <= user.rect.y <= 400 and index_of_room == 1:
-                pass
-            else:
-                user.rect.x -= 4
-                back = False
-                front = False
-                right = False
-                left = True
 
-        ############################# Границы карты ##############################
-        if user.rect.right > display_width - 50:
-            if 200 <= user.rect.y <= 400:
-                pass
-            else:
-                user.rect.right = display_width - 50
-        if user.rect.left < 50:
-            if 200 <= user.rect.y <= 400:
-                pass
-            else:
-                user.rect.left = 50
-        if user.rect.top < 50:
-            if 700 <= user.rect.x <= 975:
-                pass
-            else:
-                user.rect.top = 50
-        if user.rect.bottom > display_height - 50:
-            if 345 <= user.rect.x <= 675:
-                pass
-            else:
-                user.rect.bottom = display_height - 50
+                first = False
 
-        if blocked_right:
+            if keys[pygame.K_w] and keys[pygame.K_a]:
+                if user.rect.x <= 50 and 200 <= user.rect.y <= 205:
+                    pass
+                elif user.rect.right >= display_width - 50 and 300 <= user.rect.bottom <= 500:
+                    pass
+                elif 339 <= user.rect.left <= 350 and user.rect.bottom > 650:
+                    pass
+                elif 700 <= user.rect.x <= 705 and user.rect.top < 50:
+                    pass
+                elif user.rect.left <= -100 and 200 <= user.rect.y <= 400 and index_of_room == 1:
+                    pass
+                elif user.rect.top <= -100 and 700 <= user.rect.x <= 975 and index_of_room == 4:
+                    pass
+                else:
+                    user.rect.y -= 2
+                    user.rect.x -= 2
+            elif keys[pygame.K_w]:
+                if user.rect.x <= 50 and 200 <= user.rect.y <= 205:
+                    pass
+                elif user.rect.right > display_width - 50 and 200 <= user.rect.y <= 205:
+                    pass
+                elif user.rect.top <= -100 and 700 <= user.rect.x <= 975 and index_of_room == 4:
+                    pass
+                else:
+                    user.rect.y -= 4
+                    back = True
+                    front = False
+                    right = False
+                    left = False
+            elif keys[pygame.K_a]:
+                if 339 <= user.rect.left <= 350 and user.rect.bottom > 650:
+                    pass
+                elif 700 <= user.rect.x <= 705 and user.rect.top < 50:
+                    pass
+                elif user.rect.left <= -100 and 200 <= user.rect.y <= 400 and index_of_room == 1:
+                    pass
+                else:
+                    user.rect.x -= 4
+                    back = False
+                    front = False
+                    right = False
+                    left = True
+
+            if keys[pygame.K_w] and keys[pygame.K_d]:
+                if user.rect.x <= 50 and 200 <= user.rect.y <= 205:
+                    pass
+                elif user.rect.right >= display_width - 50 and 200 <= user.rect.y <= 205:
+                    pass
+                elif 669 <= user.rect.x <= 675 and user.rect.bottom > 650:
+                    pass
+                elif 970 <= user.rect.x <= 975 and user.rect.top < 50:
+                    pass
+                elif user.rect.right > display_width + 100 and 200 <= user.rect.y <= 400 and index_of_room == 2:
+                    pass
+                elif user.rect.top <= -100 and 700 <= user.rect.x <= 975 and index_of_room == 4:
+                    pass
+                else:
+                    user.rect.y -= 2
+                    user.rect.x += 2
+            elif keys[pygame.K_w]:
+                if user.rect.x <= 50 and 200 <= user.rect.y <= 205:
+                    pass
+                elif user.rect.right > display_width - 50 and 200 <= user.rect.y <= 205:
+                    pass
+                elif user.rect.top <= -100 and 700 <= user.rect.x <= 975 and index_of_room == 4:
+                    pass
+                else:
+                    user.rect.y -= 4
+                    back = True
+                    front = False
+                    right = False
+                    left = False
+            elif keys[pygame.K_d]:
+                if 669 <= user.rect.x <= 675 and user.rect.bottom > 650:
+                    pass
+                elif 970 <= user.rect.x <= 975 and user.rect.top < 50:
+                    pass
+                elif user.rect.right > display_width + 100 and 200 <= user.rect.y <= 400 and index_of_room == 2:
+                    pass
+                else:
+                    user.rect.x += 4
+                    back = False
+                    front = False
+                    right = True
+                    left = False
+
+            if keys[pygame.K_d] and keys[pygame.K_s]:
+                if user.rect.x <= 50 and 495 <= user.rect.bottom <= 500:
+                    pass
+                elif user.rect.right > display_width - 50 and 500 <= user.rect.bottom <= 505:
+                    pass
+                elif 669 <= user.rect.x <= 675 and user.rect.bottom > 650:
+                    pass
+                elif 970 <= user.rect.x <= 975 and user.rect.top < 50:
+                    pass
+                elif user.rect.right > display_width + 100 and 200 <= user.rect.y <= 400 and index_of_room == 2:
+                    pass
+                elif user.rect.bottom > display_height + 100 and 345 <= user.rect.x <= 675 and index_of_room == 3:
+                    pass
+                else:
+                    user.rect.x += 2
+                    user.rect.y += 2
+            elif keys[pygame.K_d]:
+                if 669 <= user.rect.x <= 675 and user.rect.bottom > 650:
+                    pass
+                elif 970 <= user.rect.x <= 975 and user.rect.top < 50:
+                    pass
+                elif user.rect.right > display_width + 100 and 200 <= user.rect.y <= 400 and index_of_room == 2:
+                    pass
+                else:
+                    user.rect.x += 4
+                    back = False
+                    front = False
+                    right = True
+                    left = False
+            elif keys[pygame.K_s]:
+                if user.rect.x <= 50 and 495 <= user.rect.bottom <= 500:
+                    pass
+                elif user.rect.right > display_width - 50 and 500 <= user.rect.bottom <= 505:
+                    pass
+                elif user.rect.bottom > display_height + 100 and 345 <= user.rect.x <= 675 and index_of_room == 3:
+                    pass
+                else:
+                    user.rect.y += 4
+                    back = False
+                    front = True
+                    right = False
+                    left = False
+            if keys[pygame.K_s] and keys[pygame.K_a]:
+                if user.rect.x <= 50 and 495 <= user.rect.bottom <= 500:
+                    pass
+                elif user.rect.right >= display_width - 50 and 495 <= user.rect.bottom <= 501:
+                    pass
+                elif 339 <= user.rect.left <= 350 and user.rect.bottom > 650:
+                    pass
+                elif 700 <= user.rect.x <= 705 and user.rect.top < 50:
+                    pass
+                elif user.rect.left <= -100 and 200 <= user.rect.y <= 400 and index_of_room == 1:
+                    pass
+                elif user.rect.bottom > display_height + 100 and 345 <= user.rect.x <= 675 and index_of_room == 3:
+                    pass
+                else:
+                    user.rect.y += 2
+                    user.rect.x -= 2
+            elif keys[pygame.K_s]:
+                if user.rect.x <= 50 and 490 <= user.rect.bottom <= 500:
+                    pass
+                elif user.rect.right > display_width - 50 and 500 <= user.rect.bottom <= 505:
+                    pass
+                elif user.rect.bottom > display_height + 100 and 345 <= user.rect.x <= 675 and index_of_room == 3:
+                    pass
+                else:
+                    user.rect.y += 4
+                    back = False
+                    front = True
+                    right = False
+                    left = False
+            elif keys[pygame.K_a]:
+                if 339 <= user.rect.left <= 350 and user.rect.bottom > 650:
+                    pass
+                elif 700 <= user.rect.x <= 705 and user.rect.top < 50:
+                    pass
+                elif user.rect.left <= -100 and 200 <= user.rect.y <= 400 and index_of_room == 1:
+                    pass
+                else:
+                    user.rect.x -= 4
+                    back = False
+                    front = False
+                    right = False
+                    left = True
+
+            ############################# Границы карты ##############################
             if user.rect.right > display_width - 50:
-                user.rect.right = display_width - 50
-        if blocked_left:
-            if user.rect. left < 50:
-                user.rect.left = 50
-        if blocked_top:
+                if 200 <= user.rect.y <= 400:
+                    pass
+                else:
+                    user.rect.right = display_width - 50
+            if user.rect.left < 50:
+                if 200 <= user.rect.y <= 400:
+                    pass
+                else:
+                    user.rect.left = 50
             if user.rect.top < 50:
-                user.rect.top = 50
-        if blocked_bottom:
+                if 700 <= user.rect.x <= 975:
+                    pass
+                else:
+                    user.rect.top = 50
             if user.rect.bottom > display_height - 50:
-                user.rect.bottom = display_height - 50
-        ############################# Смена уровня ##############################
-        def pause():
-            pass
-
-        if user.rect.right >= display_width + 150:
-            user.rect.left = -100
-            index_of_room = 1
-            pause()
-            count_of_room += 1
-            count_of_room %= 4
-            background.change_the_room(count_of_room)
-            for i in all_temporary_walls:
-                if i in walls:
-                    walls.remove(i)
-                i.kill()
-            for sprite in all_enemy:
-                sprite.kill()
-            for sprite in all_items_ont_the_ground:
-                sprite.kill()
-            for sprite in all_bullets:
-                sprite.kill()
-            for sprite in all_enemy_bars:
-                sprite.kill()
-            generate_ghosts()
-            generate_items()
-            temporary_wall = Temporary_Wall_Vertical('left')
-            walls.add(temporary_wall)
-            all_temporary_walls.add(temporary_wall)
-            all_sprites.add(temporary_wall)
-            temporary_wall.rect.bottom = 200
-
-
-        elif user.rect.left <= -150:
-            user.rect.right = display_width + 100
-            index_of_room = 2
-            pause()
-            count_of_room += 1
-            count_of_room %= 4
-            background.change_the_room(count_of_room)
-            for i in all_temporary_walls:
-                if i in walls:
-                    walls.remove(i)
-                i.kill()
-            for sprite in all_enemy:
-                sprite.kill()
-            for sprite in all_items_ont_the_ground:
-                sprite.kill()
-            for sprite in all_bullets:
-                sprite.kill()
-            for sprite in all_enemy_bars:
-                sprite.kill()
-            generate_ghosts()
-            generate_items()
-
-            temporary_wall = Temporary_Wall_Vertical('right')
-            walls.add(temporary_wall)
-            all_temporary_walls.add(temporary_wall)
-            all_sprites.add(temporary_wall)
-            temporary_wall.rect.bottom = 200
-            temporary_wall.rect.x = display_width - 50
-
-
-        elif user.rect.top <= -150:
-            user.rect.bottom = display_height + 100
-            user.rect.x = 500
-            index_of_room = 3
-            pause()
-            count_of_room += 1
-            count_of_room %= 4
-            background.change_the_room(count_of_room)
-            for i in all_temporary_walls:
-                if i in walls:
-                    walls.remove(i)
-                i.kill()
-            for sprite in all_enemy:
-                sprite.kill()
-            for sprite in all_items_ont_the_ground:
-                sprite.kill()
-            for sprite in all_bullets:
-                sprite.kill()
-            for sprite in all_enemy_bars:
-                sprite.kill()
-            generate_ghosts()
-            generate_items()
-
-            temporary_wall = Temporary_Wall_Horizontal('bottom')
-            walls.add(temporary_wall)
-            all_temporary_walls.add(temporary_wall)
-            all_sprites.add(temporary_wall)
-            temporary_wall.rect.right = 350
-            temporary_wall.rect.y = display_height - 50
-
-        elif user.rect.bottom >= display_height + 150:
-            user.rect.top = -100
-            user.rect.x = 835
-            index_of_room = 4
-            pause()
-            count_of_room += 1
-            count_of_room %= 4
-            background.change_the_room(count_of_room)
-            for i in all_temporary_walls:
-                if i in walls:
-                    walls.remove(i)
-                i.kill()
-            for sprite in all_enemy:
-                sprite.kill()
-            for sprite in all_items_ont_the_ground:
-                sprite.kill()
-            for sprite in all_bullets:
-                sprite.kill()
-            for sprite in all_enemy_bars:
-                sprite.kill()
-            generate_ghosts()
-            generate_items()
-
-            temporary_wall = Temporary_Wall_Horizontal('top')
-            walls.add(temporary_wall)
-            all_temporary_walls.add(temporary_wall)
-            all_sprites.add(temporary_wall)
-            temporary_wall.rect.right = 700
-
-        for bullet in all_bullets:
-            ### Направление движения ###
-            if bullet.direction == 'right':
-                bullet.rect.right += bullet.speed
-            elif bullet.direction == 'left':
-                bullet.rect.left -= bullet.speed
-            elif bullet.direction == 'top':
-                bullet.rect.top -= bullet.speed
-            elif bullet.direction == 'bottom':
-                bullet.rect.bottom += bullet.speed
-
-            if bullet.rect.y >= display_height + 100:
-                bullet.kill()
-            if bullet.rect.y <= -100:
-                bullet.kill()
-            if bullet.rect.x <= -100:
-                bullet.kill()
-            if bullet.rect.x >= display_width + 100:
-                bullet.kill()
-
-            list = pygame.sprite.spritecollide(bullet, all_enemy, False)
-            if list:
-                for i in range(len(list)):
-                    list[i].hp -= 1
-                bullet.kill()
-
-            for wall in walls:
-                pygame.sprite.spritecollide(wall, all_bullets, True)
-        ############################# Движение Призрака ##############################
-        for ghost in all_enemy:
-            if math.fabs(user.rect.center[0] - ghost.rect.center[0]) >= 50 or math.fabs(user.rect.center[1] - ghost.rect.center[1]) >= 50:
-                if user.rect.x - ghost.rect.x > 0:
-                    ghost.rect.x = ghost.rect.x + ghost.speed
-                    ghost_right = True
-                    ghost_left = False
-                if user.rect.x - ghost.rect.x < 0:
-                    ghost_right = False
-                    ghost_left = True
-                    ghost.rect.x = ghost.rect.x - ghost.speed
-
-                if user.rect.y - ghost.rect.y > 0:
-                    ghost.rect.y = ghost.rect.y + ghost.speed
-                if user.rect.y - ghost.rect.y < 0:
-                    ghost.rect.y = ghost.rect.y - ghost.speed
-            else:
-                count_of_detected_colide = len(pygame.sprite.spritecollide(user, all_enemy, False))
-                ghost.bar.kill()
-                ghost.kill()
-                user.hp -= count_of_detected_colide
-
-            for bars in all_enemy_bars:
-                bars.rect.bottom = bars.follow.rect.top
-                bars.rect.x = bars.follow.rect.center[0] - 17
-                if bars.follow.hp == 2:
-                    bars.image = pygame.image.load('resources\\enemy health\\2.png')
-                if bars.follow.hp == 1:
-                    bars.image = pygame.image.load('resources\\enemy health\\1.png')
-                if bars.follow.hp <= 0:
-                    bars.follow.kill()
-                    bars.kill()
-                    user.scores+=1
-            ############################# Отрисовка призрака ##############################
-            if ghost_right:
-                ghost.image = pygame.image.load('resources\enemy\ghost_right.png')
-            elif ghost_left:
-                ghost.image = pygame.image.load('resources\enemy\ghost_left.png')
-
-        ############################# Предметы и взаимодействие с ними ##############################
-        def pick_up():
-            if len(user.items) < 5:
-                list = pygame.sprite.spritecollide(user, all_items_ont_the_ground, True)
-                for i in range(len(list)):
-                    if len(user.items) < 5:
-                        user.items.append(list[i].name)
-                print_items()
-
-        if pygame.sprite.spritecollide(user, all_items_ont_the_ground, False):
-            pick_up()
-
-        ############################# Выдвижение стен ##############################
-        for block in all_temporary_walls:
-            if isinstance(block, Temporary_Wall_Vertical):
-                if block.place == 'left':
-                    if user.rect.x > 125:
-                        if block.rect.bottom < 500:
-                            block.rect.y += 5
-                        else:
-                            blocked_left = True
-                            blocked_right = False
-                            blocked_top = False
-                            blocked_bottom = False
+                if 345 <= user.rect.x <= 675:
+                    pass
                 else:
-                    if user.rect.x < display_width - 125:
-                        if block.rect.bottom < 500:
-                            block.rect.y += 5
-                        else:
-                            blocked_left = False
-                            blocked_right = True
-                            blocked_top = False
-                            blocked_bottom = False
-            else:
-                if block.place == 'bottom':
-                    if user.rect.y < display_height - 125:
-                        if block.rect.right < 750:
-                            block.rect.x += 5
-                        else:
-                            blocked_left = False
-                            blocked_right = False
-                            blocked_top = False
-                            blocked_bottom = True
+                    user.rect.bottom = display_height - 50
+
+            if blocked_right:
+                if user.rect.right > display_width - 50:
+                    user.rect.right = display_width - 50
+            if blocked_left:
+                if user.rect. left < 50:
+                    user.rect.left = 50
+            if blocked_top:
+                if user.rect.top < 50:
+                    user.rect.top = 50
+            if blocked_bottom:
+                if user.rect.bottom > display_height - 50:
+                    user.rect.bottom = display_height - 50
+            ############################# Смена уровня ##############################
+            def pause():
+                black = Black()
+                all_sprites.add(black)
+                all_black_elements.add(black)
+
+            if user.rect.right >= display_width + 150:
+                user.rect.left = -100
+                index_of_room = 1
+                count_of_room += 1
+                count_of_room %= 4
+                background.change_the_room(count_of_room)
+                for i in all_temporary_walls:
+                    if i in walls:
+                        walls.remove(i)
+                    i.kill()
+                for sprite in all_enemy:
+                    sprite.kill()
+                for sprite in all_items_ont_the_ground:
+                    sprite.kill()
+                for sprite in all_bullets:
+                    sprite.kill()
+                for sprite in all_enemy_bars:
+                    sprite.kill()
+                generate_ghosts()
+                generate_items()
+                temporary_wall = Temporary_Wall_Vertical('left')
+                walls.add(temporary_wall)
+                all_temporary_walls.add(temporary_wall)
+                all_sprites.add(temporary_wall)
+                temporary_wall.rect.bottom = 200
+                pause()
+
+            elif user.rect.left <= -150:
+                user.rect.right = display_width + 100
+                index_of_room = 2
+                count_of_room += 1
+                count_of_room %= 4
+                background.change_the_room(count_of_room)
+                for i in all_temporary_walls:
+                    if i in walls:
+                        walls.remove(i)
+                    i.kill()
+                for sprite in all_enemy:
+                    sprite.kill()
+                for sprite in all_items_ont_the_ground:
+                    sprite.kill()
+                for sprite in all_bullets:
+                    sprite.kill()
+                for sprite in all_enemy_bars:
+                    sprite.kill()
+                generate_ghosts()
+                generate_items()
+
+                temporary_wall = Temporary_Wall_Vertical('right')
+                walls.add(temporary_wall)
+                all_temporary_walls.add(temporary_wall)
+                all_sprites.add(temporary_wall)
+                temporary_wall.rect.bottom = 200
+                temporary_wall.rect.x = display_width - 50
+                pause()
+
+
+            elif user.rect.top <= -150:
+                user.rect.bottom = display_height + 100
+                user.rect.x = 500
+                index_of_room = 3
+                count_of_room += 1
+                count_of_room %= 4
+                background.change_the_room(count_of_room)
+                for i in all_temporary_walls:
+                    if i in walls:
+                        walls.remove(i)
+                    i.kill()
+                for sprite in all_enemy:
+                    sprite.kill()
+                for sprite in all_items_ont_the_ground:
+                    sprite.kill()
+                for sprite in all_bullets:
+                    sprite.kill()
+                for sprite in all_enemy_bars:
+                    sprite.kill()
+                generate_ghosts()
+                generate_items()
+
+                temporary_wall = Temporary_Wall_Horizontal('bottom')
+                walls.add(temporary_wall)
+                all_temporary_walls.add(temporary_wall)
+                all_sprites.add(temporary_wall)
+                temporary_wall.rect.right = 350
+                temporary_wall.rect.y = display_height - 50
+                pause()
+
+            elif user.rect.bottom >= display_height + 150:
+                user.rect.top = -100
+                user.rect.x = 835
+                index_of_room = 4
+                count_of_room += 1
+                count_of_room %= 4
+                background.change_the_room(count_of_room)
+                for i in all_temporary_walls:
+                    if i in walls:
+                        walls.remove(i)
+                    i.kill()
+                for sprite in all_enemy:
+                    sprite.kill()
+                for sprite in all_items_ont_the_ground:
+                    sprite.kill()
+                for sprite in all_bullets:
+                    sprite.kill()
+                for sprite in all_enemy_bars:
+                    sprite.kill()
+                generate_ghosts()
+                generate_items()
+
+                temporary_wall = Temporary_Wall_Horizontal('top')
+                walls.add(temporary_wall)
+                all_temporary_walls.add(temporary_wall)
+                all_sprites.add(temporary_wall)
+                temporary_wall.rect.right = 700
+                pause()
+
+            for bullet in all_bullets:
+                ### Направление движения ###
+                if bullet.direction == 'right':
+                    bullet.rect.right += bullet.speed
+                elif bullet.direction == 'left':
+                    bullet.rect.left -= bullet.speed
+                elif bullet.direction == 'top':
+                    bullet.rect.top -= bullet.speed
+                elif bullet.direction == 'bottom':
+                    bullet.rect.bottom += bullet.speed
+
+                if bullet.rect.y >= display_height + 100:
+                    bullet.kill()
+                if bullet.rect.y <= -100:
+                    bullet.kill()
+                if bullet.rect.x <= -100:
+                    bullet.kill()
+                if bullet.rect.x >= display_width + 100:
+                    bullet.kill()
+
+                list = pygame.sprite.spritecollide(bullet, all_enemy, False)
+                if list:
+                    for i in range(len(list)):
+                        list[i].hp -= 1
+                    bullet.kill()
+
+                for wall in walls:
+                    pygame.sprite.spritecollide(wall, all_bullets, True)
+            ############################# Движение Призрака ##############################
+            for ghost in all_enemy:
+                if math.fabs(user.rect.center[0] - ghost.rect.center[0]) >= 50 or math.fabs(user.rect.center[1] - ghost.rect.center[1]) >= 50:
+                    if user.rect.x - ghost.rect.x > 0:
+                        ghost.rect.x = ghost.rect.x + ghost.speed
+                        ghost_right = True
+                        ghost_left = False
+                    if user.rect.x - ghost.rect.x < 0:
+                        ghost_right = False
+                        ghost_left = True
+                        ghost.rect.x = ghost.rect.x - ghost.speed
+
+                    if user.rect.y - ghost.rect.y > 0:
+                        ghost.rect.y = ghost.rect.y + ghost.speed
+                    if user.rect.y - ghost.rect.y < 0:
+                        ghost.rect.y = ghost.rect.y - ghost.speed
                 else:
-                    if user.rect.y > 125:
-                        if block.rect.right < 1050:
-                            block.rect.x += 5
-                        else:
-                            blocked_left = False
-                            blocked_right = False
-                            blocked_top = True
-                            blocked_bottom = False
+                    count_of_detected_colide = len(pygame.sprite.spritecollide(user, all_enemy, False))
+                    ghost.bar.kill()
+                    ghost.kill()
+                    user.hp -= count_of_detected_colide
 
-        ############################# Отрисовка предметов из инвентаря ##############################
-        def print_items():
-            for i in range(5):
-                inventory.items[i].is_empty = True
+                for bars in all_enemy_bars:
+                    bars.rect.bottom = bars.follow.rect.top
+                    bars.rect.x = bars.follow.rect.center[0] - 17
+                    if bars.follow.hp == 2:
+                        bars.image = pygame.image.load('resources\\enemy health\\2.png')
+                    if bars.follow.hp == 1:
+                        bars.image = pygame.image.load('resources\\enemy health\\1.png')
+                    if bars.follow.hp <= 0:
+                        bars.follow.kill()
+                        bars.kill()
+                        user.scores+=1
+                ############################# Отрисовка призрака ##############################
+                if ghost_right:
+                    ghost.image = pygame.image.load('resources\enemy\ghost_right.png')
+                elif ghost_left:
+                    ghost.image = pygame.image.load('resources\enemy\ghost_left.png')
 
-            for item in user.items:
-                if item == 'heal_bottle':
+            ############################# Предметы и взаимодействие с ними ##############################
+            def pick_up():
+                if len(user.items) < 5:
+                    list = pygame.sprite.spritecollide(user, all_items_ont_the_ground, True)
+                    for i in range(len(list)):
+                        if len(user.items) < 5:
+                            user.items.append(list[i].name)
+                    print_items()
 
-                    directory = 'resources\\inventory\\items\\heal_bottle.png'
+            if pygame.sprite.spritecollide(user, all_items_ont_the_ground, False):
+                pick_up()
 
-                    if inventory.items[0].is_empty:
-                        empty_1.image = pygame.image.load(directory)
-                        inventory.items[0].is_empty = False
-                    elif inventory.items[1].is_empty:
-                        empty_2.image = pygame.image.load(directory)
-                        inventory.items[1].is_empty = False
-                    elif inventory.items[2].is_empty:
-                        empty_3.image = pygame.image.load(directory)
-                        inventory.items[2].is_empty = False
-                    elif inventory.items[3].is_empty:
-                        empty_4.image = pygame.image.load(directory)
-                        inventory.items[3].is_empty = False
-                    elif inventory.items[4].is_empty:
-                        empty_5.image = pygame.image.load(directory)
-                        inventory.items[4].is_empty = False
+            ############################# Выдвижение стен ##############################
+            for block in all_temporary_walls:
+                if isinstance(block, Temporary_Wall_Vertical):
+                    if block.place == 'left':
+                        if user.rect.x > 125:
+                            if block.rect.bottom < 500:
+                                block.rect.y += 5
+                            else:
+                                blocked_left = True
+                                blocked_right = False
+                                blocked_top = False
+                                blocked_bottom = False
+                    else:
+                        if user.rect.x < display_width - 125:
+                            if block.rect.bottom < 500:
+                                block.rect.y += 5
+                            else:
+                                blocked_left = False
+                                blocked_right = True
+                                blocked_top = False
+                                blocked_bottom = False
+                else:
+                    if block.place == 'bottom':
+                        if user.rect.y < display_height - 125:
+                            if block.rect.right < 750:
+                                block.rect.x += 5
+                            else:
+                                blocked_left = False
+                                blocked_right = False
+                                blocked_top = False
+                                blocked_bottom = True
+                    else:
+                        if user.rect.y > 125:
+                            if block.rect.right < 1050:
+                                block.rect.x += 5
+                            else:
+                                blocked_left = False
+                                blocked_right = False
+                                blocked_top = True
+                                blocked_bottom = False
 
-                elif item == 'bow':
-                    directory = 'resources\\inventory\\items\\bow.png'
+            ############################# Отрисовка предметов из инвентаря ##############################
+            def print_items():
+                for i in range(5):
+                    inventory.items[i].is_empty = True
 
-                    if inventory.items[0].is_empty:
-                        empty_1.image = pygame.image.load(directory)
-                        inventory.items[0].is_empty = False
-                    elif inventory.items[1].is_empty:
-                        empty_2.image = pygame.image.load(directory)
-                        inventory.items[1].is_empty = False
-                    elif inventory.items[2].is_empty:
-                        empty_3.image = pygame.image.load(directory)
-                        inventory.items[2].is_empty = False
-                    elif inventory.items[3].is_empty:
-                        empty_4.image = pygame.image.load(directory)
-                        inventory.items[3].is_empty = False
-                    elif inventory.items[4].is_empty:
-                        empty_5.image = pygame.image.load(directory)
-                        inventory.items[4].is_empty = False
+                for item in user.items:
+                    if item == 'heal_bottle':
 
-        ############################# Отрисовка игрока ##############################
-        if front:
-            user.image = pygame.image.load('resources\knight\\front.png')  # Переменная-картинка игрока
-        elif back:
-            user.image = pygame.image.load('resources\knight\\back.png')  # Переменная-картинка игрока
-        elif right:
-            user.image = pygame.image.load('resources\knight\\right.png')  # Переменная-картинка игрока
-        elif left:
-            user.image = pygame.image.load('resources\knight\\left.png')  # Переменная-картинка игрока
+                        directory = 'resources\\inventory\\items\\heal_bottle.png'
 
-        ############################# Отрисовка hp игрока ##############################
-        if user.hp == 5:
-            bar.image = pygame.image.load('resources\\health\\5.png')
-        elif user.hp == 4:
-            bar.image = pygame.image.load('resources\\health\\4.png')
-        elif user.hp == 3:
-            bar.image = pygame.image.load('resources\\health\\3.png')
-        elif user.hp == 2:
-            bar.image = pygame.image.load('resources\\health\\2.png')
-        elif user.hp == 1:
-            bar.image = pygame.image.load('resources\\health\\1.png')
-        elif user.hp <= 0:
-            bar.image = pygame.image.load('resources\\health\\0.png')
-            exit()
+                        if inventory.items[0].is_empty:
+                            empty_1.image = pygame.image.load(directory)
+                            inventory.items[0].is_empty = False
+                        elif inventory.items[1].is_empty:
+                            empty_2.image = pygame.image.load(directory)
+                            inventory.items[1].is_empty = False
+                        elif inventory.items[2].is_empty:
+                            empty_3.image = pygame.image.load(directory)
+                            inventory.items[2].is_empty = False
+                        elif inventory.items[3].is_empty:
+                            empty_4.image = pygame.image.load(directory)
+                            inventory.items[3].is_empty = False
+                        elif inventory.items[4].is_empty:
+                            empty_5.image = pygame.image.load(directory)
+                            inventory.items[4].is_empty = False
 
-        elif user.hp > 5:
-            user.hp = 5
+                    elif item == 'bow':
+                        directory = 'resources\\inventory\\items\\bow.png'
+
+                        if inventory.items[0].is_empty:
+                            empty_1.image = pygame.image.load(directory)
+                            inventory.items[0].is_empty = False
+                        elif inventory.items[1].is_empty:
+                            empty_2.image = pygame.image.load(directory)
+                            inventory.items[1].is_empty = False
+                        elif inventory.items[2].is_empty:
+                            empty_3.image = pygame.image.load(directory)
+                            inventory.items[2].is_empty = False
+                        elif inventory.items[3].is_empty:
+                            empty_4.image = pygame.image.load(directory)
+                            inventory.items[3].is_empty = False
+                        elif inventory.items[4].is_empty:
+                            empty_5.image = pygame.image.load(directory)
+                            inventory.items[4].is_empty = False
+
+            ############################# Отрисовка игрока ##############################
+            if front:
+                user.image = pygame.image.load('resources\knight\\front.png')  # Переменная-картинка игрока
+            elif back:
+                user.image = pygame.image.load('resources\knight\\back.png')  # Переменная-картинка игрока
+            elif right:
+                user.image = pygame.image.load('resources\knight\\right.png')  # Переменная-картинка игрока
+            elif left:
+                user.image = pygame.image.load('resources\knight\\left.png')  # Переменная-картинка игрока
+
+            ############################# Отрисовка hp игрока ##############################
+            if user.hp == 5:
+                bar.image = pygame.image.load('resources\\health\\5.png')
+            elif user.hp == 4:
+                bar.image = pygame.image.load('resources\\health\\4.png')
+            elif user.hp == 3:
+                bar.image = pygame.image.load('resources\\health\\3.png')
+            elif user.hp == 2:
+                bar.image = pygame.image.load('resources\\health\\2.png')
+            elif user.hp == 1:
+                bar.image = pygame.image.load('resources\\health\\1.png')
+            elif user.hp <= 0:
+                bar.image = pygame.image.load('resources\\health\\0.png')
+                exit()
+
+            elif user.hp > 5:
+                user.hp = 5
+
+        ############################# Работа с паузой ##############################
+
+        for i in all_black_elements:
+            we_are_drawing = True
+            if stop:
+                if i.image.get_alpha() != 241:
+                    i.image.set_alpha(i.image.get_alpha() + 16)
+                else:
+                    stop = False
+                    i.image.set_alpha(i.image.get_alpha() - 1)
+            else:
+                if i.image.get_alpha() != 2:
+                    i.image.set_alpha(i.image.get_alpha() - 2)
+                else:
+                    stop = True
+                    all_black_elements.remove(i)
+                    all_sprites.remove(i)
+                    i.kill()
+                    we_are_drawing = False
 
         draw_scores()
         pygame.display.update()
@@ -1040,7 +1071,5 @@ def run_game():   # Основная функция игры
         all_sprites.draw(display)  # Прорисовка всех спрайтов
         pygame.display.flip()   # Переворчиваем экран
         clock.tick(60)   # FPS
-
-        print(user.rect.bottom)
 
 run_game()
