@@ -35,13 +35,23 @@ class Bar_HP(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = (1215,675)
 
+############################# Класс объекта-бара хп противника ##############################
+class Enemy_Bar_HP(pygame.sprite.Sprite):
+    def __init__(self, object):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('resources\\enemy health\\3.png')
+        self.rect = self.image.get_rect()
+        self.follow = object
+
 ################################ Класс Противника ##################################
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self, object=0):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load('resources\\enemy\\ghost_left.png')
         self.rect = self.image.get_rect()
         self.speed = 2
+        self.hp = 3
+        self.bar = object
 
 ################################ Класс ячейки инвентаря ##################################
 class Ceil_of_inventory(pygame.sprite.Sprite):
@@ -127,6 +137,7 @@ def run_game():   # Основная функция игры
     all_enemy = pygame.sprite.Group()  # Группа монстров
     all_items_ont_the_ground = pygame.sprite.Group()   # Группа предметов на земле
     all_bullets = pygame.sprite.Group()   # Группа снарядов
+    all_enemy_bars = pygame.sprite.Group()   # Группа баров противников
 
     ############################# Задний фон ##############################
     background = Background()
@@ -208,6 +219,12 @@ def run_game():   # Основная функция игры
             all_sprites.add(ghost)
             all_enemy.add(ghost)
             ghost.rect.center = functions.random_position_of_spawn(display_width, display_height)
+
+            ghost_bar = Enemy_Bar_HP(ghost)
+            ghost.bar = ghost_bar
+            all_sprites.add(ghost_bar)
+            all_enemy_bars.add(ghost_bar)
+            ghost_bar.rect.center = ghost_bar.follow.rect.center
 
     ############################# Генерация противников ##############################
     generate_ghosts()
@@ -550,6 +567,7 @@ def run_game():   # Основная функция игры
         def pause():
             #pygame.time.delay(500)
             pass
+
         if user.rect.right >= display_width + 150:
             user.rect.left = -100
             index_of_room = 1
@@ -563,9 +581,10 @@ def run_game():   # Основная функция игры
                 sprite.kill()
             for sprite in all_bullets:
                 sprite.kill()
+            for sprite in all_enemy_bars:
+                sprite.kill()
             generate_ghosts()
             generate_items()
-
 
 
         elif user.rect.left <= -150:
@@ -580,6 +599,8 @@ def run_game():   # Основная функция игры
             for sprite in all_items_ont_the_ground:
                 sprite.kill()
             for sprite in all_bullets:
+                sprite.kill()
+            for sprite in all_enemy_bars:
                 sprite.kill()
             generate_ghosts()
             generate_items()
@@ -599,6 +620,8 @@ def run_game():   # Основная функция игры
                 sprite.kill()
             for sprite in all_bullets:
                 sprite.kill()
+            for sprite in all_enemy_bars:
+                sprite.kill()
             generate_ghosts()
             generate_items()
 
@@ -616,6 +639,8 @@ def run_game():   # Основная функция игры
             for sprite in all_items_ont_the_ground:
                 sprite.kill()
             for sprite in all_bullets:
+                sprite.kill()
+            for sprite in all_enemy_bars:
                 sprite.kill()
             generate_ghosts()
             generate_items()
@@ -641,7 +666,10 @@ def run_game():   # Основная функция игры
             if bullet.rect.x >= display_width + 100:
                 bullet.kill()
 
-            if pygame.sprite.spritecollide(bullet, all_enemy, True):
+            list = pygame.sprite.spritecollide(bullet, all_enemy, False)
+            if list:
+                for i in range(len(list)):
+                    list[i].hp -= 1
                 bullet.kill()
 
             for wall in walls:
@@ -663,10 +691,21 @@ def run_game():   # Основная функция игры
                 if user.rect.y - ghost.rect.y < 0:
                     ghost.rect.y = ghost.rect.y - ghost.speed
             else:
-                count_of_detected_colide = len(pygame.sprite.spritecollide(user, all_enemy, True))
+                count_of_detected_colide = len(pygame.sprite.spritecollide(user, all_enemy, False))
+                ghost.bar.kill()
+                ghost.kill()
                 user.hp -= count_of_detected_colide
 
-
+            for bars in all_enemy_bars:
+                bars.rect.bottom = bars.follow.rect.top
+                bars.rect.x = bars.follow.rect.center[0] - 17
+                if bars.follow.hp == 2:
+                    bars.image = pygame.image.load('resources\\enemy health\\2.png')
+                if bars.follow.hp == 1:
+                    bars.image = pygame.image.load('resources\\enemy health\\1.png')
+                if bars.follow.hp <= 0:
+                    bars.follow.kill()
+                    bars.kill()
             ############################# Отрисовка призрака ##############################
             if ghost_right:
                 ghost.image = pygame.image.load('resources\enemy\ghost_right.png')
