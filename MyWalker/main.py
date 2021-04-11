@@ -70,31 +70,15 @@ class Chest(pygame.sprite.Sprite):
 class Wall_Horizontal(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('resources\\level elements\\wall.png')
+        self.image = pygame.image.load('resources\\level elements\\wall-horizontal.png')
         self.rect = self.image.get_rect()
 
 ############################# Класс вертикальной стены ##############################
 class Wall_Vertical(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('resources\\level elements\\wall.png')
+        self.image = pygame.image.load('resources\\level elements\\wall-vertical.png')
         self.rect = self.image.get_rect()
-        self.image = pygame.transform.rotate(self.image, 90)
-
-############################# Класс гозизонтального блока ##############################
-class Blockage_Horizontal(pygame.sprite.Sprite):
-    def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('resources\\level elements\\wall_blockage.png')
-        self.rect = self.image.get_rect()
-
-############################# Класс вертикального блока ##############################
-class Blockage_Vertical(pygame.sprite.Sprite):
-    def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('resources\\level elements\\wall_blockage.png')
-        self.rect = self.image.get_rect()
-        self.image = pygame.transform.rotate(self.image, 90)
 
 ############################# Класс хилки ##############################
 class Heal_bottle(pygame.sprite.Sprite):
@@ -119,6 +103,7 @@ class Bullet(pygame.sprite.Sprite):
         self.image = pygame.image.load('resources\\attacking\\arrow.png')
         self.rect = self.image.get_rect()
         self.direction = 0
+        self.speed = 11
 
 ################################ Класс заднего фона ##################################
 class Background(pygame.sprite.Sprite):
@@ -175,9 +160,11 @@ def run_game():   # Основная функция игры
 
     def shoot():
         can_we_shoot = False
+
         for item in user.items:
             if item == 'bow':
                 can_we_shoot = True
+
         if can_we_shoot:
             arrow = Bullet()
             all_sprites.add(arrow)
@@ -185,14 +172,18 @@ def run_game():   # Основная функция игры
             arrow.rect.center = user.rect.center
             if right:
                 arrow.direction = 'right'
+                arrow.image = pygame.image.load('resources\\attacking\\arrow-right.png')
             elif left:
                 arrow.direction = 'left'
+                arrow.image = pygame.image.load('resources\\attacking\\arrow-left.png')
             elif back:
                 arrow.direction = 'top'
+                arrow.image = pygame.image.load('resources\\attacking\\arrow-top.png')
             elif front:
                 arrow.direction = 'bottom'
+                arrow.image = pygame.image.load('resources\\attacking\\arrow-bottom.png')
 
-        # bullet_move(arrow, direction)
+            bullet_move(arrow, arrow.direction)
 
     ############################# Предметы ##############################
     def generate_items():
@@ -270,12 +261,12 @@ def run_game():   # Основная функция игры
     all_sprites.add(wall_top_9)
     walls.add(wall_top_9)
     wall_top_9.rect.top = -150
-    wall_top_9.rect.right = 1700
+    wall_top_9.rect.right = 1400
 
     wall_top_10 = Wall_Vertical()
     all_sprites.add(wall_top_10)
     walls.add(wall_top_10)
-    wall_top_10.rect.right = 1700
+    wall_top_10.rect.right = 1400
     wall_top_10.rect.top = 500
 
     ############################# Бар-хп ##############################
@@ -574,10 +565,6 @@ def run_game():   # Основная функция игры
                 sprite.kill()
             generate_ghosts()
             generate_items()
-            wall_blockage = Blockage_Vertical()
-            all_sprites.add(wall_blockage)
-            walls.add(wall_blockage)
-            wall_blockage.rect.top = 200
 
 
 
@@ -596,11 +583,6 @@ def run_game():   # Основная функция игры
                 sprite.kill()
             generate_ghosts()
             generate_items()
-            wall_blockage = Blockage_Vertical()
-            all_sprites.add(wall_blockage)
-            walls.add(wall_blockage)
-            wall_blockage.rect.top = 200
-            wall_blockage.rect.right = display_width-400 ### что-то не так с определением координат
 
 
         elif user.rect.top <= -150:
@@ -619,11 +601,6 @@ def run_game():   # Основная функция игры
                 sprite.kill()
             generate_ghosts()
             generate_items()
-            wall_blockage = Blockage_Horizontal()
-            all_sprites.add(wall_blockage)
-            walls.add(wall_blockage)
-            wall_blockage.rect.bottom = display_height
-            wall_blockage.rect.left = 400
 
 
         elif user.rect.bottom >= display_height + 150:
@@ -642,39 +619,33 @@ def run_game():   # Основная функция игры
                 sprite.kill()
             generate_ghosts()
             generate_items()
-            wall_blockage = Blockage_Horizontal()
-            all_sprites.add(wall_blockage)
-            walls.add(wall_blockage)
-            wall_blockage.rect.left = 400
 
 
         for bullet in all_bullets:
             ### Направление движения ###
             if bullet.direction == 'right':
-                if bullet.rect.right <= display_width - 50:
-                    bullet.rect.right += 5
-                else:
-                    bullet.kill()
+                bullet.rect.right += bullet.speed
             elif bullet.direction == 'left':
-                if bullet.rect.left >= 50:
-                    bullet.rect.left -= 5
-                else:
-                    bullet.kill()
+                bullet.rect.left -= bullet.speed
             elif bullet.direction == 'top':
-                if bullet.rect.top >= 50:
-                    bullet.rect.top -= 5
-                else:
-                    bullet.kill()
+                bullet.rect.top -= bullet.speed
             elif bullet.direction == 'bottom':
-                if bullet.rect.bottom <= display_height - 50:
-                    bullet.rect.bottom += 5
-                else:
-                    bullet.kill()
+                bullet.rect.bottom += bullet.speed
 
-            if pygame.sprite.spritecollide(bullet, all_enemy, True):
-                #bullet.remove(all_bullets)
+            if bullet.rect.y >= display_height + 100:
+                bullet.kill()
+            if bullet.rect.y <= -100:
+                bullet.kill()
+            if bullet.rect.x <= -100:
+                bullet.kill()
+            if bullet.rect.x >= display_width + 100:
                 bullet.kill()
 
+            if pygame.sprite.spritecollide(bullet, all_enemy, True):
+                bullet.kill()
+
+            for wall in walls:
+                pygame.sprite.spritecollide(wall, all_bullets, True)
         ############################# Движение Призрака ##############################
         for ghost in all_enemy:
             if math.fabs(user.rect.center[0] - ghost.rect.center[0]) >= 50 or math.fabs(user.rect.center[1] - ghost.rect.center[1]) >= 50:
