@@ -293,6 +293,86 @@ def run_game():   # Основная функция игры
     count_of_room = 1
 
     ############################# Инвентарь ##############################
+    def use_heal():
+        have_heal = False
+        last_not_empty = len(user.items) - 1
+
+        for item in user.items:
+            if item == 'heal_bottle':
+                have_heal = True
+        if have_heal:
+            user.hp += 1
+            index = user.items.index('heal_bottle')
+            user.items.pop(index)
+
+            if index == 0:
+                empty_1.image = pygame.image.load('resources\\inventory\\items\\empty_slot.png')
+            elif index == 1:
+                empty_2.image = pygame.image.load('resources\\inventory\\items\\empty_slot.png')
+            elif index == 2:
+                empty_3.image = pygame.image.load('resources\\inventory\\items\\empty_slot.png')
+            elif index == 3:
+                empty_4.image = pygame.image.load('resources\\inventory\\items\\empty_slot.png')
+            elif index == 4:
+                empty_5.image = pygame.image.load('resources\\inventory\\items\\empty_slot.png')
+            print_items()
+            if last_not_empty == 0:
+                empty_1.image = pygame.image.load('resources\\inventory\\items\\empty_slot.png')
+            elif last_not_empty == 1:
+                empty_2.image = pygame.image.load('resources\\inventory\\items\\empty_slot.png')
+            elif last_not_empty == 2:
+                empty_3.image = pygame.image.load('resources\\inventory\\items\\empty_slot.png')
+            elif last_not_empty == 3:
+                empty_4.image = pygame.image.load('resources\\inventory\\items\\empty_slot.png')
+            elif last_not_empty == 4:
+                empty_5.image = pygame.image.load('resources\\inventory\\items\\empty_slot.png')
+        else:
+            pass
+
+    def drop(number, item):
+        last_not_empty = len(user.items) - 1
+        user.items.pop(number-1)
+
+        if number == 1:
+            empty_1.image = pygame.image.load('resources\\inventory\\items\\empty_slot.png')
+        elif number == 2:
+            empty_2.image = pygame.image.load('resources\\inventory\\items\\empty_slot.png')
+        elif number == 3:
+            empty_3.image = pygame.image.load('resources\\inventory\\items\\empty_slot.png')
+        elif number == 4:
+            empty_4.image = pygame.image.load('resources\\inventory\\items\\empty_slot.png')
+        elif number == 5:
+            empty_5.image = pygame.image.load('resources\\inventory\\items\\empty_slot.png')
+
+        print_items()
+
+        if item == 'heal_bottle':
+            dropted = Heal_bottle()
+        elif item == 'bow':
+            dropted = Bow()
+
+        all_sprites.add(dropted)
+        all_items_ont_the_ground.add(dropted)
+        if right:
+            dropted.rect.center = (user.rect.center[0] - 100, user.rect.center[1])
+        elif left:
+            dropted.rect.center = (user.rect.center[0] + 100, user.rect.center[1])
+        elif front:
+            dropted.rect.center = (user.rect.center[0], user.rect.center[1] - 100)
+        elif back:
+            dropted.rect.center = (user.rect.center[0], user.rect.center[1] + 100)
+
+        if last_not_empty == 0:
+            empty_1.image = pygame.image.load('resources\\inventory\\items\\empty_slot.png')
+        elif last_not_empty == 1:
+            empty_2.image = pygame.image.load('resources\\inventory\\items\\empty_slot.png')
+        elif last_not_empty == 2:
+            empty_3.image = pygame.image.load('resources\\inventory\\items\\empty_slot.png')
+        elif last_not_empty == 3:
+            empty_4.image = pygame.image.load('resources\\inventory\\items\\empty_slot.png')
+        elif last_not_empty == 4:
+            empty_5.image = pygame.image.load('resources\\inventory\\items\\empty_slot.png')
+
     inventory = Inventory()
 
     block_1 = Ceil_of_inventory()
@@ -349,9 +429,42 @@ def run_game():   # Основная функция игры
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
-            elif event.type == pygame.KEYDOWN:
+            if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     shoot()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_e:
+                    use_heal()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_KP1:
+                    try:
+                        drop(1, user.items[0])
+                    except:
+                        pass
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_KP2:
+                    try:
+                        drop(2, user.items[1])
+                    except:
+                        pass
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_KP3:
+                    try:
+                        drop(3, user.items[2])
+                    except:
+                        pass
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_KP4:
+                    try:
+                        drop(4, user.items[3])
+                    except:
+                        pass
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_KP5:
+                    try:
+                        drop(5, user.items[4])
+                    except:
+                        pass
 
         keys = pygame.key.get_pressed()   # Инициализируем клавиатуру
         ############################# Стрельба ##############################
@@ -794,10 +907,14 @@ def run_game():   # Основная функция игры
             bar.image = pygame.image.load('resources\\health\\0.png')
             exit()
 
+        elif user.hp > 5:
+            user.hp = 5
+
         all_sprites.update()   # Обновление спрайтов
         all_sprites.draw(display)  # Прорисовка всех спрайтов
         pygame.display.flip()   # Переворчиваем экран
         clock.tick(60)   # FPS
 
+        print(user.items)
 
 run_game()
