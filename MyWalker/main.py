@@ -91,6 +91,22 @@ class Wall_Vertical(pygame.sprite.Sprite):
         self.image = pygame.image.load('resources\\level elements\\wall-vertical.png')
         self.rect = self.image.get_rect()
 
+############################# Класс временной вертикальной стены ##############################
+class Temporary_Wall_Vertical(pygame.sprite.Sprite):
+    def __init__(self, place):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('resources\\level elements\\temporary_vertical_wall.png')
+        self.rect = self.image.get_rect()
+        self.place = place
+
+############################# Класс временной горизонтальной стены ##############################
+class Temporary_Wall_Horizontal(pygame.sprite.Sprite):
+    def __init__(self, place):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('resources\\level elements\\temporary_horizontal_wall.png')
+        self.rect = self.image.get_rect()
+        self.place = place
+
 ############################# Класс хилки ##############################
 class Heal_bottle(pygame.sprite.Sprite):
     def __init__(self):
@@ -140,6 +156,7 @@ def run_game():   # Основная функция игры
     all_items_ont_the_ground = pygame.sprite.Group()   # Группа предметов на земле
     all_bullets = pygame.sprite.Group()   # Группа снарядов
     all_enemy_bars = pygame.sprite.Group()   # Группа баров противников
+    all_temporary_walls = pygame.sprite.Group()   # Группа временных стен
 
     ############################# Задний фон ##############################
     background = Background()
@@ -288,6 +305,11 @@ def run_game():   # Основная функция игры
     wall_top_10.rect.right = 1400
     wall_top_10.rect.top = 500
 
+    blocked_right = False
+    blocked_left = False
+    blocked_top = False
+    blocked_bottom = False
+
     ############################# Бар-хп ##############################
     bar = Bar_HP()   # бар
     all_sprites.add(bar)
@@ -432,9 +454,6 @@ def run_game():   # Основная функция игры
     all_sprites.add(empty_5)
     empty_5.rect.center = (275, 25)
 
-    sound = pygame.mixer.Sound("resources\\sound.wav")
-    sound.play()
-
     while game:   # Пока сеанс игры запущен:
         print(user.scores)
 
@@ -515,7 +534,7 @@ def run_game():   # Основная функция игры
         elif keys[pygame.K_w]:
             if user.rect.x <= 50 and 200 <= user.rect.y <= 205:
                 pass
-            elif user.rect.right >= display_width - 50 and 200 <= user.rect.y <= 205:
+            elif user.rect.right > display_width - 50 and 200 <= user.rect.y <= 205:
                 pass
             elif user.rect.top <= -100 and 700 <= user.rect.x <= 975 and index_of_room == 4:
                 pass
@@ -558,7 +577,7 @@ def run_game():   # Основная функция игры
         elif keys[pygame.K_w]:
             if user.rect.x <= 50 and 200 <= user.rect.y <= 205:
                 pass
-            elif user.rect.right >= display_width - 50 and 200 <= user.rect.y <= 205:
+            elif user.rect.right > display_width - 50 and 200 <= user.rect.y <= 205:
                 pass
             elif user.rect.top <= -100 and 700 <= user.rect.x <= 975 and index_of_room == 4:
                 pass
@@ -585,7 +604,7 @@ def run_game():   # Основная функция игры
         if keys[pygame.K_d] and keys[pygame.K_s]:
             if user.rect.x <= 50 and 495 <= user.rect.bottom <= 500:
                 pass
-            elif user.rect.right >= display_width - 50 and 500 <= user.rect.bottom <= 505:
+            elif user.rect.right > display_width - 50 and 500 <= user.rect.bottom <= 505:
                 pass
             elif 669 <= user.rect.x <= 675 and user.rect.bottom > 650:
                 pass
@@ -614,7 +633,7 @@ def run_game():   # Основная функция игры
         elif keys[pygame.K_s]:
             if user.rect.x <= 50 and 495 <= user.rect.bottom <= 500:
                 pass
-            elif user.rect.right >= display_width - 50 and 500 <= user.rect.bottom <= 505:
+            elif user.rect.right > display_width - 50 and 500 <= user.rect.bottom <= 505:
                 pass
             elif user.rect.bottom > display_height + 100 and 345 <= user.rect.x <= 675 and index_of_room == 3:
                 pass
@@ -643,7 +662,7 @@ def run_game():   # Основная функция игры
         elif keys[pygame.K_s]:
             if user.rect.x <= 50 and 490 <= user.rect.bottom <= 500:
                 pass
-            elif user.rect.right >= display_width - 50 and 500 <= user.rect.bottom <= 505:
+            elif user.rect.right > display_width - 50 and 500 <= user.rect.bottom <= 505:
                 pass
             elif user.rect.bottom > display_height + 100 and 345 <= user.rect.x <= 675 and index_of_room == 3:
                 pass
@@ -689,9 +708,20 @@ def run_game():   # Основная функция игры
             else:
                 user.rect.bottom = display_height - 50
 
+        if blocked_right:
+            if user.rect.right > display_width - 50:
+                user.rect.right = display_width - 50
+        if blocked_left:
+            if user.rect. left < 50:
+                user.rect.left = 50
+        if blocked_top:
+            if user.rect.top < 50:
+                user.rect.top = 50
+        if blocked_bottom:
+            if user.rect.bottom > display_height - 50:
+                user.rect.bottom = display_height - 50
         ############################# Смена уровня ##############################
         def pause():
-            #pygame.time.delay(500)
             pass
 
         if user.rect.right >= display_width + 150:
@@ -701,6 +731,10 @@ def run_game():   # Основная функция игры
             count_of_room += 1
             count_of_room %= 4
             background.change_the_room(count_of_room)
+            for i in all_temporary_walls:
+                if i in walls:
+                    walls.remove(i)
+                i.kill()
             for sprite in all_enemy:
                 sprite.kill()
             for sprite in all_items_ont_the_ground:
@@ -711,6 +745,11 @@ def run_game():   # Основная функция игры
                 sprite.kill()
             generate_ghosts()
             generate_items()
+            temporary_wall = Temporary_Wall_Vertical('left')
+            walls.add(temporary_wall)
+            all_temporary_walls.add(temporary_wall)
+            all_sprites.add(temporary_wall)
+            temporary_wall.rect.bottom = 200
 
 
         elif user.rect.left <= -150:
@@ -720,6 +759,10 @@ def run_game():   # Основная функция игры
             count_of_room += 1
             count_of_room %= 4
             background.change_the_room(count_of_room)
+            for i in all_temporary_walls:
+                if i in walls:
+                    walls.remove(i)
+                i.kill()
             for sprite in all_enemy:
                 sprite.kill()
             for sprite in all_items_ont_the_ground:
@@ -730,6 +773,13 @@ def run_game():   # Основная функция игры
                 sprite.kill()
             generate_ghosts()
             generate_items()
+
+            temporary_wall = Temporary_Wall_Vertical('right')
+            walls.add(temporary_wall)
+            all_temporary_walls.add(temporary_wall)
+            all_sprites.add(temporary_wall)
+            temporary_wall.rect.bottom = 200
+            temporary_wall.rect.x = display_width - 50
 
 
         elif user.rect.top <= -150:
@@ -740,6 +790,10 @@ def run_game():   # Основная функция игры
             count_of_room += 1
             count_of_room %= 4
             background.change_the_room(count_of_room)
+            for i in all_temporary_walls:
+                if i in walls:
+                    walls.remove(i)
+                i.kill()
             for sprite in all_enemy:
                 sprite.kill()
             for sprite in all_items_ont_the_ground:
@@ -751,6 +805,12 @@ def run_game():   # Основная функция игры
             generate_ghosts()
             generate_items()
 
+            temporary_wall = Temporary_Wall_Horizontal('bottom')
+            walls.add(temporary_wall)
+            all_temporary_walls.add(temporary_wall)
+            all_sprites.add(temporary_wall)
+            temporary_wall.rect.right = 350
+            temporary_wall.rect.y = display_height - 50
 
         elif user.rect.bottom >= display_height + 150:
             user.rect.top = -100
@@ -760,6 +820,10 @@ def run_game():   # Основная функция игры
             count_of_room += 1
             count_of_room %= 4
             background.change_the_room(count_of_room)
+            for i in all_temporary_walls:
+                if i in walls:
+                    walls.remove(i)
+                i.kill()
             for sprite in all_enemy:
                 sprite.kill()
             for sprite in all_items_ont_the_ground:
@@ -771,6 +835,11 @@ def run_game():   # Основная функция игры
             generate_ghosts()
             generate_items()
 
+            temporary_wall = Temporary_Wall_Horizontal('top')
+            walls.add(temporary_wall)
+            all_temporary_walls.add(temporary_wall)
+            all_sprites.add(temporary_wall)
+            temporary_wall.rect.right = 700
 
         for bullet in all_bullets:
             ### Направление движения ###
@@ -850,6 +919,47 @@ def run_game():   # Основная функция игры
 
         if pygame.sprite.spritecollide(user, all_items_ont_the_ground, False):
             pick_up()
+
+        ############################# Выдвижение стен ##############################
+        for block in all_temporary_walls:
+            if isinstance(block, Temporary_Wall_Vertical):
+                if block.place == 'left':
+                    if user.rect.x > 125:
+                        if block.rect.bottom < 500:
+                            block.rect.y += 5
+                        else:
+                            blocked_left = True
+                            blocked_right = False
+                            blocked_top = False
+                            blocked_bottom = False
+                else:
+                    if user.rect.x < display_width - 125:
+                        if block.rect.bottom < 500:
+                            block.rect.y += 5
+                        else:
+                            blocked_left = False
+                            blocked_right = True
+                            blocked_top = False
+                            blocked_bottom = False
+            else:
+                if block.place == 'bottom':
+                    if user.rect.y < display_height - 125:
+                        if block.rect.right < 750:
+                            block.rect.x += 5
+                        else:
+                            blocked_left = False
+                            blocked_right = False
+                            blocked_top = False
+                            blocked_bottom = True
+                else:
+                    if user.rect.y > 125:
+                        if block.rect.right < 1050:
+                            block.rect.x += 5
+                        else:
+                            blocked_left = False
+                            blocked_right = False
+                            blocked_top = True
+                            blocked_bottom = False
 
         ############################# Отрисовка предметов из инвентаря ##############################
         def print_items():
@@ -931,6 +1041,6 @@ def run_game():   # Основная функция игры
         pygame.display.flip()   # Переворчиваем экран
         clock.tick(60)   # FPS
 
-        #print(user.items)
+        print(user.rect.bottom)
 
 run_game()
