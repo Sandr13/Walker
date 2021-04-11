@@ -673,7 +673,7 @@ def run_game():   # Основная функция игры
 
             if pygame.sprite.spritecollide(bullet, all_enemy, True):
                 #bullet.remove(all_bullets)
-                bullet.kill()
+                цbullet.kill()
 
         ############################# Движение Призрака ##############################
         for ghost in all_enemy:
