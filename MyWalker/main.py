@@ -76,6 +76,8 @@ class Chest(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load('resources\\objects\\chest.png')
         self.rect = self.image.get_rect()
+        self.opened = False
+        self.dropted = False
 
 ############################# Класс гозизонтальной стены ##############################
 class Wall_Horizontal(pygame.sprite.Sprite):
@@ -168,21 +170,11 @@ def run_game():   # Основная функция игры
     all_enemy_bars = pygame.sprite.Group()   # Группа баров противников
     all_temporary_walls = pygame.sprite.Group()   # Группа временных стен
     all_black_elements = pygame.sprite.Group()   # Группа чёрных фонов
+    all_chests = pygame.sprite.Group()   # Группа сундуков
 
     ############################# Задний фон ##############################
     background = Background()
     all_sprites.add(background)
-
-    ############################# Сундуки ##############################
-    def generate_chests():
-        chest = Chest()  # Создаём сундук
-        all_sprites.add(chest)
-        chests.add(chest)
-        chest.rect.center = (500, 100)
-
-    ############################# Игрок ##############################
-    user = Player()   # Создаём игрока
-    all_sprites.add(user)
 
     ############################# Стрельба ##############################
     def bullet_move(arrow, direction):
@@ -256,10 +248,23 @@ def run_game():   # Основная функция игры
             all_enemy_bars.add(ghost_bar)
             ghost_bar.rect.center = ghost_bar.follow.rect.center
 
+    ############################# ф-я генерации сундуков ##############################
+    def generate_chests():
+        for i in range(functions.chanse_to_spawn_the_enemy()):
+            chest = Chest()
+            all_sprites.add(chest)
+            all_chests.add(chest)
+            chest.rect.center = functions.random_position_of_spawn(display_width, display_height)
+
+    ############################# Генерация сундуков ##############################
+    generate_chests()
     ############################# Генерация противников ##############################
     generate_ghosts()
     ############################# Генерация предметов ##############################
     generate_items()
+    ############################# Игрок ##############################
+    user = Player()   # Создаём игрока
+    all_sprites.add(user)
     ############################# Создаём стены ##############################
     wall_top_1 = Wall_Horizontal()
     all_sprites.add(wall_top_1)
@@ -505,6 +510,12 @@ def run_game():   # Основная функция игры
                     if event.key == pygame.K_KP5:
                         try:
                             drop(5, user.items[4])
+                        except:
+                            pass
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_c:
+                        try:
+                            open_chest()
                         except:
                             pass
 
@@ -754,14 +765,33 @@ def run_game():   # Основная функция игры
                     sprite.kill()
                 for sprite in all_enemy_bars:
                     sprite.kill()
+                for sprite in all_chests:
+                    sprite.kill()
+                remember = user
+                user.kill()
+
                 generate_ghosts()
                 generate_items()
+                generate_chests()
+
+                user = Player()
+                user.items = remember.items
+                user.hp = remember.hp
+                user.rect.center = remember.rect.center
+                all_sprites.add(user)
+
+                blocked_left = False
+                blocked_right = False
+                blocked_top = False
+                blocked_bottom = False
+
                 temporary_wall = Temporary_Wall_Vertical('left')
                 walls.add(temporary_wall)
                 all_temporary_walls.add(temporary_wall)
                 all_sprites.add(temporary_wall)
                 temporary_wall.rect.bottom = 200
                 pause()
+
 
             elif user.rect.left <= -150:
                 user.rect.right = display_width + 100
@@ -781,8 +811,26 @@ def run_game():   # Основная функция игры
                     sprite.kill()
                 for sprite in all_enemy_bars:
                     sprite.kill()
+                for sprite in all_chests:
+                    sprite.kill()
+
+                remember = user
+                user.kill()
+
                 generate_ghosts()
                 generate_items()
+                generate_chests()
+
+                user = Player()
+                user.items = remember.items
+                user.hp = remember.hp
+                user.rect.center = remember.rect.center
+                all_sprites.add(user)
+
+                blocked_left = False
+                blocked_right = False
+                blocked_top = False
+                blocked_bottom = False
 
                 temporary_wall = Temporary_Wall_Vertical('right')
                 walls.add(temporary_wall)
@@ -812,8 +860,26 @@ def run_game():   # Основная функция игры
                     sprite.kill()
                 for sprite in all_enemy_bars:
                     sprite.kill()
+                for sprite in all_chests:
+                    sprite.kill()
+
+                remember = user
+                user.kill()
+
                 generate_ghosts()
                 generate_items()
+                generate_chests()
+
+                user = Player()
+                user.items = remember.items
+                user.hp = remember.hp
+                user.rect.center = remember.rect.center
+                all_sprites.add(user)
+
+                blocked_left = False
+                blocked_right = False
+                blocked_top = False
+                blocked_bottom = False
 
                 temporary_wall = Temporary_Wall_Horizontal('bottom')
                 walls.add(temporary_wall)
@@ -842,8 +908,26 @@ def run_game():   # Основная функция игры
                     sprite.kill()
                 for sprite in all_enemy_bars:
                     sprite.kill()
+                for sprite in all_chests:
+                    sprite.kill()
+
+                remember = user
+                user.kill()
+
                 generate_ghosts()
                 generate_items()
+                generate_chests()
+
+                user = Player()
+                user.items = remember.items
+                user.hp = remember.hp
+                user.rect.center = remember.rect.center
+                all_sprites.add(user)
+
+                blocked_left = False
+                blocked_right = False
+                blocked_top = False
+                blocked_bottom = False
 
                 temporary_wall = Temporary_Wall_Horizontal('top')
                 walls.add(temporary_wall)
@@ -913,6 +997,28 @@ def run_game():   # Основная функция игры
                         bars.follow.kill()
                         bars.kill()
                         user.scores+=1
+
+                if ghost.rect.top < 50:
+                    if ghost.rect.left >= 700 and ghost.rect.right <= 1050:
+                        pass
+                    else:
+                        ghost.rect.top = 50
+                if ghost.rect.bottom > display_height - 50:
+                    if ghost.rect.left >= 350 and ghost.rect.right <= 775:
+                        pass
+                    else:
+                        ghost.rect.bottom = display_height - 50
+                if ghost.rect.right > display_width - 50:
+                    if ghost.rect.top >= 200 and ghost.rect.bottom <= 500:
+                        pass
+                    else:
+                        ghost.rect.right = display_width - 50
+                if ghost.rect.left < 50:
+                    if ghost.rect.top >= 200 and ghost.rect.bottom <= 500:
+                        pass
+                    else:
+                        ghost.rect.left = 50
+
                 ############################# Отрисовка призрака ##############################
                 if ghost_right:
                     ghost.image = pygame.image.load('resources\enemy\ghost_right.png')
@@ -930,6 +1036,29 @@ def run_game():   # Основная функция игры
 
             if pygame.sprite.spritecollide(user, all_items_ont_the_ground, False):
                 pick_up()
+
+            ############################# Сундуки и взаимодействие с ними ##############################
+            def drop_items_from_chest(chest):
+                if user.rect.left >= chest.rect.center[0]:   # Если игрок стоит справа от сундука
+                    print('Справа')
+                elif user.rect.right <= chest.rect.center[0]:   # Если игрок стоит слева от сундука
+                    print('Слева')
+
+            def open_chest():
+                list = pygame.sprite.spritecollide(user, all_chests, False)
+                for chest in list:
+                    if chest.opened:
+                        chest.image = pygame.image.load('resources/objects/chest.png')
+                        chest.opened = False
+                    else:
+                        chest.image = pygame.image.load('resources/objects/chest_opened.png')
+                        chest.opened = True
+                        if not chest.dropted:
+                            drop_items_from_chest(chest)
+                        chest.dropted = True
+
+
+
 
             ############################# Выдвижение стен ##############################
             for block in all_temporary_walls:
@@ -1056,8 +1185,8 @@ def run_game():   # Основная функция игры
                     stop = False
                     i.image.set_alpha(i.image.get_alpha() - 1)
             else:
-                if i.image.get_alpha() != 2:
-                    i.image.set_alpha(i.image.get_alpha() - 2)
+                if i.image.get_alpha() != 0:
+                    i.image.set_alpha(i.image.get_alpha() - 4)
                 else:
                     stop = True
                     all_black_elements.remove(i)
