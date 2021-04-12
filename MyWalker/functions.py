@@ -1,5 +1,8 @@
 import random
 
+def choose_the_drop():
+    list = ['bow', 'heal_bottle']
+    return random.choice(list)
 
 def chanse_to_spawn_the_enemy():   # Генерация рандомного числа противников
     choice = random.choice(range(100))

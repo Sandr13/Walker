@@ -1039,10 +1039,30 @@ def run_game():   # Основная функция игры
 
             ############################# Сундуки и взаимодействие с ними ##############################
             def drop_items_from_chest(chest):
-                if user.rect.left >= chest.rect.center[0]:   # Если игрок стоит справа от сундука
-                    print('Справа')
-                elif user.rect.right <= chest.rect.center[0]:   # Если игрок стоит слева от сундука
-                    print('Слева')
+                if user.rect.center[0] >= chest.rect.center[0]:   # Если игрок стоит справа от сундука
+                    item = functions.choose_the_drop()
+                    if item == 'bow':
+                        item = Bow()
+                        all_sprites.add(item)
+                        all_items_ont_the_ground.add(item)
+                        item.rect.center = (chest.rect.center[0] - 64, chest.rect.center[1])
+                    elif item == 'heal_bottle':
+                        item = Heal_bottle()
+                        all_sprites.add(item)
+                        all_items_ont_the_ground.add(item)
+                        item.rect.center = (chest.rect.center[0] - 64, chest.rect.center[1])
+                elif user.rect.center[0] <= chest.rect.center[0]:   # Если игрок стоит слева от сундука
+                    item = functions.choose_the_drop()
+                    if item == 'bow':
+                        item = Bow()
+                        all_sprites.add(item)
+                        all_items_ont_the_ground.add(item)
+                        item.rect.center = (chest.rect.center[0] + 64, chest.rect.center[1])
+                    elif item == 'heal_bottle':
+                        item = Heal_bottle()
+                        all_sprites.add(item)
+                        all_items_ont_the_ground.add(item)
+                        item.rect.center = (chest.rect.center[0] + 64, chest.rect.center[1])
 
             def open_chest():
                 list = pygame.sprite.spritecollide(user, all_chests, False)
