@@ -260,8 +260,6 @@ def run_game():   # Основная функция игры
     generate_chests()
     ############################# Генерация противников ##############################
     generate_ghosts()
-    ############################# Генерация предметов ##############################
-    generate_items()
     ############################# Игрок ##############################
     user = Player()   # Создаём игрока
     all_sprites.add(user)
@@ -771,7 +769,6 @@ def run_game():   # Основная функция игры
                 user.kill()
 
                 generate_ghosts()
-                generate_items()
                 generate_chests()
 
                 user = Player()
@@ -818,7 +815,6 @@ def run_game():   # Основная функция игры
                 user.kill()
 
                 generate_ghosts()
-                generate_items()
                 generate_chests()
 
                 user = Player()
@@ -867,7 +863,6 @@ def run_game():   # Основная функция игры
                 user.kill()
 
                 generate_ghosts()
-                generate_items()
                 generate_chests()
 
                 user = Player()
@@ -915,7 +910,6 @@ def run_game():   # Основная функция игры
                 user.kill()
 
                 generate_ghosts()
-                generate_items()
                 generate_chests()
 
                 user = Player()
