@@ -20,5 +20,11 @@ def random_position_of_spawn(display_width, display_height):   # Генерац�
 
     return (x, y)
 
+def random_position_of_spawn_chest(display_width, display_height):   # Генерация рандомного места для сундука генерации на карте
+    x = random.choice(range(165, display_width - 165))
+    y = random.choice(range(165, display_height - 165))
+
+    return (x, y)
+
 def check_for_item(list):
     return random.choice(list)

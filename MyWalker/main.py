@@ -44,14 +44,24 @@ class Enemy_Bar_HP(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.follow = object
 
-################################ Класс Противника ##################################
-class Enemy(pygame.sprite.Sprite):
+################################ Класс призрака ##################################
+class Ghost(pygame.sprite.Sprite):
     def __init__(self, object=0):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load('resources\\enemy\\ghost_left.png')
         self.rect = self.image.get_rect()
         self.speed = 2
         self.hp = 3
+        self.bar = object
+
+################################ Класс импа ##################################
+class Imp(pygame.sprite.Sprite):
+    def __init__(self, object=0):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('resources\\enemy\\imp_front.png')
+        self.rect = self.image.get_rect()
+        self.speed = 1
+        self.hp = 10
         self.bar = object
 
 ################################ Класс ячейки инвентаря ##################################
@@ -165,9 +175,13 @@ def run_game():   # Основная функция игры
     all_sprites = pygame.sprite.Group()  # Группа спрайтов
     walls = pygame.sprite.Group()   # Группа стен
     all_enemy = pygame.sprite.Group()  # Группа монстров
+    all_ghosts = pygame.sprite.Group()   # Группа призраков
+    all_imps = pygame.sprite.Group()   # Группа импов
     all_items_ont_the_ground = pygame.sprite.Group()   # Группа предметов на земле
     all_bullets = pygame.sprite.Group()   # Группа снарядов
     all_enemy_bars = pygame.sprite.Group()   # Группа баров противников
+    all_ghost_bars = pygame.sprite.Group()   # Группа баров призраков
+    all_imp_bars = pygame.sprite.Group()  # Группа баров импов
     all_temporary_walls = pygame.sprite.Group()   # Группа временных стен
     all_black_elements = pygame.sprite.Group()   # Группа чёрных фонов
     all_chests = pygame.sprite.Group()   # Группа сундуков
@@ -237,16 +251,35 @@ def run_game():   # Основная функция игры
     def generate_ghosts():
         number_of_enemy = functions.chanse_to_spawn_the_enemy()
         for i in range(number_of_enemy):
-            ghost = Enemy()
+            ghost = Ghost()
             all_sprites.add(ghost)
+            all_ghosts.add(ghost)
             all_enemy.add(ghost)
             ghost.rect.center = functions.random_position_of_spawn(display_width, display_height)
 
             ghost_bar = Enemy_Bar_HP(ghost)
             ghost.bar = ghost_bar
             all_sprites.add(ghost_bar)
+            all_ghost_bars.add(ghost_bar)
             all_enemy_bars.add(ghost_bar)
             ghost_bar.rect.center = ghost_bar.follow.rect.center
+
+
+    def generate_imps():
+        number_of_enemy = functions.chanse_to_spawn_the_enemy()
+        for i in range(number_of_enemy):
+            imp = Imp()
+            all_sprites.add(imp)
+            all_imps.add(imp)
+            all_enemy.add(imp)
+            imp.rect.center = functions.random_position_of_spawn(display_width, display_height)
+
+            imp_bar = Enemy_Bar_HP(imp)
+            imp.bar = imp_bar
+            all_sprites.add(imp_bar)
+            all_enemy_bars.add(imp_bar)
+            all_imp_bars.add(imp_bar)
+            imp_bar.rect.center = imp_bar.follow.rect.center
 
     ############################# ф-я генерации сундуков ##############################
     def generate_chests():
@@ -254,12 +287,14 @@ def run_game():   # Основная функция игры
             chest = Chest()
             all_sprites.add(chest)
             all_chests.add(chest)
-            chest.rect.center = functions.random_position_of_spawn(display_width, display_height)
+            chest.rect.center = functions.random_position_of_spawn_chest(display_width, display_height)
 
     ############################# Генерация сундуков ##############################
     generate_chests()
     ############################# Генерация противников ##############################
     generate_ghosts()
+    ############################# Генерация противников ##############################
+    generate_imps()
     ############################# Игрок ##############################
     user = Player()   # Создаём игрока
     all_sprites.add(user)
@@ -526,6 +561,11 @@ def run_game():   # Основная функция игры
             ghost_right = True   # Направления, куда смотрит призрак
             ghost_left = False
 
+            imp_right = True   # Направление, куда смотрит имп
+            imp_left = False
+            imp_top = False
+            imp_bottom = False
+
             if first:
                 back = False   # Направления, куда смотрит игрок
                 front = True
@@ -770,6 +810,7 @@ def run_game():   # Основная функция игры
 
                 generate_ghosts()
                 generate_chests()
+                generate_imps()
 
                 user = Player()
                 user.items = remember.items
@@ -816,6 +857,7 @@ def run_game():   # Основная функция игры
 
                 generate_ghosts()
                 generate_chests()
+                generate_imps()
 
                 user = Player()
                 user.items = remember.items
@@ -864,6 +906,7 @@ def run_game():   # Основная функция игры
 
                 generate_ghosts()
                 generate_chests()
+                generate_imps()
 
                 user = Player()
                 user.items = remember.items
@@ -911,6 +954,7 @@ def run_game():   # Основная функция игры
 
                 generate_ghosts()
                 generate_chests()
+                generate_imps()
 
                 user = Player()
                 user.items = remember.items
@@ -959,7 +1003,7 @@ def run_game():   # Основная функция игры
                 for wall in walls:
                     pygame.sprite.spritecollide(wall, all_bullets, True)
             ############################# Движение Призрака ##############################
-            for ghost in all_enemy:
+            for ghost in all_ghosts:
                 if math.fabs(user.rect.center[0] - ghost.rect.center[0]) >= 50 or math.fabs(user.rect.center[1] - ghost.rect.center[1]) >= 50:
                     if user.rect.x - ghost.rect.x > 0:
                         ghost.rect.x = ghost.rect.x + ghost.speed
@@ -975,12 +1019,12 @@ def run_game():   # Основная функция игры
                     if user.rect.y - ghost.rect.y < 0:
                         ghost.rect.y = ghost.rect.y - ghost.speed
                 else:
-                    count_of_detected_colide = len(pygame.sprite.spritecollide(user, all_enemy, False))
+                    count_of_detected_colide = len(pygame.sprite.spritecollide(user, all_ghosts, False))
                     ghost.bar.kill()
                     ghost.kill()
                     user.hp -= count_of_detected_colide
 
-                for bars in all_enemy_bars:
+                for bars in all_ghost_bars:
                     bars.rect.bottom = bars.follow.rect.top
                     bars.rect.x = bars.follow.rect.center[0] - 17
                     if bars.follow.hp == 2:
@@ -1019,6 +1063,82 @@ def run_game():   # Основная функция игры
                 elif ghost_left:
                     ghost.image = pygame.image.load('resources\enemy\ghost_left.png')
 
+            ############################# Движение импа ##############################
+            for imp in all_imps:
+                if math.fabs(user.rect.center[0] - imp.rect.center[0]) >= 50 or math.fabs(
+                        user.rect.center[1] - imp.rect.center[1]) >= 50:
+                    if user.rect.center[0] > imp.rect.center[0]:
+                        imp.rect.x = imp.rect.x + imp.speed
+                        imp_right = True
+                        imp_left = False
+                        imp_top = False
+                        imp_bottom = False
+                    if user.rect.center[0] < imp.rect.center[0]:
+                        imp_right = False
+                        imp_left = True
+                        imp_top = False
+                        imp_bottom = False
+                        imp.rect.x = imp.rect.x - imp.speed
+
+                    if user.rect.center[1] > imp.rect.center[1]:
+                        imp_right = False
+                        imp_left = False
+                        imp_top = False
+                        imp_bottom = True
+                        imp.rect.y = imp.rect.y + imp.speed
+                    if user.rect.center[1] < imp.rect.center[1]:
+                        imp_right = False
+                        imp_left = False
+                        imp_top = True
+                        imp_bottom = False
+                        imp.rect.y = imp.rect.y - imp.speed
+                else:
+                    count_of_detected_colide = len(pygame.sprite.spritecollide(user, all_imps, False))
+                    imp.kill()
+                    imp.bar.kill()
+                    user.hp -= count_of_detected_colide * 2
+
+                for bars in all_imp_bars:
+                    bars.rect.bottom = bars.follow.rect.top
+                    bars.rect.x = bars.follow.rect.center[0] - 17
+                    if bars.follow.hp <= 7:
+                        bars.image = pygame.image.load('resources\\enemy health\\2.png')
+                    if bars.follow.hp <= 4:
+                        bars.image = pygame.image.load('resources\\enemy health\\1.png')
+                    if bars.follow.hp == 0:
+                        bars.follow.kill()
+                        bars.kill()
+                        user.scores+=3
+
+                if imp.rect.top < 50:
+                    if imp.rect.left >= 700 and imp.rect.right <= 1050:
+                        pass
+                    else:
+                        imp.rect.top = 50
+                if imp.rect.bottom > display_height - 50:
+                    if imp.rect.left >= 350 and imp.rect.right <= 775:
+                        pass
+                    else:
+                        imp.rect.bottom = display_height - 50
+                if imp.rect.right > display_width - 50:
+                    if imp.rect.top >= 200 and imp.rect.bottom <= 500:
+                        pass
+                    else:
+                        imp.rect.right = display_width - 50
+                if imp.rect.left < 50:
+                    if imp.rect.top >= 200 and imp.rect.bottom <= 500:
+                        pass
+                    else:
+                        imp.rect.left = 50
+                ############################# Отрисовка импа ##############################
+                if imp_right:
+                    imp.image = pygame.image.load('resources\enemy\imp_right.png')
+                if imp_left:
+                    imp.image = pygame.image.load('resources\enemy\imp_left.png')
+                if imp_top:
+                    imp.image = pygame.image.load('resources\enemy\imp_back.png')
+                if imp_bottom:
+                    imp.image = pygame.image.load('resources\enemy\imp_front.png')
             ############################# Предметы и взаимодействие с ними ##############################
             def pick_up():
                 if len(user.items) < 5:
