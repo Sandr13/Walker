@@ -63,6 +63,17 @@ class Imp(pygame.sprite.Sprite):
         self.speed = 1
         self.hp = 10
         self.bar = object
+        self.shoot_timming = 1
+        self.direction = ''
+
+############################# Класс объекта-снаряда Импа ##############################
+class Imp_Ball(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('resources/attacking/1.png')
+        self.rect = self.image.get_rect()
+        self.condition = 1
+        self.direction = ''
 
 ################################ Класс ячейки инвентаря ##################################
 class Ceil_of_inventory(pygame.sprite.Sprite):
@@ -177,6 +188,7 @@ def run_game():   # Основная функция игры
     all_enemy = pygame.sprite.Group()  # Группа монстров
     all_ghosts = pygame.sprite.Group()   # Группа призраков
     all_imps = pygame.sprite.Group()   # Группа импов
+    all_imp_fireballs = pygame.sprite.Group()   # Группа снарядов Импа
     all_items_ont_the_ground = pygame.sprite.Group()   # Группа предметов на земле
     all_bullets = pygame.sprite.Group()   # Группа снарядов
     all_enemy_bars = pygame.sprite.Group()   # Группа баров противников
@@ -376,10 +388,13 @@ def run_game():   # Основная функция игры
         have_heal = False
         last_not_empty = len(user.items) - 1
 
+        sound = pygame.mixer.Sound('resources/sounds/use_heal.wav')
+
         for item in user.items:
             if item == 'heal_bottle':
                 have_heal = True
         if have_heal:
+            sound.play()
             user.hp += 1
             index = user.items.index('heal_bottle')
             user.items.pop(index)
@@ -1019,10 +1034,10 @@ def run_game():   # Основная функция игры
                     if user.rect.y - ghost.rect.y < 0:
                         ghost.rect.y = ghost.rect.y - ghost.speed
                 else:
-                    count_of_detected_colide = len(pygame.sprite.spritecollide(user, all_ghosts, False))
-                    ghost.bar.kill()
-                    ghost.kill()
-                    user.hp -= count_of_detected_colide
+                    if pygame.sprite.spritecollide(user, all_ghosts, False):
+                        ghost.bar.kill()
+                        ghost.kill()
+                        user.hp -= 1
 
                 for bars in all_ghost_bars:
                     bars.rect.bottom = bars.follow.rect.top
@@ -1073,11 +1088,13 @@ def run_game():   # Основная функция игры
                         imp_left = False
                         imp_top = False
                         imp_bottom = False
+                        imp.direction = 'right'
                     if user.rect.center[0] < imp.rect.center[0]:
                         imp_right = False
                         imp_left = True
                         imp_top = False
                         imp_bottom = False
+                        imp.direction = 'left'
                         imp.rect.x = imp.rect.x - imp.speed
 
                     if user.rect.center[1] > imp.rect.center[1]:
@@ -1085,22 +1102,24 @@ def run_game():   # Основная функция игры
                         imp_left = False
                         imp_top = False
                         imp_bottom = True
+                        imp.direction = 'bottom'
                         imp.rect.y = imp.rect.y + imp.speed
                     if user.rect.center[1] < imp.rect.center[1]:
                         imp_right = False
                         imp_left = False
                         imp_top = True
                         imp_bottom = False
+                        imp.direction = 'top'
                         imp.rect.y = imp.rect.y - imp.speed
                 else:
-                    count_of_detected_colide = len(pygame.sprite.spritecollide(user, all_imps, False))
-                    imp.kill()
-                    imp.bar.kill()
-                    user.hp -= count_of_detected_colide * 2
+                    if pygame.sprite.spritecollide(user, all_imps, False):
+                        imp.kill()
+                        imp.bar.kill()
+                        user.hp -= 2
 
                 for bars in all_imp_bars:
                     bars.rect.bottom = bars.follow.rect.top
-                    bars.rect.x = bars.follow.rect.center[0] - 17
+                    bars.rect.x = bars.follow.rect.center[0] -10
                     if bars.follow.hp <= 7:
                         bars.image = pygame.image.load('resources\\enemy health\\2.png')
                     if bars.follow.hp <= 4:
@@ -1279,6 +1298,49 @@ def run_game():   # Основная функция игры
                         elif inventory.items[4].is_empty:
                             empty_5.image = pygame.image.load(directory)
                             inventory.items[4].is_empty = False
+
+            ############################# Отрисовка анимеции снарядов импа ##############################
+            for ball in all_imp_fireballs:
+                ball.condition += 1
+                if ball.condition == 1:
+                    ball.image = pygame.image.load('resources/attacking/1.png')
+                if ball.condition == 10:
+                    ball.image = pygame.image.load('resources/attacking/2.png')
+                if ball.condition == 20:
+                    ball.image = pygame.image.load('resources/attacking/3.png')
+                if ball.condition == 30:
+                    ball.image = pygame.image.load('resources/attacking/4.png')
+                if ball.condition == 40:
+                    ball.image = pygame.image.load('resources/attacking/5.png')
+                    ball.condition = 1
+
+                if ball.direction == 'left':
+                    ball.rect.x -= 5
+                if ball.direction == 'right':
+                    ball.rect.x += 5
+                if ball.direction == 'top':
+                    ball.rect.y -= 5
+                if ball.direction == 'bottom':
+                    ball.rect.y += 5
+
+                if pygame.sprite.spritecollide(user, all_imp_fireballs, True):
+                    user.hp -= 1
+
+                for wall in walls:
+                    pygame.sprite.spritecollide(wall, all_imp_fireballs, True)
+
+            def imp_shoot(imp):
+                imp_ball = Imp_Ball()
+                imp_ball.direction = imp.direction
+                all_sprites.add(imp_ball)
+                all_imp_fireballs.add(imp_ball)
+                imp_ball.rect.center = imp.rect.center
+
+            for imp in all_imps:
+                imp.shoot_timming += 1
+                if imp.shoot_timming == 100:
+                    imp_shoot(imp)
+                    imp.shoot_timming = 1
 
             ############################# Отрисовка игрока ##############################
             if front:
