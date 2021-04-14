@@ -226,6 +226,8 @@ def run_game():   # Основная функция игры
                 can_we_shoot = True
 
         if can_we_shoot:
+            sound = pygame.mixer.Sound('resources/sounds/user_shooting_from_bow.wav')
+            sound.play()
             arrow = Bullet()
             all_sprites.add(arrow)
             all_bullets.add(arrow)
@@ -834,7 +836,7 @@ def run_game():   # Основная функция игры
                 user.items = remember.items
                 user.hp = remember.hp
                 user.rect.center = remember.rect.center
-                user.scores = remember.scoresффв
+                user.scores = remember.scores
                 all_sprites.add(user)
 
                 blocked_left = False
@@ -1048,8 +1050,12 @@ def run_game():   # Основная функция игры
                         ghost.rect.y = ghost.rect.y - ghost.speed
                 else:
                     if pygame.sprite.spritecollide(user, all_ghosts, False):
+                        sound = pygame.mixer.Sound('resources/sounds/ghost_dying.wav')
+                        sound.play()
                         ghost.bar.kill()
                         ghost.kill()
+                        sound = pygame.mixer.Sound('resources/sounds/taking_damage_by_user.wav')
+                        sound.play()
                         user.hp -= 1
 
                 for bars in all_ghost_bars:
@@ -1060,6 +1066,8 @@ def run_game():   # Основная функция игры
                     if bars.follow.hp == 1:
                         bars.image = pygame.image.load('resources\\enemy health\\1.png')
                     if bars.follow.hp <= 0:
+                        sound = pygame.mixer.Sound('resources/sounds/ghost_dying.wav')
+                        sound.play()
                         bars.follow.kill()
                         bars.kill()
                         user.scores+=1
@@ -1128,6 +1136,8 @@ def run_game():   # Основная функция игры
                     if pygame.sprite.spritecollide(user, all_imps, False):
                         imp.kill()
                         imp.bar.kill()
+                        sound = pygame.mixer.Sound('resources/sounds/taking_damage_by_user.wav')
+                        sound.play()
                         user.hp -= 2
 
                 for bars in all_imp_bars:
@@ -1138,6 +1148,8 @@ def run_game():   # Основная функция игры
                     if bars.follow.hp <= 4:
                         bars.image = pygame.image.load('resources\\enemy health\\1.png')
                     if bars.follow.hp == 0:
+                        sound = pygame.mixer.Sound('resources/sounds/imp_dying.wav')
+                        sound.play()
                         bars.follow.kill()
                         bars.kill()
                         user.scores+=3
@@ -1239,6 +1251,8 @@ def run_game():   # Основная функция игры
             def open_chest():
                 list = pygame.sprite.spritecollide(user, all_chests, False)
                 for chest in list:
+                    sound = pygame.mixer.Sound('resources/sounds/chest_sound.wav')
+                    sound.play()
                     if chest.opened:
                         chest.image = pygame.image.load('resources/objects/chest.png')
                         chest.opened = False
@@ -1366,6 +1380,7 @@ def run_game():   # Основная функция игры
                         ball.image = pygame.image.load('resources/attacking/fireball_4_right.png')
                     if ball.condition == 40:
                         ball.image = pygame.image.load('resources/attacking/fireball_5_right.png')
+                        ball.condition = 1
                     ball.rect.x += 5
                 if ball.direction == 'top':
                     if ball.condition == 1:
@@ -1378,6 +1393,7 @@ def run_game():   # Основная функция игры
                         ball.image = pygame.image.load('resources/attacking/fireball_4_top.png')
                     if ball.condition == 40:
                         ball.image = pygame.image.load('resources/attacking/fireball_5_top.png')
+                        ball.condition = 1
                     ball.rect.y -= 5
                 if ball.direction == 'bottom':
                     if ball.condition == 1:
@@ -1390,6 +1406,7 @@ def run_game():   # Основная функция игры
                         ball.image = pygame.image.load('resources/attacking/fireball_4_bottom.png')
                     if ball.condition == 40:
                         ball.image = pygame.image.load('resources/attacking/fireball_5_bottom.png')
+                        ball.condition = 1
                     ball.rect.y += 5
 
                 if ball.rect.y >= display_height + 100:
@@ -1402,12 +1419,16 @@ def run_game():   # Основная функция игры
                     ball.kill()
 
                 if pygame.sprite.spritecollide(user, all_imp_fireballs, True):
+                    sound = pygame.mixer.Sound('resources/sounds/taking_damage_by_user.wav')
+                    sound.play()
                     user.hp -= 1
 
                 for wall in walls:
                     pygame.sprite.spritecollide(wall, all_imp_fireballs, True)
 
             def imp_shoot(imp):
+                sound = pygame.mixer.Sound('resources/sounds/imp_shooting.wav')
+                sound.play()
                 imp_ball = Imp_Ball()
                 imp_ball.direction = imp.direction
                 all_sprites.add(imp_ball)
