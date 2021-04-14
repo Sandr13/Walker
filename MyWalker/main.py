@@ -58,19 +58,20 @@ class Ghost(pygame.sprite.Sprite):
 class Imp(pygame.sprite.Sprite):
     def __init__(self, object=0):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('resources\\enemy\\imp_front.png')
+        self.image = pygame.image.load('resources\\enemy\\imp_front_1.png')
         self.rect = self.image.get_rect()
         self.speed = 1
         self.hp = 10
         self.bar = object
         self.shoot_timming = 1
+        self.condition = 1
         self.direction = ''
 
 ############################# Класс объекта-снаряда Импа ##############################
 class Imp_Ball(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('resources/attacking/1.png')
+        self.image = pygame.image.load('resources/inventory/items/empty_slot.png')
         self.rect = self.image.get_rect()
         self.condition = 1
         self.direction = ''
@@ -816,6 +817,8 @@ def run_game():   # Основная функция игры
                     sprite.kill()
                 for sprite in all_bullets:
                     sprite.kill()
+                for sprite in all_imp_fireballs:
+                    sprite.kill()
                 for sprite in all_enemy_bars:
                     sprite.kill()
                 for sprite in all_chests:
@@ -831,6 +834,7 @@ def run_game():   # Основная функция игры
                 user.items = remember.items
                 user.hp = remember.hp
                 user.rect.center = remember.rect.center
+                user.scores = remember.scoresффв
                 all_sprites.add(user)
 
                 blocked_left = False
@@ -862,6 +866,8 @@ def run_game():   # Основная функция игры
                     sprite.kill()
                 for sprite in all_bullets:
                     sprite.kill()
+                for sprite in all_imp_fireballs:
+                    sprite.kill()
                 for sprite in all_enemy_bars:
                     sprite.kill()
                 for sprite in all_chests:
@@ -878,6 +884,7 @@ def run_game():   # Основная функция игры
                 user.items = remember.items
                 user.hp = remember.hp
                 user.rect.center = remember.rect.center
+                user.scores = remember.scores
                 all_sprites.add(user)
 
                 blocked_left = False
@@ -911,6 +918,8 @@ def run_game():   # Основная функция игры
                     sprite.kill()
                 for sprite in all_bullets:
                     sprite.kill()
+                for sprite in all_imp_fireballs:
+                    sprite.kill()
                 for sprite in all_enemy_bars:
                     sprite.kill()
                 for sprite in all_chests:
@@ -927,6 +936,7 @@ def run_game():   # Основная функция игры
                 user.items = remember.items
                 user.hp = remember.hp
                 user.rect.center = remember.rect.center
+                user.scores = remember.scores
                 all_sprites.add(user)
 
                 blocked_left = False
@@ -959,6 +969,8 @@ def run_game():   # Основная функция игры
                     sprite.kill()
                 for sprite in all_bullets:
                     sprite.kill()
+                for sprite in all_imp_fireballs:
+                    sprite.kill()
                 for sprite in all_enemy_bars:
                     sprite.kill()
                 for sprite in all_chests:
@@ -975,6 +987,7 @@ def run_game():   # Основная функция игры
                 user.items = remember.items
                 user.hp = remember.hp
                 user.rect.center = remember.rect.center
+                user.scores = remember.scores
                 all_sprites.add(user)
 
                 blocked_left = False
@@ -1150,14 +1163,40 @@ def run_game():   # Основная функция игры
                     else:
                         imp.rect.left = 50
                 ############################# Отрисовка импа ##############################
-                if imp_right:
-                    imp.image = pygame.image.load('resources\enemy\imp_right.png')
-                if imp_left:
-                    imp.image = pygame.image.load('resources\enemy\imp_left.png')
-                if imp_top:
-                    imp.image = pygame.image.load('resources\enemy\imp_back.png')
-                if imp_bottom:
-                    imp.image = pygame.image.load('resources\enemy\imp_front.png')
+                imp.condition += 1
+                if imp.direction == 'right':
+                    if imp.condition == 1:
+                        imp.image = pygame.image.load('resources/enemy/imp_right_1.png')
+                    if imp.condition == 20:
+                        imp.image = pygame.image.load('resources/enemy/imp_right_2.png')
+                    if imp.condition == 40:
+                        imp.image = pygame.image.load('resources/enemy/imp_right_3.png')
+                        imp.condition = 1
+                if imp.direction == 'left':
+                    if imp.condition == 1:
+                        imp.image = pygame.image.load('resources/enemy/imp_left_1.png')
+                    if imp.condition == 20:
+                        imp.image = pygame.image.load('resources/enemy/imp_left_2.png')
+                    if imp.condition == 40:
+                        imp.image = pygame.image.load('resources/enemy/imp_left_3.png')
+                        imp.condition = 1
+                if imp.direction == 'top':
+                    if imp.condition == 1:
+                        imp.image = pygame.image.load('resources/enemy/imp_back_1.png')
+                    if imp.condition == 20:
+                        imp.image = pygame.image.load('resources/enemy/imp_back_2.png')
+                    if imp.condition == 40:
+                        imp.image = pygame.image.load('resources/enemy/imp_back_3.png')
+                        imp.condition = 1
+                if imp.direction == 'bottom':
+                    if imp.condition == 1:
+                        imp.image = pygame.image.load('resources/enemy/imp_front_1.png')
+                    if imp.condition == 20:
+                        imp.image = pygame.image.load('resources/enemy/imp_front_2.png')
+                    if imp.condition == 40:
+                        imp.image = pygame.image.load('resources/enemy/imp_front_3.png')
+                        imp.condition = 1
+
             ############################# Предметы и взаимодействие с ними ##############################
             def pick_up():
                 if len(user.items) < 5:
@@ -1302,26 +1341,65 @@ def run_game():   # Основная функция игры
             ############################# Отрисовка анимеции снарядов импа ##############################
             for ball in all_imp_fireballs:
                 ball.condition += 1
-                if ball.condition == 1:
-                    ball.image = pygame.image.load('resources/attacking/1.png')
-                if ball.condition == 10:
-                    ball.image = pygame.image.load('resources/attacking/2.png')
-                if ball.condition == 20:
-                    ball.image = pygame.image.load('resources/attacking/3.png')
-                if ball.condition == 30:
-                    ball.image = pygame.image.load('resources/attacking/4.png')
-                if ball.condition == 40:
-                    ball.image = pygame.image.load('resources/attacking/5.png')
-                    ball.condition = 1
 
                 if ball.direction == 'left':
+                    if ball.condition == 1:
+                        ball.image = pygame.image.load('resources/attacking/fireball_1_left.png')
+                    if ball.condition == 10:
+                        ball.image = pygame.image.load('resources/attacking/fireball_2_left.png')
+                    if ball.condition == 20:
+                        ball.image = pygame.image.load('resources/attacking/fireball_3_left.png')
+                    if ball.condition == 30:
+                        ball.image = pygame.image.load('resources/attacking/fireball_4_left.png')
+                    if ball.condition == 40:
+                        ball.image = pygame.image.load('resources/attacking/fireball_5_left.png')
+                        ball.condition = 1
                     ball.rect.x -= 5
                 if ball.direction == 'right':
+                    if ball.condition == 1:
+                        ball.image = pygame.image.load('resources/attacking/fireball_1_right.png')
+                    if ball.condition == 10:
+                        ball.image = pygame.image.load('resources/attacking/fireball_2_right.png')
+                    if ball.condition == 20:
+                        ball.image = pygame.image.load('resources/attacking/fireball_3_right.png')
+                    if ball.condition == 30:
+                        ball.image = pygame.image.load('resources/attacking/fireball_4_right.png')
+                    if ball.condition == 40:
+                        ball.image = pygame.image.load('resources/attacking/fireball_5_right.png')
                     ball.rect.x += 5
                 if ball.direction == 'top':
+                    if ball.condition == 1:
+                        ball.image = pygame.image.load('resources/attacking/fireball_1_top.png')
+                    if ball.condition == 10:
+                        ball.image = pygame.image.load('resources/attacking/fireball_2_top.png')
+                    if ball.condition == 20:
+                        ball.image = pygame.image.load('resources/attacking/fireball_3_top.png')
+                    if ball.condition == 30:
+                        ball.image = pygame.image.load('resources/attacking/fireball_4_top.png')
+                    if ball.condition == 40:
+                        ball.image = pygame.image.load('resources/attacking/fireball_5_top.png')
                     ball.rect.y -= 5
                 if ball.direction == 'bottom':
+                    if ball.condition == 1:
+                        ball.image = pygame.image.load('resources/attacking/fireball_1_bottom.png')
+                    if ball.condition == 10:
+                        ball.image = pygame.image.load('resources/attacking/fireball_2_bottom.png')
+                    if ball.condition == 20:
+                        ball.image = pygame.image.load('resources/attacking/fireball_3_bottom.png')
+                    if ball.condition == 30:
+                        ball.image = pygame.image.load('resources/attacking/fireball_4_bottom.png')
+                    if ball.condition == 40:
+                        ball.image = pygame.image.load('resources/attacking/fireball_5_bottom.png')
                     ball.rect.y += 5
+
+                if ball.rect.y >= display_height + 100:
+                    ball.kill()
+                if ball.rect.y <= -100:
+                    ball.kill()
+                if ball.rect.x <= -100:
+                    ball.kill()
+                if ball.rect.x >= display_width + 100:
+                    ball.kill()
 
                 if pygame.sprite.spritecollide(user, all_imp_fireballs, True):
                     user.hp -= 1
@@ -1335,6 +1413,7 @@ def run_game():   # Основная функция игры
                 all_sprites.add(imp_ball)
                 all_imp_fireballs.add(imp_ball)
                 imp_ball.rect.center = imp.rect.center
+
 
             for imp in all_imps:
                 imp.shoot_timming += 1
