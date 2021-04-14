@@ -147,6 +147,14 @@ class Black(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.image.set_alpha(1)
 
+############################# Класс арбалета ##############################
+class Crossbow(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('resources/inventory/items/crossbow.png')
+        self.rect = self.image.get_rect()
+        self.name = 'crossbow'
+
 ############################# Класс лука ##############################
 class Bow(pygame.sprite.Sprite):
     def __init__(self):
@@ -221,47 +229,75 @@ def run_game():   # Основная функция игры
     def shoot():
         can_we_shoot = False
 
-        for item in user.items:
-            if item == 'bow':
-                can_we_shoot = True
+        if user.items[0] == 'bow' or user.items[0] == 'crossbow':
+            can_we_shoot = True
 
         if can_we_shoot:
             sound = pygame.mixer.Sound('resources/sounds/user_shooting_from_bow.wav')
             sound.play()
-            arrow = Bullet()
-            all_sprites.add(arrow)
-            all_bullets.add(arrow)
-            arrow.rect.center = user.rect.center
-            if right:
-                arrow.direction = 'right'
-                arrow.image = pygame.image.load('resources\\attacking\\arrow-right.png')
-            elif left:
-                arrow.direction = 'left'
-                arrow.image = pygame.image.load('resources\\attacking\\arrow-left.png')
-            elif back:
-                arrow.direction = 'top'
-                arrow.image = pygame.image.load('resources\\attacking\\arrow-top.png')
-            elif front:
-                arrow.direction = 'bottom'
-                arrow.image = pygame.image.load('resources\\attacking\\arrow-bottom.png')
+            if user.items[0] == 'bow':
+                arrow = Bullet()
+                all_sprites.add(arrow)
+                all_bullets.add(arrow)
+                arrow.rect.center = user.rect.center
+                if right:
+                    arrow.direction = 'right'
+                    arrow.image = pygame.image.load('resources\\attacking\\arrow-right.png')
+                elif left:
+                    arrow.direction = 'left'
+                    arrow.image = pygame.image.load('resources\\attacking\\arrow-left.png')
+                elif back:
+                    arrow.direction = 'top'
+                    arrow.image = pygame.image.load('resources\\attacking\\arrow-top.png')
+                elif front:
+                    arrow.direction = 'bottom'
+                    arrow.image = pygame.image.load('resources\\attacking\\arrow-bottom.png')
 
-            bullet_move(arrow, arrow.direction)
+                bullet_move(arrow, arrow.direction)
+            elif user.items[0] == 'crossbow':
+                count = -80
+                if left or right:
+                    for i in range(3):
+                        count += 40
+                        arrow = Bullet()
+                        all_sprites.add(arrow)
+                        all_bullets.add(arrow)
+                        arrow.rect.center = (user.rect.center[0], user.rect.center[1] + count)
+                        if right:
+                            arrow.direction = 'right'
+                            arrow.image = pygame.image.load('resources\\attacking\\arrow-right.png')
+                        elif left:
+                            arrow.direction = 'left'
+                            arrow.image = pygame.image.load('resources\\attacking\\arrow-left.png')
+                        elif back:
+                            arrow.direction = 'top'
+                            arrow.image = pygame.image.load('resources\\attacking\\arrow-top.png')
+                        elif front:
+                            arrow.direction = 'bottom'
+                            arrow.image = pygame.image.load('resources\\attacking\\arrow-bottom.png')
 
-    ############################# Предметы ##############################
-    def generate_items():
-        number_of_items = functions.chanse_to_spawn_the_enemy()
+                        bullet_move(arrow, arrow.direction)
+                elif front  or back:
+                    for i in range(3):
+                        count += 40
+                        arrow = Bullet()
+                        all_sprites.add(arrow)
+                        all_bullets.add(arrow)
+                        arrow.rect.center = (user.rect.center[0] + count, user.rect.center[1])
+                        if right:
+                            arrow.direction = 'right'
+                            arrow.image = pygame.image.load('resources\\attacking\\arrow-right.png')
+                        elif left:
+                            arrow.direction = 'left'
+                            arrow.image = pygame.image.load('resources\\attacking\\arrow-left.png')
+                        elif back:
+                            arrow.direction = 'top'
+                            arrow.image = pygame.image.load('resources\\attacking\\arrow-top.png')
+                        elif front:
+                            arrow.direction = 'bottom'
+                            arrow.image = pygame.image.load('resources\\attacking\\arrow-bottom.png')
 
-        for i in range(number_of_items):
-            type = functions.check_for_item(['heal_bottle', 'bow'])
-            if type == 'heal_bottle':
-                item = Heal_bottle()
-            elif type == 'bow':
-                item = Bow()
-
-            all_sprites.add(item)
-            all_items_ont_the_ground.add(item)
-            item.rect.center = functions.random_position_of_spawn(display_width, display_height)
-
+                        bullet_move(arrow, arrow.direction)
     ############################# Противники ##############################
     def generate_ghosts():
         number_of_enemy = functions.chanse_to_spawn_the_enemy()
@@ -447,6 +483,8 @@ def run_game():   # Основная функция игры
             dropted = Heal_bottle()
         elif item == 'bow':
             dropted = Bow()
+        elif item == 'crossbow':
+            dropted = Crossbow()
 
         all_sprites.add(dropted)
         all_items_ont_the_ground.add(dropted)
@@ -533,6 +571,9 @@ def run_game():   # Основная функция игры
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_e:
                         use_heal()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_q:
+                        permutation()
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_KP1:
                         try:
@@ -1027,7 +1068,7 @@ def run_game():   # Основная функция игры
                 list = pygame.sprite.spritecollide(bullet, all_enemy, False)
                 if list:
                     for i in range(len(list)):
-                        list[i].hp -= 1
+                        list[i].hp -= len(list)
                     bullet.kill()
 
                 for wall in walls:
@@ -1147,7 +1188,7 @@ def run_game():   # Основная функция игры
                         bars.image = pygame.image.load('resources\\enemy health\\2.png')
                     if bars.follow.hp <= 4:
                         bars.image = pygame.image.load('resources\\enemy health\\1.png')
-                    if bars.follow.hp == 0:
+                    if bars.follow.hp <= 0:
                         sound = pygame.mixer.Sound('resources/sounds/imp_dying.wav')
                         sound.play()
                         bars.follow.kill()
@@ -1235,6 +1276,11 @@ def run_game():   # Основная функция игры
                         all_sprites.add(item)
                         all_items_ont_the_ground.add(item)
                         item.rect.center = (chest.rect.center[0] - 64, chest.rect.center[1])
+                    elif item == 'crossbow':
+                        item = Crossbow()
+                        all_sprites.add(item)
+                        all_items_ont_the_ground.add(item)
+                        item.rect.center = (chest.rect.center[0] - 83, chest.rect.center[1])
                 elif user.rect.center[0] <= chest.rect.center[0]:   # Если игрок стоит слева от сундука
                     item = functions.choose_the_drop()
                     if item == 'bow':
@@ -1247,6 +1293,11 @@ def run_game():   # Основная функция игры
                         all_sprites.add(item)
                         all_items_ont_the_ground.add(item)
                         item.rect.center = (chest.rect.center[0] + 64, chest.rect.center[1])
+                    elif item == 'crossbow':
+                        item = Crossbow()
+                        all_sprites.add(item)
+                        all_items_ont_the_ground.add(item)
+                        item.rect.center = (chest.rect.center[0] + 83, chest.rect.center[1])
 
             def open_chest():
                 list = pygame.sprite.spritecollide(user, all_chests, False)
@@ -1307,6 +1358,16 @@ def run_game():   # Основная функция игры
                                 blocked_top = True
                                 blocked_bottom = False
 
+            ############################# Перестановка предметов из инвентаря ##############################
+            def permutation():
+                if len(user.items) != 0:
+                    remember = user.items[0]
+                    for i in range(len(user.items) - 1):
+                        user.items[i] = user.items[i+1]
+                    user.items[len(user.items) - 1] = remember
+                    print_items()
+                else:
+                    pass
             ############################# Отрисовка предметов из инвентаря ##############################
             def print_items():
                 for i in range(5):
@@ -1335,6 +1396,25 @@ def run_game():   # Основная функция игры
 
                     elif item == 'bow':
                         directory = 'resources\\inventory\\items\\bow.png'
+
+                        if inventory.items[0].is_empty:
+                            empty_1.image = pygame.image.load(directory)
+                            inventory.items[0].is_empty = False
+                        elif inventory.items[1].is_empty:
+                            empty_2.image = pygame.image.load(directory)
+                            inventory.items[1].is_empty = False
+                        elif inventory.items[2].is_empty:
+                            empty_3.image = pygame.image.load(directory)
+                            inventory.items[2].is_empty = False
+                        elif inventory.items[3].is_empty:
+                            empty_4.image = pygame.image.load(directory)
+                            inventory.items[3].is_empty = False
+                        elif inventory.items[4].is_empty:
+                            empty_5.image = pygame.image.load(directory)
+                            inventory.items[4].is_empty = False
+
+                    elif item == 'crossbow':
+                        directory = 'resources\\inventory\\items\\crossbow.png'
 
                         if inventory.items[0].is_empty:
                             empty_1.image = pygame.image.load(directory)
@@ -1489,6 +1569,8 @@ def run_game():   # Основная функция игры
                     all_sprites.remove(i)
                     i.kill()
                     we_are_drawing = False
+
+        print(user.items)
 
         draw_scores()
         pygame.display.update()
