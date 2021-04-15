@@ -31,6 +31,15 @@ class Inventory:
     def __init__(self):
         self.items = []
 
+############################# Класс объекта-бара прочности ##############################
+class Bar_DURABILITY(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('resources\\inventory\\items\\empty_slot.png')
+        self.rect = self.image.get_rect()
+        self.rect.left = 350
+        self.rect.top = 5
+
 ############################# Класс объекта-бара хп ##############################
 class Bar_HP(pygame.sprite.Sprite):
     def __init__(self):
@@ -172,6 +181,7 @@ class Bow(pygame.sprite.Sprite):
         self.image = pygame.image.load('resources/inventory/items/bow.png')
         self.rect = self.image.get_rect()
         self.name = 'bow'
+        self.durability = 30
 
 ############################# Класс сообщения ##############################
 class Message(pygame.sprite.Sprite):
@@ -261,13 +271,14 @@ def run_game():   # Основная функция игры
 
     def use_first_item():
         if user.time_to_realise:
-            if user.items[0] == 'bow':
-                if functions.chanse_to_broke_the_bow() <= 2:
+            if user.items[0].name == 'bow':
+                if user.items[0].durability == 0:
                     user.time_to_realise = False
                     user.time_spended_to_realise = 0
                     print_the_message('bow_is_broken')
                 sound = pygame.mixer.Sound('resources/sounds/user_shooting_from_bow.wav')
                 sound.play()
+                user.items[0].durability -= 1
                 arrow = Bullet()
                 all_sprites.add(arrow)
                 all_bullets.add(arrow)
@@ -286,7 +297,7 @@ def run_game():   # Основная функция игры
                     arrow.image = pygame.image.load('resources\\attacking\\arrow-bottom.png')
 
                 bullet_move(arrow, arrow.direction)
-            elif user.items[0] == 'crossbow':
+            elif user.items[0].name == 'crossbow':
                 sound = pygame.mixer.Sound('resources/sounds/user_shooting_from_bow.wav')
                 sound.play()
                 count = -80
@@ -332,8 +343,11 @@ def run_game():   # Основная функция игры
                             arrow.image = pygame.image.load('resources\\attacking\\arrow-bottom.png')
 
                         bullet_move(arrow, arrow.direction)
-            elif user.items[0] == 'heal_bottle':
-                use_heal()
+            elif user.items[0].name == 'heal_bottle':
+                sound = pygame.mixer.Sound('resources/sounds/use_heal.wav')
+                sound.play()
+                user.hp += 1
+                delete()
         else:
             pass
     ############################# Противники ##############################
@@ -454,54 +468,22 @@ def run_game():   # Основная функция игры
     index_of_room = 0
     count_of_room = 1
 
+    ############################# Бар-прочности ##############################
+    bar_durability = Bar_DURABILITY()   # бар
+    all_sprites.add(bar_durability)
+
     ######################### Отрисовка очков ############################
     def draw_scores():
         font = pygame.font.Font(None, 72)
         text_scores = font.render(str(user.scores), True, (192, 192, 192))
         display.blit(text_scores, (display_width-70, 7))
 
-    ############################# Инвентарь ##############################
-    def use_heal():
-        have_heal = False
-        last_not_empty = len(user.items) - 1
-
-        sound = pygame.mixer.Sound('resources/sounds/use_heal.wav')
-
-        for item in user.items:
-            if item == 'heal_bottle':
-                have_heal = True
-        if have_heal:
-            sound.play()
-            user.hp += 1
-            index = user.items.index('heal_bottle')
-            user.items.pop(index)
-
-            if index == 0:
-                empty_1.image = pygame.image.load('resources\\inventory\\items\\empty_slot.png')
-            elif index == 1:
-                empty_2.image = pygame.image.load('resources\\inventory\\items\\empty_slot.png')
-            elif index == 2:
-                empty_3.image = pygame.image.load('resources\\inventory\\items\\empty_slot.png')
-            elif index == 3:
-                empty_4.image = pygame.image.load('resources\\inventory\\items\\empty_slot.png')
-            elif index == 4:
-                empty_5.image = pygame.image.load('resources\\inventory\\items\\empty_slot.png')
-            print_items()
-            if last_not_empty == 0:
-                empty_1.image = pygame.image.load('resources\\inventory\\items\\empty_slot.png')
-            elif last_not_empty == 1:
-                empty_2.image = pygame.image.load('resources\\inventory\\items\\empty_slot.png')
-            elif last_not_empty == 2:
-                empty_3.image = pygame.image.load('resources\\inventory\\items\\empty_slot.png')
-            elif last_not_empty == 3:
-                empty_4.image = pygame.image.load('resources\\inventory\\items\\empty_slot.png')
-            elif last_not_empty == 4:
-                empty_5.image = pygame.image.load('resources\\inventory\\items\\empty_slot.png')
-        else:
-            pass
 
     def drop(number, item):
         last_not_empty = len(user.items) - 1
+
+        remember = user.items[number-1]
+
         user.items.pop(number-1)
 
         if number == 1:
@@ -521,6 +503,7 @@ def run_game():   # Основная функция игры
             dropted = Heal_bottle()
         elif item == 'bow':
             dropted = Bow()
+            dropted.durability = remember.durability
         elif item == 'crossbow':
             dropted = Crossbow()
 
@@ -634,31 +617,31 @@ def run_game():   # Основная функция игры
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_KP1:
                         try:
-                            drop(1, user.items[0])
+                            drop(1, user.items[0].name)
                         except:
                             pass
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_KP2:
                         try:
-                            drop(2, user.items[1])
+                            drop(2, user.items[1].name)
                         except:
                             pass
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_KP3:
                         try:
-                            drop(3, user.items[2])
+                            drop(3, user.items[2].name)
                         except:
                             pass
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_KP4:
                         try:
-                            drop(4, user.items[3])
+                            drop(4, user.items[3].name)
                         except:
                             pass
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_KP5:
                         try:
-                            drop(5, user.items[4])
+                            drop(5, user.items[4].name)
                         except:
                             pass
                 if event.type == pygame.KEYDOWN:
@@ -1221,7 +1204,7 @@ def run_game():   # Основная функция игры
                     list = pygame.sprite.spritecollide(user, all_items_ont_the_ground, True)
                     for i in range(len(list)):
                         if len(user.items) < 5:
-                            user.items.append(list[i].name)
+                            user.items.append(list[i])
                     print_items()
 
             if pygame.sprite.spritecollide(user, all_items_ont_the_ground, False):
@@ -1339,7 +1322,7 @@ def run_game():   # Основная функция игры
                     inventory.items[i].is_empty = True
 
                 for item in user.items:
-                    if item == 'heal_bottle':
+                    if item.name == 'heal_bottle':
 
                         directory = 'resources\\inventory\\items\\heal_bottle.png'
 
@@ -1359,7 +1342,7 @@ def run_game():   # Основная функция игры
                             empty_5.image = pygame.image.load(directory)
                             inventory.items[4].is_empty = False
 
-                    elif item == 'bow':
+                    elif item.name == 'bow':
                         directory = 'resources\\inventory\\items\\bow.png'
 
                         if inventory.items[0].is_empty:
@@ -1378,7 +1361,7 @@ def run_game():   # Основная функция игры
                             empty_5.image = pygame.image.load(directory)
                             inventory.items[4].is_empty = False
 
-                    elif item == 'crossbow':
+                    elif item.name == 'crossbow':
                         directory = 'resources\\inventory\\items\\crossbow.png'
 
                         if inventory.items[0].is_empty:
@@ -1514,6 +1497,34 @@ def run_game():   # Основная функция игры
             elif user.hp > 5:
                 user.hp = 5
 
+        ############################# Работа с баром прочности ##############################
+        if len(user.items) != 0:
+            item = user.items[0]
+            if item.name == 'bow':
+                if 28 <= item.durability <= 30:
+                    bar_durability.image = pygame.image.load('resources/durability/10.png')
+                elif 25 <= item.durability <= 27:
+                    bar_durability.image = pygame.image.load('resources/durability/9.png')
+                elif 22 <= item.durability <= 24:
+                    bar_durability.image = pygame.image.load('resources/durability/8.png')
+                elif 19 <= item.durability <= 21:
+                    bar_durability.image = pygame.image.load('resources/durability/7.png')
+                elif 16 <= item.durability <= 18:
+                    bar_durability.image = pygame.image.load('resources/durability/6.png')
+                elif 13 <= item.durability <= 15:
+                    bar_durability.image = pygame.image.load('resources/durability/5.png')
+                elif 10 <= item.durability <= 12:
+                    bar_durability.image = pygame.image.load('resources/durability/4.png')
+                elif 7 <= item.durability <= 9:
+                    bar_durability.image = pygame.image.load('resources/durability/3.png')
+                elif 4 <= item.durability <= 6:
+                    bar_durability.image = pygame.image.load('resources/durability/2.png')
+                elif 1 <= item.durability <= 3:
+                    bar_durability.image = pygame.image.load('resources/durability/1.png')
+            else:
+                bar_durability.image = pygame.image.load('resources/inventory/items/empty_slot.png')
+        else:
+            bar_durability.image = pygame.image.load('resources/inventory/items/empty_slot.png')
         ############################# Работа с паузой ##############################
         for block in all_messages:
             if block.image.get_alpha() != 0:
@@ -1545,7 +1556,10 @@ def run_game():   # Основная функция игры
             user.time_to_realise = True
             user.time_spended_to_realise = 0
 
-        print()
+        try:
+            print(user.items[0].durability)
+        except:
+            pass
 
         draw_scores()
         pygame.display.update()
