@@ -1,18 +1,33 @@
 import random
 
-def choose_the_drop():
-    list = ['bow', 'heal_bottle', 'crossbow']
+def choose_the_drop_10():
+    list = ['bow', 'heal_bottle']
     return random.choice(list)
 
-def chanse_to_spawn_the_enemy():   # Генерация рандомного числа противников
+def chanse_to_spawn_the_enemy(lvl):   # Генерация рандомного числа противников
+    if lvl < 10:
+        if lvl == 1:
+            return 1
+        elif 2 <= lvl <= 5:
+            return 2
+        elif 6 <= lvl <= 7:
+            return 3
+        elif lvl == 8:
+            return 4
+        elif lvl == 9:
+            return 5
+
+def chanse_to_spawn_the_chest():   # Генерация рандомного числа сундуков
     choice = random.choice(range(100))
 
-    if choice <= 25:
+    if choice <= 10:
         return 3
-    elif choice <= 50:
+    elif choice <= 20:
         return 2
-    else:
+    elif choice <= 85:
         return 1
+    else:
+        return 0
 
 def random_position_of_spawn(display_width, display_height):   # Генерация рандомного места генерации на карте
     x = random.choice(range(65, display_width - 65))
@@ -28,3 +43,6 @@ def random_position_of_spawn_chest(display_width, display_height):   # Гене�
 
 def check_for_item(list):
     return random.choice(list)
+
+def chanse_to_broke_the_bow():
+    return random.choice(range(100))

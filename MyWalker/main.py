@@ -22,6 +22,9 @@ class Player(pygame.sprite.Sprite):
         self.hp = 5
         self.items = []
         self.scores = 0
+        self.lvl = 1
+        self.time_to_realise = True
+        self.time_spended_to_realise = 0
 
 ############################# Класс инвентаря ##############################
 class Inventory:
@@ -51,8 +54,15 @@ class Ghost(pygame.sprite.Sprite):
         self.image = pygame.image.load('resources\\enemy\\ghost_left.png')
         self.rect = self.image.get_rect()
         self.speed = 2
-        self.hp = 3
+        self.hp = 6
         self.bar = object
+
+################################ Класс призрака-босса ##################################
+class Ghost_Boss(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('resources\\enemy\\ghost_boss_left_1.png')
+        self.rect = self.image.get_rect()
 
 ################################ Класс импа ##################################
 class Imp(pygame.sprite.Sprite):
@@ -163,6 +173,13 @@ class Bow(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.name = 'bow'
 
+############################# Класс сообщения ##############################
+class Message(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('resources/inventory/items/empty_slot.png')
+        self.rect = self.image.get_rect()
+
 ############################# Класс снаряда ##############################
 class Bullet(pygame.sprite.Sprite):
     def __init__(self):
@@ -206,10 +223,14 @@ def run_game():   # Основная функция игры
     all_temporary_walls = pygame.sprite.Group()   # Группа временных стен
     all_black_elements = pygame.sprite.Group()   # Группа чёрных фонов
     all_chests = pygame.sprite.Group()   # Группа сундуков
+    all_messages = pygame.sprite.Group()   # Группа сообщений
 
     ############################# Задний фон ##############################
     background = Background()
     all_sprites.add(background)
+    ############################# Создаём игрока ##############################
+    user = Player()
+    all_sprites.add(user)
 
     ############################# Стрельба ##############################
     def bullet_move(arrow, direction):
@@ -226,16 +247,26 @@ def run_game():   # Основная функция игры
             if arrow.rect.bottom <= display_height - 50:
                 arrow.rect.right += 1
 
-    def shoot():
-        can_we_shoot = False
+    def print_the_message(type_of_message):
+        sound = pygame.mixer.Sound('resources/sounds/broke.wav')
+        sound.play()
+        message = Message()
+        all_sprites.add(message)
+        all_messages.add(message)
+        message.rect.center = (525, 500)
+        if type_of_message == 'bow_is_broken':
+            message.image = pygame.image.load('resources/messages/bow_is_broken.png')
+            delete()
 
-        if user.items[0] == 'bow' or user.items[0] == 'crossbow':
-            can_we_shoot = True
-
-        if can_we_shoot:
-            sound = pygame.mixer.Sound('resources/sounds/user_shooting_from_bow.wav')
-            sound.play()
+    def use_first_item():
+        if user.time_to_realise:
             if user.items[0] == 'bow':
+                if functions.chanse_to_broke_the_bow() <= 2:
+                    user.time_to_realise = False
+                    user.time_spended_to_realise = 0
+                    print_the_message('bow_is_broken')
+                sound = pygame.mixer.Sound('resources/sounds/user_shooting_from_bow.wav')
+                sound.play()
                 arrow = Bullet()
                 all_sprites.add(arrow)
                 all_bullets.add(arrow)
@@ -255,6 +286,8 @@ def run_game():   # Основная функция игры
 
                 bullet_move(arrow, arrow.direction)
             elif user.items[0] == 'crossbow':
+                sound = pygame.mixer.Sound('resources/sounds/user_shooting_from_bow.wav')
+                sound.play()
                 count = -80
                 if left or right:
                     for i in range(3):
@@ -298,9 +331,13 @@ def run_game():   # Основная функция игры
                             arrow.image = pygame.image.load('resources\\attacking\\arrow-bottom.png')
 
                         bullet_move(arrow, arrow.direction)
+            elif user.items[0] == 'heal_bottle':
+                use_heal()
+        else:
+            pass
     ############################# Противники ##############################
     def generate_ghosts():
-        number_of_enemy = functions.chanse_to_spawn_the_enemy()
+        number_of_enemy = functions.chanse_to_spawn_the_enemy(user.lvl)
         for i in range(number_of_enemy):
             ghost = Ghost()
             all_sprites.add(ghost)
@@ -314,6 +351,9 @@ def run_game():   # Основная функция игры
             all_ghost_bars.add(ghost_bar)
             all_enemy_bars.add(ghost_bar)
             ghost_bar.rect.center = ghost_bar.follow.rect.center
+
+    def generate_boss_of_ghost():
+        pass
 
 
     def generate_imps():
@@ -334,7 +374,7 @@ def run_game():   # Основная функция игры
 
     ############################# ф-я генерации сундуков ##############################
     def generate_chests():
-        for i in range(functions.chanse_to_spawn_the_enemy()):
+        for i in range(functions.chanse_to_spawn_the_chest()):
             chest = Chest()
             all_sprites.add(chest)
             all_chests.add(chest)
@@ -344,11 +384,6 @@ def run_game():   # Основная функция игры
     generate_chests()
     ############################# Генерация противников ##############################
     generate_ghosts()
-    ############################# Генерация противников ##############################
-    generate_imps()
-    ############################# Игрок ##############################
-    user = Player()   # Создаём игрока
-    all_sprites.add(user)
     ############################# Создаём стены ##############################
     wall_top_1 = Wall_Horizontal()
     all_sprites.add(wall_top_1)
@@ -508,6 +543,25 @@ def run_game():   # Основная функция игры
         elif last_not_empty == 4:
             empty_5.image = pygame.image.load('resources\\inventory\\items\\empty_slot.png')
 
+    def delete():
+        last_not_empty = len(user.items) - 1
+        user.items.pop(0)
+
+        empty_1.image = pygame.image.load('resources\\inventory\\items\\empty_slot.png')
+
+        print_items()
+
+        if last_not_empty == 0:
+            empty_1.image = pygame.image.load('resources\\inventory\\items\\empty_slot.png')
+        elif last_not_empty == 1:
+            empty_2.image = pygame.image.load('resources\\inventory\\items\\empty_slot.png')
+        elif last_not_empty == 2:
+            empty_3.image = pygame.image.load('resources\\inventory\\items\\empty_slot.png')
+        elif last_not_empty == 3:
+            empty_4.image = pygame.image.load('resources\\inventory\\items\\empty_slot.png')
+        elif last_not_empty == 4:
+            empty_5.image = pygame.image.load('resources\\inventory\\items\\empty_slot.png')
+
     inventory = Inventory()
 
     block_1 = Ceil_of_inventory()
@@ -567,10 +621,10 @@ def run_game():   # Основная функция игры
                     quit()
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
-                        shoot()
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_e:
-                        use_heal()
+                        try:
+                            use_first_item()
+                        except:
+                            pass
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_q:
                         permutation()
@@ -844,9 +898,76 @@ def run_game():   # Основная функция игры
                 all_sprites.add(black)
                 all_black_elements.add(black)
 
-            if user.rect.right >= display_width + 150:
-                user.rect.left = -100
-                index_of_room = 1
+            if user.rect.right >= display_width + 150 or user.rect.left <= -150 or user.rect.top <= -150 or user.rect.bottom >= display_height + 150:
+
+                if user.rect.right >= display_width + 150:
+                    user.lvl += 1
+                    user.rect.left = -100
+                    index_of_room = 1
+
+                    blocked_left = False
+                    blocked_right = False
+                    blocked_top = False
+                    blocked_bottom = False
+
+                    temporary_wall = Temporary_Wall_Vertical('left')
+                    walls.add(temporary_wall)
+                    all_temporary_walls.add(temporary_wall)
+                    all_sprites.add(temporary_wall)
+                    temporary_wall.rect.bottom = 200
+
+                elif user.rect.left <= -150:
+                    user.lvl += 1
+                    user.rect.right = display_width + 100
+                    index_of_room = 2
+
+                    blocked_left = False
+                    blocked_right = False
+                    blocked_top = False
+                    blocked_bottom = False
+
+                    temporary_wall = Temporary_Wall_Vertical('right')
+                    walls.add(temporary_wall)
+                    all_temporary_walls.add(temporary_wall)
+                    all_sprites.add(temporary_wall)
+                    temporary_wall.rect.bottom = 200
+                    temporary_wall.rect.x = display_width - 50
+
+                elif user.rect.top <= -150:
+                    user.lvl += 1
+                    user.rect.bottom = display_height + 100
+                    user.rect.x = 500
+                    index_of_room = 3
+
+                    blocked_left = False
+                    blocked_right = False
+                    blocked_top = False
+                    blocked_bottom = False
+
+                    temporary_wall = Temporary_Wall_Horizontal('bottom')
+                    walls.add(temporary_wall)
+                    all_temporary_walls.add(temporary_wall)
+                    all_sprites.add(temporary_wall)
+                    temporary_wall.rect.right = 350
+                    temporary_wall.rect.y = display_height - 50
+
+                elif user.rect.bottom >= display_height + 150:
+                    user.lvl += 1
+                    user.rect.top = -100
+                    user.rect.x = 835
+                    index_of_room = 4
+
+                    blocked_left = False
+                    blocked_right = False
+                    blocked_top = False
+                    blocked_bottom = False
+
+                    temporary_wall = Temporary_Wall_Horizontal('top')
+                    walls.add(temporary_wall)
+                    all_temporary_walls.add(temporary_wall)
+                    all_sprites.add(temporary_wall)
+                    temporary_wall.rect.right = 700
+
                 count_of_room += 1
                 count_of_room %= 4
                 background.change_the_room(count_of_room)
@@ -869,181 +990,20 @@ def run_game():   # Основная функция игры
                 remember = user
                 user.kill()
 
-                generate_ghosts()
-                generate_chests()
-                generate_imps()
-
                 user = Player()
                 user.items = remember.items
                 user.hp = remember.hp
                 user.rect.center = remember.rect.center
                 user.scores = remember.scores
+                user.lvl = remember.lvl
                 all_sprites.add(user)
 
-                blocked_left = False
-                blocked_right = False
-                blocked_top = False
-                blocked_bottom = False
+                if user.lvl < 10:
+                    generate_ghosts()
+                    generate_chests()
 
-                temporary_wall = Temporary_Wall_Vertical('left')
-                walls.add(temporary_wall)
-                all_temporary_walls.add(temporary_wall)
-                all_sprites.add(temporary_wall)
-                temporary_wall.rect.bottom = 200
                 pause()
 
-
-            elif user.rect.left <= -150:
-                user.rect.right = display_width + 100
-                index_of_room = 2
-                count_of_room += 1
-                count_of_room %= 4
-                background.change_the_room(count_of_room)
-                for i in all_temporary_walls:
-                    if i in walls:
-                        walls.remove(i)
-                    i.kill()
-                for sprite in all_enemy:
-                    sprite.kill()
-                for sprite in all_items_ont_the_ground:
-                    sprite.kill()
-                for sprite in all_bullets:
-                    sprite.kill()
-                for sprite in all_imp_fireballs:
-                    sprite.kill()
-                for sprite in all_enemy_bars:
-                    sprite.kill()
-                for sprite in all_chests:
-                    sprite.kill()
-
-                remember = user
-                user.kill()
-
-                generate_ghosts()
-                generate_chests()
-                generate_imps()
-
-                user = Player()
-                user.items = remember.items
-                user.hp = remember.hp
-                user.rect.center = remember.rect.center
-                user.scores = remember.scores
-                all_sprites.add(user)
-
-                blocked_left = False
-                blocked_right = False
-                blocked_top = False
-                blocked_bottom = False
-
-                temporary_wall = Temporary_Wall_Vertical('right')
-                walls.add(temporary_wall)
-                all_temporary_walls.add(temporary_wall)
-                all_sprites.add(temporary_wall)
-                temporary_wall.rect.bottom = 200
-                temporary_wall.rect.x = display_width - 50
-                pause()
-
-
-            elif user.rect.top <= -150:
-                user.rect.bottom = display_height + 100
-                user.rect.x = 500
-                index_of_room = 3
-                count_of_room += 1
-                count_of_room %= 4
-                background.change_the_room(count_of_room)
-                for i in all_temporary_walls:
-                    if i in walls:
-                        walls.remove(i)
-                    i.kill()
-                for sprite in all_enemy:
-                    sprite.kill()
-                for sprite in all_items_ont_the_ground:
-                    sprite.kill()
-                for sprite in all_bullets:
-                    sprite.kill()
-                for sprite in all_imp_fireballs:
-                    sprite.kill()
-                for sprite in all_enemy_bars:
-                    sprite.kill()
-                for sprite in all_chests:
-                    sprite.kill()
-
-                remember = user
-                user.kill()
-
-                generate_ghosts()
-                generate_chests()
-                generate_imps()
-
-                user = Player()
-                user.items = remember.items
-                user.hp = remember.hp
-                user.rect.center = remember.rect.center
-                user.scores = remember.scores
-                all_sprites.add(user)
-
-                blocked_left = False
-                blocked_right = False
-                blocked_top = False
-                blocked_bottom = False
-
-                temporary_wall = Temporary_Wall_Horizontal('bottom')
-                walls.add(temporary_wall)
-                all_temporary_walls.add(temporary_wall)
-                all_sprites.add(temporary_wall)
-                temporary_wall.rect.right = 350
-                temporary_wall.rect.y = display_height - 50
-                pause()
-
-            elif user.rect.bottom >= display_height + 150:
-                user.rect.top = -100
-                user.rect.x = 835
-                index_of_room = 4
-                count_of_room += 1
-                count_of_room %= 4
-                background.change_the_room(count_of_room)
-                for i in all_temporary_walls:
-                    if i in walls:
-                        walls.remove(i)
-                    i.kill()
-                for sprite in all_enemy:
-                    sprite.kill()
-                for sprite in all_items_ont_the_ground:
-                    sprite.kill()
-                for sprite in all_bullets:
-                    sprite.kill()
-                for sprite in all_imp_fireballs:
-                    sprite.kill()
-                for sprite in all_enemy_bars:
-                    sprite.kill()
-                for sprite in all_chests:
-                    sprite.kill()
-
-                remember = user
-                user.kill()
-
-                generate_ghosts()
-                generate_chests()
-                generate_imps()
-
-                user = Player()
-                user.items = remember.items
-                user.hp = remember.hp
-                user.rect.center = remember.rect.center
-                user.scores = remember.scores
-                all_sprites.add(user)
-
-                blocked_left = False
-                blocked_right = False
-                blocked_top = False
-                blocked_bottom = False
-
-                temporary_wall = Temporary_Wall_Horizontal('top')
-                walls.add(temporary_wall)
-                all_temporary_walls.add(temporary_wall)
-                all_sprites.add(temporary_wall)
-                temporary_wall.rect.right = 700
-                pause()
 
             for bullet in all_bullets:
                 ### Направление движения ###
@@ -1102,9 +1062,9 @@ def run_game():   # Основная функция игры
                 for bars in all_ghost_bars:
                     bars.rect.bottom = bars.follow.rect.top
                     bars.rect.x = bars.follow.rect.center[0] - 17
-                    if bars.follow.hp == 2:
+                    if 4 <= bars.follow.hp <= 5:
                         bars.image = pygame.image.load('resources\\enemy health\\2.png')
-                    if bars.follow.hp == 1:
+                    if 1 <= bars.follow.hp <= 3:
                         bars.image = pygame.image.load('resources\\enemy health\\1.png')
                     if bars.follow.hp <= 0:
                         sound = pygame.mixer.Sound('resources/sounds/ghost_dying.wav')
@@ -1265,7 +1225,7 @@ def run_game():   # Основная функция игры
             ############################# Сундуки и взаимодействие с ними ##############################
             def drop_items_from_chest(chest):
                 if user.rect.center[0] >= chest.rect.center[0]:   # Если игрок стоит справа от сундука
-                    item = functions.choose_the_drop()
+                    item = functions.choose_the_drop_10()
                     if item == 'bow':
                         item = Bow()
                         all_sprites.add(item)
@@ -1282,7 +1242,7 @@ def run_game():   # Основная функция игры
                         all_items_ont_the_ground.add(item)
                         item.rect.center = (chest.rect.center[0] - 83, chest.rect.center[1])
                 elif user.rect.center[0] <= chest.rect.center[0]:   # Если игрок стоит слева от сундука
-                    item = functions.choose_the_drop()
+                    item = functions.choose_the_drop_10()
                     if item == 'bow':
                         item = Bow()
                         all_sprites.add(item)
@@ -1431,7 +1391,6 @@ def run_game():   # Основная функция игры
                         elif inventory.items[4].is_empty:
                             empty_5.image = pygame.image.load(directory)
                             inventory.items[4].is_empty = False
-
             ############################# Отрисовка анимеции снарядов импа ##############################
             for ball in all_imp_fireballs:
                 ball.condition += 1
@@ -1551,6 +1510,12 @@ def run_game():   # Основная функция игры
                 user.hp = 5
 
         ############################# Работа с паузой ##############################
+        for block in all_messages:
+            if block.image.get_alpha() != 0:
+                block.image.set_alpha(block.image.get_alpha() - 1)
+            else:
+                block.kill()
+        ############################# Работа с паузой ##############################
 
         for i in all_black_elements:
             we_are_drawing = True
@@ -1570,7 +1535,12 @@ def run_game():   # Основная функция игры
                     i.kill()
                     we_are_drawing = False
 
-        print(user.items)
+        user.time_spended_to_realise += 1
+        if user.time_spended_to_realise == 100:
+            user.time_to_realise = True
+            user.time_spended_to_realise = 0
+
+        print(user.time_spended_to_realise, user.time_to_realise)
 
         draw_scores()
         pygame.display.update()
