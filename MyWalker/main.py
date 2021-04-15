@@ -224,6 +224,7 @@ def run_game():   # Основная функция игры
     all_black_elements = pygame.sprite.Group()   # Группа чёрных фонов
     all_chests = pygame.sprite.Group()   # Группа сундуков
     all_messages = pygame.sprite.Group()   # Группа сообщений
+    all_bosses = pygame.sprite.Group()   # Группа боссов
 
     ############################# Задний фон ##############################
     background = Background()
@@ -353,8 +354,10 @@ def run_game():   # Основная функция игры
             ghost_bar.rect.center = ghost_bar.follow.rect.center
 
     def generate_boss_of_ghost():
-        pass
-
+        boss = Ghost_Boss()
+        all_sprites.add(boss)
+        all_enemy.add(boss)
+        boss.rect.center = (display_width/2, display_height/2)
 
     def generate_imps():
         number_of_enemy = functions.chanse_to_spawn_the_enemy()
@@ -1001,6 +1004,8 @@ def run_game():   # Основная функция игры
                 if user.lvl < 10:
                     generate_ghosts()
                     generate_chests()
+                elif user.lvl == 10:
+                    generate_boss_of_ghost()
 
                 pause()
 
@@ -1540,7 +1545,7 @@ def run_game():   # Основная функция игры
             user.time_to_realise = True
             user.time_spended_to_realise = 0
 
-        print(user.time_spended_to_realise, user.time_to_realise)
+        print()
 
         draw_scores()
         pygame.display.update()
