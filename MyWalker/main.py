@@ -1,6 +1,7 @@
 import time
 import pygame
 import math
+import random
 import functions
 
 pygame.init()  # Инициализация pygame
@@ -22,9 +23,10 @@ class Player(pygame.sprite.Sprite):
         self.hp = 5
         self.items = []
         self.scores = 0
-        self.lvl = 1
+        self.lvl = 9
         self.time_to_realise = True
         self.time_spended_to_realise = 0
+        self.knockbacked = 0
 
 ############################# Класс инвентаря ##############################
 class Inventory:
@@ -48,6 +50,16 @@ class Bar_HP(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = (1215,675)
 
+############################# Класс объекта-бара хп босса ##############################
+class Boss_Bar_HP(pygame.sprite.Sprite):
+    def __init__(self, object=0):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('resources\\boss_bars\\1.png')
+        self.rect = self.image.get_rect()
+        self.rect.center = (500,500)
+        self.follow = object
+        self.condition = 1
+
 ############################# Класс объекта-бара хп противника ##############################
 class Enemy_Bar_HP(pygame.sprite.Sprite):
     def __init__(self, object):
@@ -68,10 +80,15 @@ class Ghost(pygame.sprite.Sprite):
 
 ################################ Класс призрака-босса ##################################
 class Ghost_Boss(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self, object=0):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load('resources\\enemy\\ghost_boss_left_1.png')
         self.rect = self.image.get_rect()
+        self.bar = object
+        self.hp = 1
+        self.condition = 1
+        self.direction = 'left'
+        self.teleportation = 1
 
 ################################ Класс импа ##################################
 class Imp(pygame.sprite.Sprite):
@@ -217,7 +234,7 @@ def run_game():   # Основная функция игры
     first = True
     stop = True
     we_are_drawing = False
-
+    blocked = True
     ############################# Создаём группы объектов на карте ##############################
     all_sprites = pygame.sprite.Group()  # Группа спрайтов
     walls = pygame.sprite.Group()   # Группа стен
@@ -235,7 +252,7 @@ def run_game():   # Основная функция игры
     all_chests = pygame.sprite.Group()   # Группа сундуков
     all_messages = pygame.sprite.Group()   # Группа сообщений
     all_bosses = pygame.sprite.Group()   # Группа боссов
-
+    all_boss_bars = pygame.sprite.Group()   # Группа баров боссов
     ############################# Задний фон ##############################
     background = Background()
     all_sprites.add(background)
@@ -368,10 +385,45 @@ def run_game():   # Основная функция игры
             ghost_bar.rect.center = ghost_bar.follow.rect.center
 
     def generate_boss_of_ghost():
+        temporary_wall1 = Temporary_Wall_Vertical('left')
+        walls.add(temporary_wall1)
+        all_temporary_walls.add(temporary_wall1)
+        all_sprites.add(temporary_wall1)
+        temporary_wall1.rect.bottom = 200
+
+        temporary_wall2 = Temporary_Wall_Vertical('right')
+        walls.add(temporary_wall2)
+        all_temporary_walls.add(temporary_wall2)
+        all_sprites.add(temporary_wall2)
+        temporary_wall2.rect.bottom = 200
+        temporary_wall2.rect.x = display_width - 50
+
+        temporary_wall3 = Temporary_Wall_Horizontal('bottom')
+        walls.add(temporary_wall3)
+        all_temporary_walls.add(temporary_wall3)
+        all_sprites.add(temporary_wall3)
+        temporary_wall3.rect.right = 350
+        temporary_wall3.rect.y = display_height - 50
+
+        temporary_wall4 = Temporary_Wall_Horizontal('top')
+        walls.add(temporary_wall4)
+        all_temporary_walls.add(temporary_wall4)
+        all_sprites.add(temporary_wall4)
+        temporary_wall4.rect.right = 700
+
         boss = Ghost_Boss()
-        all_sprites.add(boss)
-        all_enemy.add(boss)
         boss.rect.center = (display_width/2, display_height/2)
+        boss.image.set_alpha(1)
+        all_enemy.add(boss)
+        all_bosses.add(boss)
+        all_sprites.add(boss)
+
+        boss_bar = Boss_Bar_HP(boss)
+        boss_bar.image.set_alpha(1)
+        all_sprites.add(boss_bar)
+        all_boss_bars.add(boss_bar)
+        boss.bar = boss_bar
+
 
     def generate_imps():
         number_of_enemy = functions.chanse_to_spawn_the_enemy()
@@ -885,6 +937,35 @@ def run_game():   # Основная функция игры
                 all_black_elements.add(black)
 
             if user.rect.right >= display_width + 150 or user.rect.left <= -150 or user.rect.top <= -150 or user.rect.bottom >= display_height + 150:
+                count_of_room += 1
+                count_of_room %= 4
+                background.change_the_room(count_of_room)
+                for i in all_temporary_walls:
+                    if i in walls:
+                        walls.remove(i)
+                    i.kill()
+                for sprite in all_enemy:
+                    sprite.kill()
+                for sprite in all_items_ont_the_ground:
+                    sprite.kill()
+                for sprite in all_bullets:
+                    sprite.kill()
+                for sprite in all_imp_fireballs:
+                    sprite.kill()
+                for sprite in all_enemy_bars:
+                    sprite.kill()
+                for sprite in all_chests:
+                    sprite.kill()
+                remember = user
+                user.kill()
+
+                user = Player()
+                user.items = remember.items
+                user.hp = remember.hp
+                user.rect.center = remember.rect.center
+                user.scores = remember.scores
+                user.lvl = remember.lvl
+                all_sprites.add(user)
 
                 if user.rect.right >= display_width + 150:
                     user.lvl += 1
@@ -954,40 +1035,13 @@ def run_game():   # Основная функция игры
                     all_sprites.add(temporary_wall)
                     temporary_wall.rect.right = 700
 
-                count_of_room += 1
-                count_of_room %= 4
-                background.change_the_room(count_of_room)
-                for i in all_temporary_walls:
-                    if i in walls:
-                        walls.remove(i)
-                    i.kill()
-                for sprite in all_enemy:
-                    sprite.kill()
-                for sprite in all_items_ont_the_ground:
-                    sprite.kill()
-                for sprite in all_bullets:
-                    sprite.kill()
-                for sprite in all_imp_fireballs:
-                    sprite.kill()
-                for sprite in all_enemy_bars:
-                    sprite.kill()
-                for sprite in all_chests:
-                    sprite.kill()
-                remember = user
-                user.kill()
 
-                user = Player()
-                user.items = remember.items
-                user.hp = remember.hp
-                user.rect.center = remember.rect.center
-                user.scores = remember.scores
-                user.lvl = remember.lvl
-                all_sprites.add(user)
 
                 if user.lvl < 10:
                     generate_ghosts()
                     generate_chests()
                 elif user.lvl == 10:
+                    ################################# Битва с босом призраков #################################
                     generate_boss_of_ghost()
 
                 pause()
@@ -1272,39 +1326,59 @@ def run_game():   # Основная функция игры
                         if user.rect.x > 125:
                             if block.rect.bottom < 500:
                                 block.rect.y += 5
-                            else:
+                            elif user.lvl != 10:
                                 blocked_left = True
                                 blocked_right = False
                                 blocked_top = False
                                 blocked_bottom = False
+                            else:
+                                blocked_left = True
+                                blocked_right = True
+                                blocked_top = True
+                                blocked_bottom = True
                     else:
                         if user.rect.x < display_width - 125:
                             if block.rect.bottom < 500:
                                 block.rect.y += 5
-                            else:
+                            elif user.lvl != 10:
                                 blocked_left = False
                                 blocked_right = True
                                 blocked_top = False
                                 blocked_bottom = False
+                            else:
+                                blocked_left = True
+                                blocked_right = True
+                                blocked_top = True
+                                blocked_bottom = True
                 else:
                     if block.place == 'bottom':
                         if user.rect.y < display_height - 125:
                             if block.rect.right < 750:
                                 block.rect.x += 5
-                            else:
+                            elif user.lvl != 10:
                                 blocked_left = False
                                 blocked_right = False
                                 blocked_top = False
+                                blocked_bottom = True
+                            else:
+                                blocked_left = True
+                                blocked_right = True
+                                blocked_top = True
                                 blocked_bottom = True
                     else:
                         if user.rect.y > 125:
                             if block.rect.right < 1050:
                                 block.rect.x += 5
-                            else:
+                            elif user.lvl != 10:
                                 blocked_left = False
                                 blocked_right = False
                                 blocked_top = True
                                 blocked_bottom = False
+                            else:
+                                blocked_left = True
+                                blocked_right = True
+                                blocked_top = True
+                                blocked_bottom = True
 
             ############################# Перестановка предметов из инвентаря ##############################
             def permutation():
@@ -1525,7 +1599,207 @@ def run_game():   # Основная функция игры
                 bar_durability.image = pygame.image.load('resources/inventory/items/empty_slot.png')
         else:
             bar_durability.image = pygame.image.load('resources/inventory/items/empty_slot.png')
-        ############################# Работа с паузой ##############################
+
+        ############################# Работа с боссом ##############################
+        boss_printed = False
+        bar_printed = False
+
+        for i in all_boss_bars:
+            i.rect.center = (i.follow.rect.center[0], i.follow.rect.top - 20)
+
+        def ghost_boss_teleportation():
+            boss.rect.center = functions.random_place_to_teleportation_of_boss_ghost(display_width,display_height)
+
+        for boss in all_bosses:
+            if user.rect.center[0] >= boss.rect.center[0]:
+                boss.direction = 'right'
+            else:
+                boss.direction = 'left'
+        ####### Проявление босса на карте #######
+        for sprite in all_bosses:
+            if sprite.image.get_alpha() != 255:
+                sprite.image.set_alpha(sprite.image.get_alpha() + 1)
+            else:
+                boss_printed = True
+
+        for sprite in all_boss_bars:
+            if sprite.follow.hp != 55:
+                if sprite.condition == 4:
+                    sprite.follow.hp += 1
+                    sprite.condition = 1
+                else:
+                    sprite.condition += 1
+
+        # Изменение состояния бара босса
+        for i in all_boss_bars:
+            i.rect.center = (i.follow.rect.center[0], i.follow.rect.top - 20)
+            if i.follow.hp == 55:
+                i.image = pygame.image.load('resources/boss_bars/55.png')
+            if i.follow.hp == 54:
+                i.image = pygame.image.load('resources/boss_bars/54.png')
+            elif i.follow.hp == 53:
+                i.image = pygame.image.load('resources/boss_bars/53.png')
+            elif i.follow.hp == 52:
+                i.image = pygame.image.load('resources/boss_bars/52.png')
+            elif i.follow.hp == 51:
+                i.image = pygame.image.load('resources/boss_bars/51.png')
+            elif i.follow.hp == 50:
+                i.image = pygame.image.load('resources/boss_bars/50.png')
+            elif i.follow.hp == 49:
+                i.image = pygame.image.load('resources/boss_bars/49.png')
+            elif i.follow.hp == 48:
+                i.image = pygame.image.load('resources/boss_bars/48.png')
+            elif i.follow.hp == 47:
+                i.image = pygame.image.load('resources/boss_bars/47.png')
+            elif i.follow.hp == 46:
+                i.image = pygame.image.load('resources/boss_bars/46.png')
+            elif i.follow.hp == 45:
+                i.image = pygame.image.load('resources/boss_bars/45.png')
+            elif i.follow.hp == 44:
+                i.image = pygame.image.load('resources/boss_bars/44.png')
+            elif i.follow.hp == 43:
+                i.image = pygame.image.load('resources/boss_bars/43.png')
+            elif i.follow.hp == 42:
+                i.image = pygame.image.load('resources/boss_bars/42.png')
+            elif i.follow.hp == 41:
+                i.image = pygame.image.load('resources/boss_bars/41.png')
+            elif i.follow.hp == 40:
+                i.image = pygame.image.load('resources/boss_bars/40.png')
+            elif i.follow.hp == 39:
+                i.image = pygame.image.load('resources/boss_bars/39.png')
+            elif i.follow.hp == 38:
+                i.image = pygame.image.load('resources/boss_bars/38.png')
+            elif i.follow.hp == 37:
+                i.image = pygame.image.load('resources/boss_bars/37.png')
+            elif i.follow.hp == 36:
+                i.image = pygame.image.load('resources/boss_bars/36.png')
+            elif i.follow.hp == 35:
+                i.image = pygame.image.load('resources/boss_bars/35.png')
+            elif i.follow.hp == 34:
+                i.image = pygame.image.load('resources/boss_bars/34.png')
+            elif i.follow.hp == 33:
+                i.image = pygame.image.load('resources/boss_bars/33.png')
+            elif i.follow.hp == 32:
+                i.image = pygame.image.load('resources/boss_bars/32.png')
+            elif i.follow.hp == 31:
+                i.image = pygame.image.load('resources/boss_bars/31.png')
+            elif i.follow.hp == 30:
+                i.image = pygame.image.load('resources/boss_bars/30.png')
+            elif i.follow.hp == 29:
+                i.image = pygame.image.load('resources/boss_bars/29.png')
+            elif i.follow.hp == 28:
+                i.image = pygame.image.load('resources/boss_bars/28.png')
+            elif i.follow.hp == 27:
+                i.image = pygame.image.load('resources/boss_bars/27.png')
+            elif i.follow.hp == 26:
+                i.image = pygame.image.load('resources/boss_bars/26.png')
+            elif i.follow.hp == 25:
+                i.image = pygame.image.load('resources/boss_bars/25.png')
+            elif i.follow.hp == 24:
+                i.image = pygame.image.load('resources/boss_bars/24.png')
+            elif i.follow.hp == 23:
+                i.image = pygame.image.load('resources/boss_bars/23.png')
+            elif i.follow.hp == 22:
+                i.image = pygame.image.load('resources/boss_bars/22.png')
+            elif i.follow.hp == 21:
+                i.image = pygame.image.load('resources/boss_bars/21.png')
+            elif i.follow.hp == 20:
+                i.image = pygame.image.load('resources/boss_bars/20.png')
+            elif i.follow.hp == 19:
+                i.image = pygame.image.load('resources/boss_bars/19.png')
+            elif i.follow.hp == 18:
+                i.image = pygame.image.load('resources/boss_bars/18.png')
+            elif i.follow.hp == 17:
+                i.image = pygame.image.load('resources/boss_bars/17.png')
+            elif i.follow.hp == 16:
+                i.image = pygame.image.load('resources/boss_bars/16.png')
+            elif i.follow.hp == 15:
+                i.image = pygame.image.load('resources/boss_bars/15.png')
+            elif i.follow.hp == 14:
+                i.image = pygame.image.load('resources/boss_bars/14.png')
+            elif i.follow.hp == 13:
+                i.image = pygame.image.load('resources/boss_bars/13.png')
+            elif i.follow.hp == 12:
+                i.image = pygame.image.load('resources/boss_bars/12.png')
+            elif i.follow.hp == 11:
+                i.image = pygame.image.load('resources/boss_bars/11.png')
+            elif i.follow.hp == 10:
+                i.image = pygame.image.load('resources/boss_bars/10.png')
+            elif i.follow.hp == 9:
+                i.image = pygame.image.load('resources/boss_bars/9.png')
+            elif i.follow.hp == 8:
+                i.image = pygame.image.load('resources/boss_bars/8.png')
+            elif i.follow.hp == 7:
+                i.image = pygame.image.load('resources/boss_bars/7.png')
+            elif i.follow.hp == 6:
+                i.image = pygame.image.load('resources/boss_bars/6.png')
+            elif i.follow.hp == 5:
+                i.image = pygame.image.load('resources/boss_bars/5.png')
+            elif i.follow.hp == 4:
+                i.image = pygame.image.load('resources/boss_bars/4.png')
+            elif i.follow.hp == 3:
+                i.image = pygame.image.load('resources/boss_bars/3.png')
+            elif i.follow.hp == 2:
+                i.image = pygame.image.load('resources/boss_bars/2.png')
+            elif i.follow.hp == 1:
+                i.image = pygame.image.load('resources/boss_bars/1.png')
+            elif i.follow.hp <= 0:
+                i.folow.kill()
+                i.kill()
+
+        if boss_printed:   # Анимация плаща босса
+            for boss in all_bosses:
+                if boss.direction == 'left':
+                    if boss.condition == 1:
+                        boss.image = pygame.image.load('resources/enemy/ghost_boss_left_1.png')
+                    elif boss.condition == 12:
+                        boss.image = pygame.image.load('resources/enemy/ghost_boss_left_2.png')
+                    elif boss.condition == 24:
+                        boss.image = pygame.image.load('resources/enemy/ghost_boss_left_3.png')
+                    elif boss.condition == 36:
+                        boss.image = pygame.image.load('resources/enemy/ghost_boss_left_4.png')
+                    elif boss.condition == 48:
+                        boss.image = pygame.image.load('resources/enemy/ghost_boss_left_5.png')
+                    elif boss.condition == 60:
+                        boss.image = pygame.image.load('resources/enemy/ghost_boss_left_6.png')
+                    elif boss.condition == 72:
+                        boss.image = pygame.image.load('resources/enemy/ghost_boss_left_7.png')
+                    elif boss.condition == 84:
+                        boss.image = pygame.image.load('resources/enemy/ghost_boss_left_8.png')
+                        boss.condition = 1
+                elif boss.direction == 'right':
+                    if boss.condition == 1:
+                        boss.image = pygame.image.load('resources/enemy/ghost_boss_right_1.png')
+                    elif boss.condition == 12:
+                        boss.image = pygame.image.load('resources/enemy/ghost_boss_right_2.png')
+                    elif boss.condition == 24:
+                        boss.image = pygame.image.load('resources/enemy/ghost_boss_right_3.png')
+                    elif boss.condition == 36:
+                        boss.image = pygame.image.load('resources/enemy/ghost_boss_right_4.png')
+                    elif boss.condition == 48:
+                        boss.image = pygame.image.load('resources/enemy/ghost_boss_right_5.png')
+                    elif boss.condition == 60:
+                        boss.image = pygame.image.load('resources/enemy/ghost_boss_right_6.png')
+                    elif boss.condition == 72:
+                        boss.image = pygame.image.load('resources/enemy/ghost_boss_right_7.png')
+                    elif boss.condition == 84:
+                        boss.image = pygame.image.load('resources/enemy/ghost_boss_right_8.png')
+                        boss.condition = 1
+                boss.condition += 1
+
+            for boss in all_bosses:
+                if boss.teleportation == 200:
+                    ghost_boss_teleportation()
+                    boss.teleportation = 1
+                else:
+                    boss.teleportation += 1
+
+        if pygame.sprite.spritecollide(user, all_bosses, False):
+            for boss in all_bosses:
+                ghost_boss_teleportation()
+                boss.teleportation = 1
+
+        ############################# Работа с сообщениями ##############################
         for block in all_messages:
             if block.image.get_alpha() != 0:
                 block.image.set_alpha(block.image.get_alpha() - 1)
@@ -1555,11 +1829,6 @@ def run_game():   # Основная функция игры
         if user.time_spended_to_realise == 100:
             user.time_to_realise = True
             user.time_spended_to_realise = 0
-
-        try:
-            print(user.items[0].durability)
-        except:
-            pass
 
         draw_scores()
         pygame.display.update()

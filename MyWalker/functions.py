@@ -4,6 +4,8 @@ def choose_the_drop_10():
     list = ['bow', 'heal_bottle']
     return random.choice(list)
 
+def random_place_to_teleportation_of_boss_ghost(display_width, display_height):
+    return (random.choice(range(100, display_width - 100)), random.choice(range(100, display_height - 100)))
 def chanse_to_spawn_the_enemy(lvl):   # Генерация рандомного числа противников
     if lvl < 10:
         if lvl == 1:
@@ -16,6 +18,8 @@ def chanse_to_spawn_the_enemy(lvl):   # Генерация рандомного 
             return 4
         elif lvl == 9:
             return 5
+        elif lvl == 10:
+            return 0
 
 def chanse_to_spawn_the_chest():   # Генерация рандомного числа сундуков
     choice = random.choice(range(100))
