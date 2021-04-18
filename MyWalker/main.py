@@ -90,6 +90,8 @@ class Ghost_Boss(pygame.sprite.Sprite):
         self.direction = 'left'
         self.teleportation = 1
         self.blue_ball_timer = 1
+        self.pink_ball_timer = 1
+        self.count_of_pink_balls = 0
 
 ################################ Класс импа ##################################
 class Imp(pygame.sprite.Sprite):
@@ -122,6 +124,14 @@ class Ghost_boss_blue_ball(pygame.sprite.Sprite):
         self.condition = 1
         self.direction = ''
 
+############################# Класс объекта-снаряда Импа ##############################
+class Ghost_boss_pink_ball(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('resources/attacking/pink_ball_left_1.png')
+        self.rect = self.image.get_rect()
+        self.condition = 1
+        self.direction =''
 ################################ Класс ячейки инвентаря ##################################
 class Ceil_of_inventory(pygame.sprite.Sprite):
     def __init__(self):
@@ -266,6 +276,11 @@ def run_game():   # Основная функция игры
     all_bosses = pygame.sprite.Group()   # Группа боссов
     all_boss_bars = pygame.sprite.Group()   # Группа баров боссов
     all_blue_boss_balls = pygame.sprite.Group()   # Группа синих файерболлов боссов
+    all_pink_boss_balls = pygame.sprite.Group()   # Группа розовых файерболлов боссов
+    right_top = pygame.sprite.Group()
+    right_bottom = pygame.sprite.Group()
+    left_top = pygame.sprite.Group()
+    left_bottom = pygame.sprite.Group()
 
     ############################# Задний фон ##############################
     background = Background()
@@ -1867,6 +1882,31 @@ def run_game():   # Основная функция игры
                 else:
                     boss.blue_ball_timer += 1
 
+                # Стрельба розовыми файерболлами
+                if boss.pink_ball_timer == 500:
+                    place = random.choice(['left_top', 'left_bottom', 'right_top', 'right_bottom'])
+                    if place == 'left_top':
+                        boss.rect.top = 50
+                        boss.rect.left = 50
+                        left_top.add(boss)
+                    elif place == 'left_bottom':
+                        boss.rect.bottom = display_height - 50
+                        boss.rect.left = 50
+                        left_bottom.add(boss)
+                    elif place == 'right_top':
+                        boss.rect.top = 50
+                        boss.rect.right = display_width - 50
+                        right_top.add(boss)
+                    elif place == 'right_bottom':
+                        boss.rect.bottom = display_height - 50
+                        boss.rect.right = display_width - 50
+                        right_bottom.add(boss)
+                    boss.pink_ball_timer = 1
+                else:
+                    boss.pink_ball_timer += 1
+
+
+
         # Анимация синих файерболлов
         for ball in all_blue_boss_balls:
             ball.condition += 1
@@ -2027,15 +2067,138 @@ def run_game():   # Основная функция игры
                     ball.image = pygame.image.load('resources/attacking/blue_ball_bottom_right_8.png')
                     ball.condition = 1   # Анимация синих
 
-            if pygame.sprite.spritecollide(user, all_blue_boss_balls, True):
-                sound = pygame.mixer.Sound('resources/sounds/taking_damage_by_user.wav')
-                sound.play()
-                user.hp -= 1
-
         for wall in walls:
             pygame.sprite.spritecollide(wall, all_blue_boss_balls, True)
 
+        if pygame.sprite.spritecollide(user, all_blue_boss_balls, True):
+            sound = pygame.mixer.Sound('resources/sounds/taking_damage_by_user.wav')
+            sound.play()
+            user.hp -= 1
 
+
+        for boss in left_top:
+            boss.pink_ball_timer = 1
+            boss.blue_ball_timer = 1
+            boss.teleportation = 1
+            if boss.rect.bottom < display_height - 50:
+                boss.rect.y += 2
+                boss.count_of_pink_balls += 1
+                if boss.count_of_pink_balls % 40 == 0:
+                    ball = Ghost_boss_pink_ball()
+                    all_sprites.add(ball)
+                    all_pink_boss_balls.add(ball)
+                    ball.rect.center = boss.rect.center
+                    ball.direction = 'right'
+                else:
+                    pass
+            else:
+                left_top.remove(boss)
+                boss.count_of_pink_balls = 0
+        for boss in left_bottom:
+            boss.pink_ball_timer = 1
+            boss.blue_ball_timer = 1
+            boss.teleportation = 1
+            if boss.rect.top > 50:
+                boss.rect.y -= 2
+                boss.count_of_pink_balls += 1
+                if boss.count_of_pink_balls % 40 == 0:
+                    ball = Ghost_boss_pink_ball()
+                    all_sprites.add(ball)
+                    all_pink_boss_balls.add(ball)
+                    ball.rect.center = boss.rect.center
+                    ball.direction = 'right'
+                else:
+                    pass
+            else:
+                left_bottom.remove(boss)
+                boss.count_of_pink_balls = 0
+        for boss in right_top:
+            boss.pink_ball_timer = 1
+            boss.blue_ball_timer = 1
+            boss.teleportation = 1
+            if boss.rect.bottom < display_height - 50:
+                boss.rect.y += 2
+                boss.count_of_pink_balls += 1
+                if boss.count_of_pink_balls % 40 == 0:
+                    ball = Ghost_boss_pink_ball()
+                    all_sprites.add(ball)
+                    all_pink_boss_balls.add(ball)
+                    ball.rect.center = boss.rect.center
+                    ball.direction = 'left'
+                else:
+                    pass
+            else:
+                right_top.remove(boss)
+                boss.count_of_pink_balls = 0
+        for boss in right_bottom:
+            boss.pink_ball_timer = 1
+            boss.blue_ball_timer = 1
+            boss.teleportation = 1
+            if boss.rect.top > 50:
+                boss.rect.y -= 2
+                boss.count_of_pink_balls += 1
+                if boss.count_of_pink_balls % 40 == 0:
+                    ball = Ghost_boss_pink_ball()
+                    all_sprites.add(ball)
+                    all_pink_boss_balls.add(ball)
+                    ball.rect.center = boss.rect.center
+                    ball.direction = 'left'
+                else:
+                    pass
+            else:
+                right_bottom.remove(boss)
+                boss.count_of_pink_balls = 0
+
+        # Анимация розовых файерболлов
+        for ball in all_pink_boss_balls:
+            if ball.direction == 'left':
+                ball.rect.x -= 10
+                ball.condition += 1
+                if ball.condition == 8:
+                    ball.image = pygame.image.load('resources/attacking/pink_ball_left_1.png')
+                elif ball.condition == 16:
+                    ball.image = pygame.image.load('resources/attacking/pink_ball_left_2.png')
+                elif ball.condition == 24:
+                    ball.image = pygame.image.load('resources/attacking/pink_ball_left_3.png')
+                elif ball.condition == 32:
+                    ball.image = pygame.image.load('resources/attacking/pink_ball_left_4.png')
+                elif ball.condition == 40:
+                    ball.image = pygame.image.load('resources/attacking/pink_ball_left_5.png')
+                elif ball.condition == 48:
+                    ball.image = pygame.image.load('resources/attacking/pink_ball_left_6.png')
+                elif ball.condition == 56:
+                    ball.image = pygame.image.load('resources/attacking/pink_ball_left_7.png')
+                elif ball.condition == 64:
+                    ball.image = pygame.image.load('resources/attacking/pink_ball_left_8.png')
+                    ball.condition = 1
+            elif ball.direction == 'right':
+                ball.rect.x += 10
+                ball.condition += 1
+                if ball.condition == 8:
+                    ball.image = pygame.image.load('resources/attacking/pink_ball_right_1.png')
+                elif ball.condition == 16:
+                    ball.image = pygame.image.load('resources/attacking/pink_ball_right_2.png')
+                elif ball.condition == 24:
+                    ball.image = pygame.image.load('resources/attacking/pink_ball_right_3.png')
+                elif ball.condition == 32:
+                    ball.image = pygame.image.load('resources/attacking/pink_ball_right_4.png')
+                elif ball.condition == 40:
+                    ball.image = pygame.image.load('resources/attacking/pink_ball_right_5.png')
+                elif ball.condition == 48:
+                    ball.image = pygame.image.load('resources/attacking/pink_ball_right_6.png')
+                elif ball.condition == 56:
+                    ball.image = pygame.image.load('resources/attacking/pink_ball_right_7.png')
+                elif ball.condition == 64:
+                    ball.image = pygame.image.load('resources/attacking/pink_ball_right_8.png')
+                    ball.condition = 1
+
+        for wall in walls:
+            pygame.sprite.spritecollide(wall, all_pink_boss_balls, True)
+
+        if pygame.sprite.spritecollide(user, all_pink_boss_balls, True):
+            sound = pygame.mixer.Sound('resources/sounds/taking_damage_by_user.wav')
+            sound.play()
+            user.hp -= 1
 
         if pygame.sprite.spritecollide(user, all_bosses, False):   # Игрок касается босса
             sound = pygame.mixer.Sound('resources/sounds/taking_damage_by_user.wav')
