@@ -4,8 +4,18 @@ def choose_the_drop_10():
     list = ['bow', 'heal_bottle']
     return random.choice(list)
 
-def random_place_to_teleportation_of_boss_ghost(display_width, display_height):
-    return (random.choice(range(100, display_width - 100)), random.choice(range(100, display_height - 100)))
+def random_place_to_teleportation_of_boss_ghost(display_width, display_height, user_x, user_y):
+    while True:
+        x = random.choice(range(100, display_width - 100))
+        y = random.choice(range(160, display_height - 160))
+
+        if user_x-100 <= x <= user_x+100 and user_y-158 <= y <= user_y+158:
+            pass
+        else:
+            break
+    return (x, y)
+
+
 def chanse_to_spawn_the_enemy(lvl):   # Генерация рандомного числа противников
     if lvl < 10:
         if lvl == 1:

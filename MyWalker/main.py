@@ -89,6 +89,7 @@ class Ghost_Boss(pygame.sprite.Sprite):
         self.condition = 1
         self.direction = 'left'
         self.teleportation = 1
+        self.blue_ball_timer = 1
 
 ################################ Класс импа ##################################
 class Imp(pygame.sprite.Sprite):
@@ -108,6 +109,15 @@ class Imp_Ball(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load('resources/inventory/items/empty_slot.png')
+        self.rect = self.image.get_rect()
+        self.condition = 1
+        self.direction = ''
+
+############################# Класс объекта-снаряда Импа ##############################
+class Ghost_boss_blue_ball(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('resources/attacking/blue_ball_left_1.png')
         self.rect = self.image.get_rect()
         self.condition = 1
         self.direction = ''
@@ -235,6 +245,8 @@ def run_game():   # Основная функция игры
     stop = True
     we_are_drawing = False
     blocked = True
+    bar_printed = False
+
     ############################# Создаём группы объектов на карте ##############################
     all_sprites = pygame.sprite.Group()  # Группа спрайтов
     walls = pygame.sprite.Group()   # Группа стен
@@ -253,6 +265,8 @@ def run_game():   # Основная функция игры
     all_messages = pygame.sprite.Group()   # Группа сообщений
     all_bosses = pygame.sprite.Group()   # Группа боссов
     all_boss_bars = pygame.sprite.Group()   # Группа баров боссов
+    all_blue_boss_balls = pygame.sprite.Group()   # Группа синих файерболлов боссов
+
     ############################# Задний фон ##############################
     background = Background()
     all_sprites.add(background)
@@ -1602,15 +1616,11 @@ def run_game():   # Основная функция игры
 
         ############################# Работа с боссом ##############################
         boss_printed = False
-        bar_printed = False
 
         for i in all_boss_bars:
             i.rect.center = (i.follow.rect.center[0], i.follow.rect.top - 20)
 
-        def ghost_boss_teleportation():
-            boss.rect.center = functions.random_place_to_teleportation_of_boss_ghost(display_width,display_height)
-
-        for boss in all_bosses:
+        for boss in all_bosses:   # Разворачивание босса в сторону игрока
             if user.rect.center[0] >= boss.rect.center[0]:
                 boss.direction = 'right'
             else:
@@ -1622,13 +1632,16 @@ def run_game():   # Основная функция игры
             else:
                 boss_printed = True
 
-        for sprite in all_boss_bars:
-            if sprite.follow.hp != 55:
-                if sprite.condition == 4:
-                    sprite.follow.hp += 1
-                    sprite.condition = 1
+        for sprite in all_boss_bars:   # Первое заполнение бара хп босса
+            if not bar_printed:
+                if sprite.follow.hp != 55:
+                    if sprite.condition == 4:
+                        sprite.follow.hp += 1
+                        sprite.condition = 1
+                    else:
+                        sprite.condition += 1
                 else:
-                    sprite.condition += 1
+                    bar_printed = True
 
         # Изменение состояния бара босса
         for i in all_boss_bars:
@@ -1788,16 +1801,255 @@ def run_game():   # Основная функция игры
                 boss.condition += 1
 
             for boss in all_bosses:
-                if boss.teleportation == 200:
-                    ghost_boss_teleportation()
+                if boss.teleportation == 150:   # Телепортация
+                    boss.rect.center = functions.random_place_to_teleportation_of_boss_ghost(
+                        display_width,
+                        display_height,
+                        user.rect.center[0],
+                        user.rect.center[1]
+                    )
                     boss.teleportation = 1
                 else:
                     boss.teleportation += 1
 
-        if pygame.sprite.spritecollide(user, all_bosses, False):
+                # Стрельба синими файерболлами
+                if boss.blue_ball_timer == 200:
+                    boss.blue_ball_timer = 1
+
+                    ball1 = Ghost_boss_blue_ball()
+                    all_sprites.add(ball1)
+                    all_blue_boss_balls.add(ball1)
+                    ball1.rect.center = boss.rect.center
+                    ball1.direction = 'bottom'
+
+                    ball2 = Ghost_boss_blue_ball()
+                    all_sprites.add(ball2)
+                    all_blue_boss_balls.add(ball2)
+                    ball2.rect.center = boss.rect.center
+                    ball2.direction = 'bottom_left'
+
+                    ball3 = Ghost_boss_blue_ball()
+                    all_sprites.add(ball3)
+                    all_blue_boss_balls.add(ball3)
+                    ball3.rect.center = boss.rect.center
+                    ball3.direction = 'left'
+
+                    ball4 = Ghost_boss_blue_ball()
+                    all_sprites.add(ball4)
+                    all_blue_boss_balls.add(ball4)
+                    ball4.rect.center = boss.rect.center
+                    ball4.direction = 'top_left'
+
+                    ball5 = Ghost_boss_blue_ball()
+                    all_sprites.add(ball5)
+                    all_blue_boss_balls.add(ball5)
+                    ball5.rect.center = boss.rect.center
+                    ball5.direction = 'top'
+
+                    ball6 = Ghost_boss_blue_ball()
+                    all_sprites.add(ball6)
+                    all_blue_boss_balls.add(ball6)
+                    ball6.rect.center = boss.rect.center
+                    ball6.direction = 'top_right'
+
+                    ball7 = Ghost_boss_blue_ball()
+                    all_sprites.add(ball7)
+                    all_blue_boss_balls.add(ball7)
+                    ball7.rect.center = boss.rect.center
+                    ball7.direction = 'right'
+
+                    ball8 = Ghost_boss_blue_ball()
+                    all_sprites.add(ball8)
+                    all_blue_boss_balls.add(ball8)
+                    ball8.rect.center = boss.rect.center
+                    ball8.direction = 'bottom_right'
+
+                else:
+                    boss.blue_ball_timer += 1
+
+        # Анимация синих файерболлов
+        for ball in all_blue_boss_balls:
+            ball.condition += 1
+            if ball.direction == 'bottom':
+                ball.rect.y += 4
+                if ball.condition == 8:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_bottom_1.png')
+                elif ball.condition == 16:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_bottom_2.png')
+                elif ball.condition == 24:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_bottom_3.png')
+                elif ball.condition == 32:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_bottom_4.png')
+                elif ball.condition == 40:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_bottom_5.png')
+                elif ball.condition == 48:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_bottom_6.png')
+                elif ball.condition == 56:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_bottom_7.png')
+                elif ball.condition == 64:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_bottom_8.png')
+                    ball.condition = 1
+            elif ball.direction == 'bottom_left':
+                ball.rect.y += 2
+                ball.rect.x -= 2
+                if ball.condition == 8:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_bottom_left_1.png')
+                elif ball.condition == 16:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_bottom_left_2.png')
+                elif ball.condition == 24:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_bottom_left_3.png')
+                elif ball.condition == 32:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_bottom_left_4.png')
+                elif ball.condition == 40:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_bottom_left_5.png')
+                elif ball.condition == 48:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_bottom_left_6.png')
+                elif ball.condition == 56:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_bottom_left_7.png')
+                elif ball.condition == 64:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_bottom_left_8.png')
+                    ball.condition = 1
+            elif ball.direction == 'left':
+                ball.rect.x -= 4
+                if ball.condition == 8:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_left_1.png')
+                elif ball.condition == 16:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_left_2.png')
+                elif ball.condition == 24:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_left_3.png')
+                elif ball.condition == 32:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_left_4.png')
+                elif ball.condition == 40:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_left_5.png')
+                elif ball.condition == 48:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_left_6.png')
+                elif ball.condition == 56:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_left_7.png')
+                elif ball.condition == 64:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_left_8.png')
+                    ball.condition = 1
+            elif ball.direction == 'top_left':
+                ball.rect.x -= 2
+                ball.rect.y -= 2
+                if ball.condition == 8:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_top_left_1.png')
+                elif ball.condition == 16:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_top_left_2.png')
+                elif ball.condition == 24:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_top_left_3.png')
+                elif ball.condition == 32:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_top_left_4.png')
+                elif ball.condition == 40:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_top_left_5.png')
+                elif ball.condition == 48:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_top_left_6.png')
+                elif ball.condition == 56:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_top_left_7.png')
+                elif ball.condition == 64:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_top_left_8.png')
+                    ball.condition = 1
+            elif ball.direction == 'top':
+                ball.rect.y -= 4
+                if ball.condition == 8:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_top_1.png')
+                elif ball.condition == 16:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_top_2.png')
+                elif ball.condition == 24:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_top_3.png')
+                elif ball.condition == 32:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_top_4.png')
+                elif ball.condition == 40:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_top_5.png')
+                elif ball.condition == 48:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_top_6.png')
+                elif ball.condition == 56:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_top_7.png')
+                elif ball.condition == 64:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_top_8.png')
+                    ball.condition = 1
+            elif ball.direction == 'top_right':
+                ball.rect.x += 2
+                ball.rect.y -= 2
+                if ball.condition == 8:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_top_right_1.png')
+                elif ball.condition == 16:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_top_right_2.png')
+                elif ball.condition == 24:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_top_right_3.png')
+                elif ball.condition == 32:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_top_right_4.png')
+                elif ball.condition == 40:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_top_right_5.png')
+                elif ball.condition == 48:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_top_right_6.png')
+                elif ball.condition == 56:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_top_right_7.png')
+                elif ball.condition == 64:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_top_right_8.png')
+                    ball.condition = 1
+            elif ball.direction == 'right':
+                ball.rect.x += 4
+                if ball.condition == 8:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_right_1.png')
+                elif ball.condition == 16:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_right_2.png')
+                elif ball.condition == 24:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_right_3.png')
+                elif ball.condition == 32:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_right_4.png')
+                elif ball.condition == 40:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_right_5.png')
+                elif ball.condition == 48:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_right_6.png')
+                elif ball.condition == 56:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_right_7.png')
+                elif ball.condition == 64:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_right_8.png')
+                    ball.condition = 1
+            elif ball.direction == 'bottom_right':
+                ball.rect.x += 2
+                ball.rect.y += 2
+                if ball.condition == 8:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_bottom_right_1.png')
+                elif ball.condition == 16:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_bottom_right_2.png')
+                elif ball.condition == 24:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_bottom_right_3.png')
+                elif ball.condition == 32:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_bottom_right_4.png')
+                elif ball.condition == 40:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_bottom_right_5.png')
+                elif ball.condition == 48:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_bottom_right_6.png')
+                elif ball.condition == 56:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_bottom_right_7.png')
+                elif ball.condition == 64:
+                    ball.image = pygame.image.load('resources/attacking/blue_ball_bottom_right_8.png')
+                    ball.condition = 1   # Анимация синих
+
+            if pygame.sprite.spritecollide(user, all_blue_boss_balls, True):
+                sound = pygame.mixer.Sound('resources/sounds/taking_damage_by_user.wav')
+                sound.play()
+                user.hp -= 1
+
+        for wall in walls:
+            pygame.sprite.spritecollide(wall, all_blue_boss_balls, True)
+
+
+
+        if pygame.sprite.spritecollide(user, all_bosses, False):   # Игрок касается босса
+            sound = pygame.mixer.Sound('resources/sounds/taking_damage_by_user.wav')
+            sound.play()
             for boss in all_bosses:
-                ghost_boss_teleportation()
+                user.hp -= 1
+                boss.rect.center = functions.random_place_to_teleportation_of_boss_ghost(
+                    display_width,
+                    display_height,
+                    user.rect.center[0],
+                    user.rect.center[1]
+                )
                 boss.teleportation = 1
+
 
         ############################# Работа с сообщениями ##############################
         for block in all_messages:
