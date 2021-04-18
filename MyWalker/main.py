@@ -68,6 +68,17 @@ class Enemy_Bar_HP(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.follow = object
 
+############################# Класс объекта-портала призраков ##############################
+class Ghost_portal(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('resources/objects/portal_right_1.png')
+        self.rect = self.image.get_rect()
+        self.condition = 1
+        self.direction = ''
+        self.spawned_ghosts = 0
+        self.spawn_timer = 1
+
 ################################ Класс призрака ##################################
 class Ghost(pygame.sprite.Sprite):
     def __init__(self, object=0):
@@ -92,6 +103,10 @@ class Ghost_Boss(pygame.sprite.Sprite):
         self.blue_ball_timer = 1
         self.pink_ball_timer = 1
         self.count_of_pink_balls = 0
+        self.portal_timer = 1
+        self.angry = False
+        self.created_portals = False
+        self.invisible = False
 
 ################################ Класс импа ##################################
 class Imp(pygame.sprite.Sprite):
@@ -277,10 +292,12 @@ def run_game():   # Основная функция игры
     all_boss_bars = pygame.sprite.Group()   # Группа баров боссов
     all_blue_boss_balls = pygame.sprite.Group()   # Группа синих файерболлов боссов
     all_pink_boss_balls = pygame.sprite.Group()   # Группа розовых файерболлов боссов
-    right_top = pygame.sprite.Group()
+    right_top = pygame.sprite.Group()   ####### Стрельба розовыми файерболлами
     right_bottom = pygame.sprite.Group()
     left_top = pygame.sprite.Group()
-    left_bottom = pygame.sprite.Group()
+    left_bottom = pygame.sprite.Group()   ####### Стрельба розовыми файерболлами
+    creating_portals = pygame.sprite.Group()   # Создание порталов призраков
+    all_portals = pygame.sprite.Group()   # Группа порталов босса-призрака
 
     ############################# Задний фон ##############################
     background = Background()
@@ -1647,7 +1664,8 @@ def run_game():   # Основная функция игры
             else:
                 boss_printed = True
 
-        for sprite in all_boss_bars:   # Первое заполнение бара хп босса
+        # Первое заполнение бара хп босса
+        for sprite in all_boss_bars:
             if not bar_printed:
                 if sprite.follow.hp != 55:
                     if sprite.condition == 4:
@@ -1772,51 +1790,55 @@ def run_game():   # Основная функция игры
             elif i.follow.hp == 1:
                 i.image = pygame.image.load('resources/boss_bars/1.png')
             elif i.follow.hp <= 0:
-                i.folow.kill()
+                for boss in all_bosses:
+                    boss.kill()
                 i.kill()
 
-        if boss_printed:   # Анимация плаща босса
-            for boss in all_bosses:
-                if boss.direction == 'left':
-                    if boss.condition == 1:
-                        boss.image = pygame.image.load('resources/enemy/ghost_boss_left_1.png')
-                    elif boss.condition == 12:
-                        boss.image = pygame.image.load('resources/enemy/ghost_boss_left_2.png')
-                    elif boss.condition == 24:
-                        boss.image = pygame.image.load('resources/enemy/ghost_boss_left_3.png')
-                    elif boss.condition == 36:
-                        boss.image = pygame.image.load('resources/enemy/ghost_boss_left_4.png')
-                    elif boss.condition == 48:
-                        boss.image = pygame.image.load('resources/enemy/ghost_boss_left_5.png')
-                    elif boss.condition == 60:
-                        boss.image = pygame.image.load('resources/enemy/ghost_boss_left_6.png')
-                    elif boss.condition == 72:
-                        boss.image = pygame.image.load('resources/enemy/ghost_boss_left_7.png')
-                    elif boss.condition == 84:
-                        boss.image = pygame.image.load('resources/enemy/ghost_boss_left_8.png')
-                        boss.condition = 1
-                elif boss.direction == 'right':
-                    if boss.condition == 1:
-                        boss.image = pygame.image.load('resources/enemy/ghost_boss_right_1.png')
-                    elif boss.condition == 12:
-                        boss.image = pygame.image.load('resources/enemy/ghost_boss_right_2.png')
-                    elif boss.condition == 24:
-                        boss.image = pygame.image.load('resources/enemy/ghost_boss_right_3.png')
-                    elif boss.condition == 36:
-                        boss.image = pygame.image.load('resources/enemy/ghost_boss_right_4.png')
-                    elif boss.condition == 48:
-                        boss.image = pygame.image.load('resources/enemy/ghost_boss_right_5.png')
-                    elif boss.condition == 60:
-                        boss.image = pygame.image.load('resources/enemy/ghost_boss_right_6.png')
-                    elif boss.condition == 72:
-                        boss.image = pygame.image.load('resources/enemy/ghost_boss_right_7.png')
-                    elif boss.condition == 84:
-                        boss.image = pygame.image.load('resources/enemy/ghost_boss_right_8.png')
-                        boss.condition = 1
-                boss.condition += 1
+        # Атаки босса и анимация его самого
+        if boss_printed:
+            if not boss.angry:
+                for boss in all_bosses:
+                    if boss.direction == 'left':
+                        if boss.condition == 1:
+                            boss.image = pygame.image.load('resources/enemy/ghost_boss_left_1.png')
+                        elif boss.condition == 12:
+                            boss.image = pygame.image.load('resources/enemy/ghost_boss_left_2.png')
+                        elif boss.condition == 24:
+                            boss.image = pygame.image.load('resources/enemy/ghost_boss_left_3.png')
+                        elif boss.condition == 36:
+                            boss.image = pygame.image.load('resources/enemy/ghost_boss_left_4.png')
+                        elif boss.condition == 48:
+                            boss.image = pygame.image.load('resources/enemy/ghost_boss_left_5.png')
+                        elif boss.condition == 60:
+                            boss.image = pygame.image.load('resources/enemy/ghost_boss_left_6.png')
+                        elif boss.condition == 72:
+                            boss.image = pygame.image.load('resources/enemy/ghost_boss_left_7.png')
+                        elif boss.condition == 84:
+                            boss.image = pygame.image.load('resources/enemy/ghost_boss_left_8.png')
+                            boss.condition = 1
+                    elif boss.direction == 'right':
+                        if boss.condition == 1:
+                            boss.image = pygame.image.load('resources/enemy/ghost_boss_right_1.png')
+                        elif boss.condition == 12:
+                            boss.image = pygame.image.load('resources/enemy/ghost_boss_right_2.png')
+                        elif boss.condition == 24:
+                            boss.image = pygame.image.load('resources/enemy/ghost_boss_right_3.png')
+                        elif boss.condition == 36:
+                            boss.image = pygame.image.load('resources/enemy/ghost_boss_right_4.png')
+                        elif boss.condition == 48:
+                            boss.image = pygame.image.load('resources/enemy/ghost_boss_right_5.png')
+                        elif boss.condition == 60:
+                            boss.image = pygame.image.load('resources/enemy/ghost_boss_right_6.png')
+                        elif boss.condition == 72:
+                            boss.image = pygame.image.load('resources/enemy/ghost_boss_right_7.png')
+                        elif boss.condition == 84:
+                            boss.image = pygame.image.load('resources/enemy/ghost_boss_right_8.png')
+                            boss.condition = 1
+                    boss.condition += 1
 
             for boss in all_bosses:
-                if boss.teleportation == 150:   # Телепортация
+                # Телепортация
+                if boss.teleportation == 150:
                     boss.rect.center = functions.random_place_to_teleportation_of_boss_ghost(
                         display_width,
                         display_height,
@@ -1878,7 +1900,6 @@ def run_game():   # Основная функция игры
                     all_blue_boss_balls.add(ball8)
                     ball8.rect.center = boss.rect.center
                     ball8.direction = 'bottom_right'
-
                 else:
                     boss.blue_ball_timer += 1
 
@@ -1905,7 +1926,36 @@ def run_game():   # Основная функция игры
                 else:
                     boss.pink_ball_timer += 1
 
+                # Создание порталов
+                if boss.portal_timer == 700:
+                    creating_portals.add(boss)
+                    boss.portal_timer = 1
+                else:
+                    boss.portal_timer += 1
 
+        # Создание порталов
+        for boss in creating_portals:
+            boss.pink_ball_timer = 1
+            boss.blue_ball_timer = 1
+            boss.teleportation = 1
+            boss.portal_timer = 1
+
+            boss.angry = True
+            if boss.direction == 'left':
+                boss.image = pygame.image.load('resources/enemy/ghost_boss_angry_left.png')
+            elif boss.direction == 'right':
+                boss.image = pygame.image.load('resources/enemy/ghost_boss_angry_right.png')
+
+            for i in range(random.choice([1, 2, 3])):
+                portal = Ghost_portal()
+                all_sprites.add(portal)
+                all_portals.add(portal)
+                portal.rect.center = functions.random_position_of_spawn(display_width, display_height)
+                if portal.rect.center[0] >= user.rect.center[0]:
+                    portal.direction = 'right'
+                else:
+                    portal.direction = 'left'
+            creating_portals.remove(boss)
 
         # Анимация синих файерболлов
         for ball in all_blue_boss_balls:
@@ -2067,19 +2117,100 @@ def run_game():   # Основная функция игры
                     ball.image = pygame.image.load('resources/attacking/blue_ball_bottom_right_8.png')
                     ball.condition = 1   # Анимация синих
 
+        # Анимация порталов-призраков
+        for portal in all_portals:
+            portal.condition += 1
+            if portal.direction == 'left':
+                if portal.condition == 1:
+                    portal.image = pygame.image.load('resources/objects/portal_left_1.png')
+                elif portal.condition == 8:
+                    portal.image = pygame.image.load('resources/objects/portal_left_2.png')
+                elif portal.condition == 16:
+                    portal.image = pygame.image.load('resources/objects/portal_left_3.png')
+                elif portal.condition == 24:
+                    portal.image = pygame.image.load('resources/objects/portal_left_4.png')
+                elif portal.condition == 32:
+                    portal.image = pygame.image.load('resources/objects/portal_left_5.png')
+                elif portal.condition == 40:
+                    portal.image = pygame.image.load('resources/objects/portal_left_6.png')
+                elif portal.condition == 48:
+                    portal.image = pygame.image.load('resources/objects/portal_left_7.png')
+                elif portal.condition == 56:
+                    portal.image = pygame.image.load('resources/objects/portal_left_8.png')
+                elif portal.condition == 64:
+                    portal.image = pygame.image.load('resources/objects/portal_left_9.png')
+                    portal.condition = 1
+            elif portal.direction == 'right':
+                if portal.condition == 1:
+                    portal.image = pygame.image.load('resources/objects/portal_right_1.png')
+                elif portal.condition == 8:
+                    portal.image = pygame.image.load('resources/objects/portal_right_2.png')
+                elif portal.condition == 16:
+                    portal.image = pygame.image.load('resources/objects/portal_right_3.png')
+                elif portal.condition == 24:
+                    portal.image = pygame.image.load('resources/objects/portal_right_4.png')
+                elif portal.condition == 32:
+                    portal.image = pygame.image.load('resources/objects/portal_right_5.png')
+                elif portal.condition == 40:
+                    portal.image = pygame.image.load('resources/objects/portal_right_6.png')
+                elif portal.condition == 48:
+                    portal.image = pygame.image.load('resources/objects/portal_right_7.png')
+                elif portal.condition == 56:
+                    portal.image = pygame.image.load('resources/objects/portal_right_8.png')
+                elif portal.condition == 64:
+                    portal.image = pygame.image.load('resources/objects/portal_right_9.png')
+                    portal.condition = 1
+
+        # Анимация "злого" босса
+        for boss in all_bosses:
+            if not all_portals:
+                boss.angry = False
+
+        # Спавн порталов- призраков
+        for portal in all_portals:
+            boss.pink_ball_timer = 1
+            boss.blue_ball_timer = 1
+            boss.teleportation = 1
+            boss.portal_timer = 1
+            if portal.spawned_ghosts != 2:
+                portal.spawn_timer += 1
+                if portal.spawn_timer == 200:
+                    portal.spawned_ghosts += 1
+                    portal.spawn_timer = 1
+
+                    ghost = Ghost()
+                    all_sprites.add(ghost)
+                    all_ghosts.add(ghost)
+                    all_enemy.add(ghost)
+                    ghost.rect.center = portal.rect.center
+
+                    ghost_bar = Enemy_Bar_HP(ghost)
+                    ghost.bar = ghost_bar
+                    all_sprites.add(ghost_bar)
+                    all_ghost_bars.add(ghost_bar)
+                    all_enemy_bars.add(ghost_bar)
+                    ghost_bar.rect.center = ghost_bar.follow.rect.center
+
+            else:
+                portal.kill()
+
+        # Коллизия синих файерболлов и стен
         for wall in walls:
             pygame.sprite.spritecollide(wall, all_blue_boss_balls, True)
 
+        # Коллизия синих файерболлов и игрока
         if pygame.sprite.spritecollide(user, all_blue_boss_balls, True):
             sound = pygame.mixer.Sound('resources/sounds/taking_damage_by_user.wav')
             sound.play()
             user.hp -= 1
 
-
+        # Выстрелы розовых файерболлов
         for boss in left_top:
             boss.pink_ball_timer = 1
             boss.blue_ball_timer = 1
             boss.teleportation = 1
+            boss.invisible = True
+
             if boss.rect.bottom < display_height - 50:
                 boss.rect.y += 2
                 boss.count_of_pink_balls += 1
@@ -2094,10 +2225,14 @@ def run_game():   # Основная функция игры
             else:
                 left_top.remove(boss)
                 boss.count_of_pink_balls = 0
+                boss.invisible = False
+
         for boss in left_bottom:
             boss.pink_ball_timer = 1
             boss.blue_ball_timer = 1
             boss.teleportation = 1
+            boss.invisible = True
+
             if boss.rect.top > 50:
                 boss.rect.y -= 2
                 boss.count_of_pink_balls += 1
@@ -2112,10 +2247,14 @@ def run_game():   # Основная функция игры
             else:
                 left_bottom.remove(boss)
                 boss.count_of_pink_balls = 0
+                boss.invisible = False
+
         for boss in right_top:
             boss.pink_ball_timer = 1
             boss.blue_ball_timer = 1
             boss.teleportation = 1
+            boss.invisible = True
+
             if boss.rect.bottom < display_height - 50:
                 boss.rect.y += 2
                 boss.count_of_pink_balls += 1
@@ -2130,10 +2269,14 @@ def run_game():   # Основная функция игры
             else:
                 right_top.remove(boss)
                 boss.count_of_pink_balls = 0
+                boss.invisible = False
+
         for boss in right_bottom:
             boss.pink_ball_timer = 1
             boss.blue_ball_timer = 1
             boss.teleportation = 1
+            boss.invisible = True
+
             if boss.rect.top > 50:
                 boss.rect.y -= 2
                 boss.count_of_pink_balls += 1
@@ -2148,6 +2291,7 @@ def run_game():   # Основная функция игры
             else:
                 right_bottom.remove(boss)
                 boss.count_of_pink_balls = 0
+                boss.invisible = False
 
         # Анимация розовых файерболлов
         for ball in all_pink_boss_balls:
@@ -2192,26 +2336,31 @@ def run_game():   # Основная функция игры
                     ball.image = pygame.image.load('resources/attacking/pink_ball_right_8.png')
                     ball.condition = 1
 
+        # Коллизия розовых файерболлов и стен
         for wall in walls:
             pygame.sprite.spritecollide(wall, all_pink_boss_balls, True)
 
+        # Коллизия розовых файерболлов и игрока
         if pygame.sprite.spritecollide(user, all_pink_boss_balls, True):
             sound = pygame.mixer.Sound('resources/sounds/taking_damage_by_user.wav')
             sound.play()
             user.hp -= 1
 
-        if pygame.sprite.spritecollide(user, all_bosses, False):   # Игрок касается босса
-            sound = pygame.mixer.Sound('resources/sounds/taking_damage_by_user.wav')
-            sound.play()
-            for boss in all_bosses:
-                user.hp -= 1
-                boss.rect.center = functions.random_place_to_teleportation_of_boss_ghost(
-                    display_width,
-                    display_height,
-                    user.rect.center[0],
-                    user.rect.center[1]
-                )
-                boss.teleportation = 1
+        # Коллизия игрока и босса
+        for boss in all_bosses:
+            if not boss.invisible:
+                if pygame.sprite.spritecollide(user, all_bosses, False):
+                    sound = pygame.mixer.Sound('resources/sounds/taking_damage_by_user.wav')
+                    sound.play()
+                    for boss in all_bosses:
+                        user.hp -= 1
+                        boss.rect.center = functions.random_place_to_teleportation_of_boss_ghost(
+                            display_width,
+                            display_height,
+                            user.rect.center[0],
+                            user.rect.center[1]
+                        )
+                        boss.teleportation = 1
 
 
         ############################# Работа с сообщениями ##############################
@@ -2244,6 +2393,9 @@ def run_game():   # Основная функция игры
         if user.time_spended_to_realise == 100:
             user.time_to_realise = True
             user.time_spended_to_realise = 0
+
+        for boss in all_bosses:
+            print(boss.portal_timer, boss.blue_ball_timer, boss.pink_ball_timer, boss.teleportation)
 
         draw_scores()
         pygame.display.update()
