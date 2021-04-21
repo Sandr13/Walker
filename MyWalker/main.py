@@ -2506,6 +2506,17 @@ def run_game():   # Основная функция игры
             user.time_to_realise = True
             user.time_spended_to_realise = 0
 
+        for sword_place in all_sword_places:
+            sword_place.rect.center = user.rect.center
+            if sword_place.name == 'left':
+                sword_place.rect.right = user.rect.left
+            elif sword_place.name == 'right':
+                sword_place.rect.left = user.rect.right
+            elif sword_place.name == 'top':
+                sword_place.rect.bottom = user.rect.top
+            elif sword_place.name == 'bottom':
+                sword_place.rect.top = user.rect.bottom
+
         draw_scores()
         pygame.display.update()
         all_sprites.update()   # Обновление спрайтов
