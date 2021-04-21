@@ -172,6 +172,20 @@ class Chest(pygame.sprite.Sprite):
         self.opened = False
         self.dropted = False
 
+############################# Класс right_left места для меча ##############################
+class Right_left_sword_barrier(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('resources/attacking/left_and_right_sword_place.png')
+        self.rect = self.image.get_rect()
+
+############################# Класс top_bottom места для меча ##############################
+class Top_bottom_sword_barrier(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('resources/attacking/top_and_bottom_sword_place.png')
+        self.rect = self.image.get_rect()
+
 ############################# Класс гозизонтальной стены ##############################
 class Wall_Horizontal(pygame.sprite.Sprite):
     def __init__(self):
@@ -225,6 +239,14 @@ class Crossbow(pygame.sprite.Sprite):
         self.image = pygame.image.load('resources/inventory/items/crossbow.png')
         self.rect = self.image.get_rect()
         self.name = 'crossbow'
+
+############################# Класс меча ##############################
+class Sword(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('resources/inventory/items/sword.png')
+        self.rect = self.image.get_rect()
+        self.name = 'sword'
 
 ############################# Класс лука ##############################
 class Bow(pygame.sprite.Sprite):
@@ -305,6 +327,10 @@ def run_game():   # Основная функция игры
     ############################# Создаём игрока ##############################
     user = Player()
     all_sprites.add(user)
+
+    base_sword = Sword()
+    user.items.append(base_sword)
+
 
     ############################# Стрельба ##############################
     def bullet_move(arrow, direction):
@@ -411,6 +437,8 @@ def run_game():   # Основная функция игры
                 sound.play()
                 user.hp += 1
                 delete()
+            elif user.items[0].name == 'sword':
+                list = pygame.sprite.spritecollide(user, all_bullets, True)
         else:
             pass
     ############################# Противники ##############################
@@ -604,6 +632,8 @@ def run_game():   # Основная функция игры
             dropted.durability = remember.durability
         elif item == 'crossbow':
             dropted = Crossbow()
+        elif item == 'sword':
+            dropted = Sword()
 
         all_sprites.add(dropted)
         all_items_ont_the_ground.add(dropted)
@@ -656,6 +686,7 @@ def run_game():   # Основная функция игры
     empty_1 = Place_for_item_in_ceil()
     all_sprites.add(empty_1)
     empty_1.rect.center = (75,25)
+    empty_1.image = pygame.image.load('resources/inventory/items/sword.png')
 
 
     block_2 = Ceil_of_inventory()
@@ -1302,6 +1333,8 @@ def run_game():   # Основная функция игры
             def pick_up():
                 if len(user.items) < 5:
                     list = pygame.sprite.spritecollide(user, all_items_ont_the_ground, True)
+                    sound = pygame.mixer.Sound('resources/sounds/pick_items_up.wav')
+                    sound.play()
                     for i in range(len(list)):
                         if len(user.items) < 5:
                             user.items.append(list[i])
@@ -1379,9 +1412,6 @@ def run_game():   # Основная функция игры
                                 blocked_bottom = False
                             else:
                                 blocked_left = True
-                                blocked_right = True
-                                blocked_top = True
-                                blocked_bottom = True
                     else:
                         if user.rect.x < display_width - 125:
                             if block.rect.bottom < 500:
@@ -1392,10 +1422,7 @@ def run_game():   # Основная функция игры
                                 blocked_top = False
                                 blocked_bottom = False
                             else:
-                                blocked_left = True
                                 blocked_right = True
-                                blocked_top = True
-                                blocked_bottom = True
                 else:
                     if block.place == 'bottom':
                         if user.rect.y < display_height - 125:
@@ -1407,9 +1434,6 @@ def run_game():   # Основная функция игры
                                 blocked_top = False
                                 blocked_bottom = True
                             else:
-                                blocked_left = True
-                                blocked_right = True
-                                blocked_top = True
                                 blocked_bottom = True
                     else:
                         if user.rect.y > 125:
@@ -1421,14 +1445,13 @@ def run_game():   # Основная функция игры
                                 blocked_top = True
                                 blocked_bottom = False
                             else:
-                                blocked_left = True
-                                blocked_right = True
                                 blocked_top = True
-                                blocked_bottom = True
 
             ############################# Перестановка предметов из инвентаря ##############################
             def permutation():
                 if len(user.items) != 0:
+                    sound = pygame.mixer.Sound('resources/sounds/scroll_the_inventory.wav')
+                    sound.play()
                     remember = user.items[0]
                     for i in range(len(user.items) - 1):
                         user.items[i] = user.items[i+1]
@@ -1483,6 +1506,25 @@ def run_game():   # Основная функция игры
 
                     elif item.name == 'crossbow':
                         directory = 'resources\\inventory\\items\\crossbow.png'
+
+                        if inventory.items[0].is_empty:
+                            empty_1.image = pygame.image.load(directory)
+                            inventory.items[0].is_empty = False
+                        elif inventory.items[1].is_empty:
+                            empty_2.image = pygame.image.load(directory)
+                            inventory.items[1].is_empty = False
+                        elif inventory.items[2].is_empty:
+                            empty_3.image = pygame.image.load(directory)
+                            inventory.items[2].is_empty = False
+                        elif inventory.items[3].is_empty:
+                            empty_4.image = pygame.image.load(directory)
+                            inventory.items[3].is_empty = False
+                        elif inventory.items[4].is_empty:
+                            empty_5.image = pygame.image.load(directory)
+                            inventory.items[4].is_empty = False
+
+                    elif item.name == 'sword':
+                        directory = 'resources\\inventory\\items\\sword.png'
 
                         if inventory.items[0].is_empty:
                             empty_1.image = pygame.image.load(directory)
@@ -1839,6 +1881,8 @@ def run_game():   # Основная функция игры
             for boss in all_bosses:
                 # Телепортация
                 if boss.teleportation == 150:
+                    sound = pygame.mixer.Sound('resources/sounds/teleportation_of_ghost_boss.wav')
+                    sound.play()
                     boss.rect.center = functions.random_place_to_teleportation_of_boss_ghost(
                         display_width,
                         display_height,
@@ -1852,6 +1896,9 @@ def run_game():   # Основная функция игры
                 # Стрельба синими файерболлами
                 if boss.blue_ball_timer == 200:
                     boss.blue_ball_timer = 1
+
+                    sound = pygame.mixer.Sound('resources/sounds/blue_fireballs.wav')
+                    sound.play()
 
                     ball1 = Ghost_boss_blue_ball()
                     all_sprites.add(ball1)
@@ -1905,6 +1952,7 @@ def run_game():   # Основная функция игры
 
                 # Стрельба розовыми файерболлами
                 if boss.pink_ball_timer == 500:
+                    boss.portal_timer -= 200
                     place = random.choice(['left_top', 'left_bottom', 'right_top', 'right_bottom'])
                     if place == 'left_top':
                         boss.rect.top = 50
@@ -1939,6 +1987,9 @@ def run_game():   # Основная функция игры
             boss.blue_ball_timer = 1
             boss.teleportation = 1
             boss.portal_timer = 1
+
+            sound = pygame.mixer.Sound('resources/sounds/creating_a_portal.wav')
+            sound.play()
 
             boss.angry = True
             if boss.direction == 'left':
@@ -2215,6 +2266,10 @@ def run_game():   # Основная функция игры
                 boss.rect.y += 2
                 boss.count_of_pink_balls += 1
                 if boss.count_of_pink_balls % 40 == 0:
+
+                    sound = pygame.mixer.Sound('resources/sounds/pink_fireballs.wav')
+                    sound.play()
+
                     ball = Ghost_boss_pink_ball()
                     all_sprites.add(ball)
                     all_pink_boss_balls.add(ball)
@@ -2237,6 +2292,10 @@ def run_game():   # Основная функция игры
                 boss.rect.y -= 2
                 boss.count_of_pink_balls += 1
                 if boss.count_of_pink_balls % 40 == 0:
+
+                    sound = pygame.mixer.Sound('resources/sounds/pink_fireballs.wav')
+                    sound.play()
+
                     ball = Ghost_boss_pink_ball()
                     all_sprites.add(ball)
                     all_pink_boss_balls.add(ball)
@@ -2259,6 +2318,10 @@ def run_game():   # Основная функция игры
                 boss.rect.y += 2
                 boss.count_of_pink_balls += 1
                 if boss.count_of_pink_balls % 40 == 0:
+
+                    sound = pygame.mixer.Sound('resources/sounds/pink_fireballs.wav')
+                    sound.play()
+
                     ball = Ghost_boss_pink_ball()
                     all_sprites.add(ball)
                     all_pink_boss_balls.add(ball)
@@ -2281,6 +2344,10 @@ def run_game():   # Основная функция игры
                 boss.rect.y -= 2
                 boss.count_of_pink_balls += 1
                 if boss.count_of_pink_balls % 40 == 0:
+
+                    sound = pygame.mixer.Sound('resources/sounds/pink_fireballs.wav')
+                    sound.play()
+
                     ball = Ghost_boss_pink_ball()
                     all_sprites.add(ball)
                     all_pink_boss_balls.add(ball)
@@ -2353,6 +2420,8 @@ def run_game():   # Основная функция игры
                     sound = pygame.mixer.Sound('resources/sounds/taking_damage_by_user.wav')
                     sound.play()
                     for boss in all_bosses:
+                        sound = pygame.mixer.Sound('resources/sounds/teleportation_of_ghost_boss.wav')
+                        sound.play()
                         user.hp -= 1
                         boss.rect.center = functions.random_place_to_teleportation_of_boss_ghost(
                             display_width,
@@ -2393,9 +2462,6 @@ def run_game():   # Основная функция игры
         if user.time_spended_to_realise == 100:
             user.time_to_realise = True
             user.time_spended_to_realise = 0
-
-        for boss in all_bosses:
-            print(boss.portal_timer, boss.blue_ball_timer, boss.pink_ball_timer, boss.teleportation)
 
         draw_scores()
         pygame.display.update()
