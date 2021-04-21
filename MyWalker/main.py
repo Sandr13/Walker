@@ -23,7 +23,7 @@ class Player(pygame.sprite.Sprite):
         self.hp = 5
         self.items = []
         self.scores = 0
-        self.lvl = 9
+        self.lvl = 1
         self.time_to_realise = True
         self.time_spended_to_realise = 0
         self.knockbacked = 0
@@ -178,6 +178,7 @@ class Right_left_sword_barrier(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load('resources/attacking/left_and_right_sword_place.png')
         self.rect = self.image.get_rect()
+        self.name = ''
 
 ############################# Класс top_bottom места для меча ##############################
 class Top_bottom_sword_barrier(pygame.sprite.Sprite):
@@ -185,6 +186,7 @@ class Top_bottom_sword_barrier(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load('resources/attacking/top_and_bottom_sword_place.png')
         self.rect = self.image.get_rect()
+        self.name = ''
 
 ############################# Класс гозизонтальной стены ##############################
 class Wall_Horizontal(pygame.sprite.Sprite):
@@ -320,6 +322,7 @@ def run_game():   # Основная функция игры
     left_bottom = pygame.sprite.Group()   ####### Стрельба розовыми файерболлами
     creating_portals = pygame.sprite.Group()   # Создание порталов призраков
     all_portals = pygame.sprite.Group()   # Группа порталов босса-призрака
+    all_sword_places = pygame.sprite.Group()   # Группа барьеров меча
 
     ############################# Задний фон ##############################
     background = Background()
@@ -330,6 +333,36 @@ def run_game():   # Основная функция игры
 
     base_sword = Sword()
     user.items.append(base_sword)
+
+    left_place_for_sword = Right_left_sword_barrier()
+    left_place_for_sword.rect.center = user.rect.center
+    left_place_for_sword.rect.right = user.rect.left
+    left_place_for_sword.name = 'left'
+
+    right_place_for_sword = Right_left_sword_barrier()
+    right_place_for_sword.rect.center = user.rect.center
+    right_place_for_sword.rect.left = user.rect.right
+    right_place_for_sword.name = 'right'
+
+    top_place_for_sword = Top_bottom_sword_barrier()
+    top_place_for_sword.rect.center = user.rect.center
+    top_place_for_sword.rect.bottom = user.rect.top
+    top_place_for_sword.name = 'top'
+
+    bottom_place_for_sword = Top_bottom_sword_barrier()
+    bottom_place_for_sword.rect.center = user.rect.center
+    bottom_place_for_sword.rect.top = user.rect.bottom
+    bottom_place_for_sword.name = 'bottom'
+
+    all_sprites.add(left_place_for_sword)
+    all_sprites.add(right_place_for_sword)
+    all_sprites.add(top_place_for_sword)
+    all_sprites.add(bottom_place_for_sword)
+
+    all_sword_places.add(left_place_for_sword)
+    all_sword_places.add(right_place_for_sword)
+    all_sword_places.add(top_place_for_sword)
+    all_sword_places.add(bottom_place_for_sword)
 
 
     ############################# Стрельба ##############################
@@ -438,7 +471,17 @@ def run_game():   # Основная функция игры
                 user.hp += 1
                 delete()
             elif user.items[0].name == 'sword':
-                list = pygame.sprite.spritecollide(user, all_bullets, True)
+                if left:
+                    list = pygame.sprite.spritecollide(left_place_for_sword, all_enemy, False)
+                elif right:
+                    list = pygame.sprite.spritecollide(right_place_for_sword, all_enemy, False)
+                elif back:
+                    list = pygame.sprite.spritecollide(top_place_for_sword, all_enemy, False)
+                elif front:
+                    list = pygame.sprite.spritecollide(bottom_place_for_sword, all_enemy, False)
+
+                for enemy in list:
+                    enemy.hp -= 0.5
         else:
             pass
     ############################# Противники ##############################
