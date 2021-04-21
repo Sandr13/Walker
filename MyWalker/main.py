@@ -23,7 +23,7 @@ class Player(pygame.sprite.Sprite):
         self.hp = 5
         self.items = []
         self.scores = 0
-        self.lvl = 1
+        self.lvl = 9
         self.time_to_realise = True
         self.time_spended_to_realise = 0
         self.knockbacked = 0
@@ -481,7 +481,7 @@ def run_game():   # Основная функция игры
                     list = pygame.sprite.spritecollide(bottom_place_for_sword, all_enemy, False)
 
                 for enemy in list:
-                    enemy.hp -= 0.5
+                    enemy.hp -= 1
         else:
             pass
     ############################# Противники ##############################
@@ -1190,7 +1190,7 @@ def run_game():   # Основная функция игры
                 list = pygame.sprite.spritecollide(bullet, all_enemy, False)
                 if list:
                     for i in range(len(list)):
-                        list[i].hp -= len(list)
+                        list[i].hp -= 1
                     bullet.kill()
 
                 for wall in walls:
