@@ -23,10 +23,11 @@ class Player(pygame.sprite.Sprite):
         self.hp = 5
         self.items = []
         self.scores = 0
-        self.lvl = 1
+        self.lvl = 9
         self.time_to_realise = True
         self.time_spended_to_realise = 0
-        self.knockbacked = 0
+        self.sword_time = 1
+        self.bow_time = 1
 
 ############################# Класс инвентаря ##############################
 class Inventory:
@@ -404,31 +405,33 @@ def run_game():   # Основная функция игры
     def use_first_item():
         if user.time_to_realise:
             if user.items[0].name == 'bow':
-                if user.items[0].durability == 0:
-                    user.time_to_realise = False
-                    user.time_spended_to_realise = 0
-                    print_the_message('bow_is_broken')
-                sound = pygame.mixer.Sound('resources/sounds/user_shooting_from_bow.wav')
-                sound.play()
-                user.items[0].durability -= 1
-                arrow = Bullet()
-                all_sprites.add(arrow)
-                all_bullets.add(arrow)
-                arrow.rect.center = user.rect.center
-                if right:
-                    arrow.direction = 'right'
-                    arrow.image = pygame.image.load('resources\\attacking\\arrow-right.png')
-                elif left:
-                    arrow.direction = 'left'
-                    arrow.image = pygame.image.load('resources\\attacking\\arrow-left.png')
-                elif back:
-                    arrow.direction = 'top'
-                    arrow.image = pygame.image.load('resources\\attacking\\arrow-top.png')
-                elif front:
-                    arrow.direction = 'bottom'
-                    arrow.image = pygame.image.load('resources\\attacking\\arrow-bottom.png')
+                if user.bow_time == 1:
+                    if user.items[0].durability == 0:
+                        user.time_to_realise = False
+                        user.time_spended_to_realise = 0
+                        print_the_message('bow_is_broken')
+                    sound = pygame.mixer.Sound('resources/sounds/user_shooting_from_bow.wav')
+                    sound.play()
+                    user.items[0].durability -= 1
+                    arrow = Bullet()
+                    all_sprites.add(arrow)
+                    all_bullets.add(arrow)
+                    arrow.rect.center = user.rect.center
+                    if right:
+                        arrow.direction = 'right'
+                        arrow.image = pygame.image.load('resources\\attacking\\arrow-right.png')
+                    elif left:
+                        arrow.direction = 'left'
+                        arrow.image = pygame.image.load('resources\\attacking\\arrow-left.png')
+                    elif back:
+                        arrow.direction = 'top'
+                        arrow.image = pygame.image.load('resources\\attacking\\arrow-top.png')
+                    elif front:
+                        arrow.direction = 'bottom'
+                        arrow.image = pygame.image.load('resources\\attacking\\arrow-bottom.png')
 
-                bullet_move(arrow, arrow.direction)
+                    bullet_move(arrow, arrow.direction)
+                    user.bow_time = 12
             elif user.items[0].name == 'crossbow':
                 sound = pygame.mixer.Sound('resources/sounds/user_shooting_from_bow.wav')
                 sound.play()
@@ -481,37 +484,41 @@ def run_game():   # Основная функция игры
                 user.hp += 1
                 delete()
             elif user.items[0].name == 'sword':
-                if left:
-                    list = pygame.sprite.spritecollide(left_place_for_sword, all_enemy, False)
-                    smash = Smash()
-                    all_smashes.add(smash)
-                    all_sprites.add(smash)
-                    smash.name = 'left'
-                    smash.rect.center = (user.rect.center[0] - 30, user.rect.center[1])
-                elif right:
-                    list = pygame.sprite.spritecollide(right_place_for_sword, all_enemy, False)
-                    smash = Smash()
-                    all_smashes.add(smash)
-                    all_sprites.add(smash)
-                    smash.name = 'right'
-                    smash.rect.center = (user.rect.center[0] + 5, user.rect.center[1])
-                elif back:
-                    list = pygame.sprite.spritecollide(top_place_for_sword, all_enemy, False)
-                    smash = Smash()
-                    all_smashes.add(smash)
-                    all_sprites.add(smash)
-                    smash.name = 'top'
-                    smash.rect.center = (user.rect.center[0] - 20, user.rect.center[1] - 20)
-                elif front:
-                    list = pygame.sprite.spritecollide(bottom_place_for_sword, all_enemy, False)
-                    smash = Smash()
-                    all_smashes.add(smash)
-                    all_sprites.add(smash)
-                    smash.name = 'bottom'
-                    smash.rect.center = (user.rect.center[0], user.rect.center[1] + 40)
+                if user.sword_time == 1:
+                    sound = pygame.mixer.Sound('resources/sounds/sword_sound.wav')
+                    sound.play()
+                    if left:
+                        list = pygame.sprite.spritecollide(left_place_for_sword, all_enemy, False)
+                        smash = Smash()
+                        all_smashes.add(smash)
+                        all_sprites.add(smash)
+                        smash.name = 'left'
+                        smash.rect.center = (user.rect.center[0] - 30, user.rect.center[1])
+                    elif right:
+                        list = pygame.sprite.spritecollide(right_place_for_sword, all_enemy, False)
+                        smash = Smash()
+                        all_smashes.add(smash)
+                        all_sprites.add(smash)
+                        smash.name = 'right'
+                        smash.rect.center = (user.rect.center[0] + 5, user.rect.center[1])
+                    elif back:
+                        list = pygame.sprite.spritecollide(top_place_for_sword, all_enemy, False)
+                        smash = Smash()
+                        all_smashes.add(smash)
+                        all_sprites.add(smash)
+                        smash.name = 'top'
+                        smash.rect.center = (user.rect.center[0] - 20, user.rect.center[1] - 20)
+                    elif front:
+                        list = pygame.sprite.spritecollide(bottom_place_for_sword, all_enemy, False)
+                        smash = Smash()
+                        all_smashes.add(smash)
+                        all_sprites.add(smash)
+                        smash.name = 'bottom'
+                        smash.rect.center = (user.rect.center[0], user.rect.center[1] + 40)
 
-                for enemy in list:
-                    enemy.hp -= 1
+                    for enemy in list:
+                        enemy.hp -= 1
+                    user.sword_time = 12
         else:
             pass
     ############################# Противники ##############################
@@ -1522,14 +1529,24 @@ def run_game():   # Основная функция игры
 
             ############################# Перестановка предметов из инвентаря ##############################
             def permutation():
-                if len(user.items) != 0:
-                    sound = pygame.mixer.Sound('resources/sounds/scroll_the_inventory.wav')
-                    sound.play()
+                if len(user.items) > 1:
+                    # sound = pygame.mixer.Sound('resources/sounds/scroll_the_inventory.wav')
+                    # sound.play()
                     remember = user.items[0]
                     for i in range(len(user.items) - 1):
                         user.items[i] = user.items[i+1]
                     user.items[len(user.items) - 1] = remember
                     print_items()
+
+                    if user.items[0].name == 'sword':
+                        sound = pygame.mixer.Sound('resources/sounds/take_sword.wav')
+                        sound.play()
+                    elif user.items[0].name == 'bow':
+                        sound = pygame.mixer.Sound('resources/sounds/take_bow.wav')
+                        sound.play()
+                    elif user.items[0].name == 'heal_bottle':
+                        sound = pygame.mixer.Sound('resources/sounds/take_potion.wav')
+                        sound.play()
                 else:
                     pass
             ############################# Отрисовка предметов из инвентаря ##############################
@@ -2625,6 +2642,10 @@ def run_game():   # Основная функция игры
                     smash.image = pygame.image.load('resources/attacking/smash_bottom_8.png')
                 elif smash.condition == 9:
                     smash.kill()
+        if user.sword_time != 1:
+            user.sword_time -= 1
+        if user.bow_time != 1:
+            user.bow_time -= 1
 
         draw_scores()
         pygame.display.update()
