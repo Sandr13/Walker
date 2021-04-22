@@ -23,7 +23,7 @@ class Player(pygame.sprite.Sprite):
         self.hp = 5
         self.items = []
         self.scores = 0
-        self.lvl = 9
+        self.lvl = 1
         self.time_to_realise = True
         self.time_spended_to_realise = 0
         self.knockbacked = 0
@@ -41,6 +41,15 @@ class Bar_DURABILITY(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.left = 350
         self.rect.top = 5
+
+############################# Класс test ##############################
+class Smash(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('resources/inventory/items/empty_slot.png')
+        self.rect = self.image.get_rect()
+        self.name = ''
+        self.condition = 1
 
 ############################# Класс объекта-бара хп ##############################
 class Bar_HP(pygame.sprite.Sprite):
@@ -323,6 +332,7 @@ def run_game():   # Основная функция игры
     creating_portals = pygame.sprite.Group()   # Создание порталов призраков
     all_portals = pygame.sprite.Group()   # Группа порталов босса-призрака
     all_sword_places = pygame.sprite.Group()   # Группа барьеров меча
+    all_smashes = pygame.sprite.Group()   # Группа следов меча
 
     ############################# Задний фон ##############################
     background = Background()
@@ -473,12 +483,32 @@ def run_game():   # Основная функция игры
             elif user.items[0].name == 'sword':
                 if left:
                     list = pygame.sprite.spritecollide(left_place_for_sword, all_enemy, False)
+                    smash = Smash()
+                    all_smashes.add(smash)
+                    all_sprites.add(smash)
+                    smash.name = 'left'
+                    smash.rect.center = (user.rect.center[0] - 30, user.rect.center[1])
                 elif right:
                     list = pygame.sprite.spritecollide(right_place_for_sword, all_enemy, False)
+                    smash = Smash()
+                    all_smashes.add(smash)
+                    all_sprites.add(smash)
+                    smash.name = 'right'
+                    smash.rect.center = (user.rect.center[0] + 5, user.rect.center[1])
                 elif back:
                     list = pygame.sprite.spritecollide(top_place_for_sword, all_enemy, False)
+                    smash = Smash()
+                    all_smashes.add(smash)
+                    all_sprites.add(smash)
+                    smash.name = 'top'
+                    smash.rect.center = (user.rect.center[0] - 20, user.rect.center[1] - 20)
                 elif front:
                     list = pygame.sprite.spritecollide(bottom_place_for_sword, all_enemy, False)
+                    smash = Smash()
+                    all_smashes.add(smash)
+                    all_sprites.add(smash)
+                    smash.name = 'bottom'
+                    smash.rect.center = (user.rect.center[0], user.rect.center[1] + 40)
 
                 for enemy in list:
                     enemy.hp -= 1
@@ -2516,6 +2546,85 @@ def run_game():   # Основная функция игры
                 sword_place.rect.bottom = user.rect.top
             elif sword_place.name == 'bottom':
                 sword_place.rect.top = user.rect.bottom
+
+        for smash in all_smashes:
+            smash.condition += 1
+            if smash.name == 'left':
+                if smash.condition == 1:
+                    smash.image = pygame.image.load('resources/attacking/smash_left_1.png')
+                elif smash.condition == 2:
+                    smash.image = pygame.image.load('resources/attacking/smash_left_2.png')
+                elif smash.condition == 3:
+                    smash.image = pygame.image.load('resources/attacking/smash_left_3.png')
+                elif smash.condition == 4:
+                    smash.image = pygame.image.load('resources/attacking/smash_left_4.png')
+                elif smash.condition == 5:
+                    smash.image = pygame.image.load('resources/attacking/smash_left_5.png')
+                elif smash.condition == 6:
+                    smash.image = pygame.image.load('resources/attacking/smash_left_6.png')
+                elif smash.condition == 7:
+                    smash.image = pygame.image.load('resources/attacking/smash_left_7.png')
+                elif smash.condition == 8:
+                    smash.image = pygame.image.load('resources/attacking/smash_left_8.png')
+                elif smash.condition == 9:
+                    smash.kill()
+            elif smash.name == 'right':
+                if smash.condition == 1:
+                    smash.image = pygame.image.load('resources/attacking/smash_right_1.png')
+                elif smash.condition == 2:
+                    smash.image = pygame.image.load('resources/attacking/smash_right_2.png')
+                elif smash.condition == 3:
+                    smash.image = pygame.image.load('resources/attacking/smash_right_3.png')
+                elif smash.condition == 4:
+                    smash.image = pygame.image.load('resources/attacking/smash_right_4.png')
+                elif smash.condition == 5:
+                    smash.image = pygame.image.load('resources/attacking/smash_right_5.png')
+                elif smash.condition == 6:
+                    smash.image = pygame.image.load('resources/attacking/smash_right_6.png')
+                elif smash.condition == 7:
+                    smash.image = pygame.image.load('resources/attacking/smash_right_7.png')
+                elif smash.condition == 8:
+                    smash.image = pygame.image.load('resources/attacking/smash_right_8.png')
+                elif smash.condition == 9:
+                    smash.kill()
+            elif smash.name == 'top':
+                if smash.condition == 1:
+                    smash.image = pygame.image.load('resources/attacking/smash_top_1.png')
+                elif smash.condition == 2:
+                    smash.image = pygame.image.load('resources/attacking/smash_top_2.png')
+                elif smash.condition == 3:
+                    smash.image = pygame.image.load('resources/attacking/smash_top_3.png')
+                elif smash.condition == 4:
+                    smash.image = pygame.image.load('resources/attacking/smash_top_4.png')
+                elif smash.condition == 5:
+                    smash.image = pygame.image.load('resources/attacking/smash_top_5.png')
+                elif smash.condition == 6:
+                    smash.image = pygame.image.load('resources/attacking/smash_top_6.png')
+                elif smash.condition == 7:
+                    smash.image = pygame.image.load('resources/attacking/smash_top_7.png')
+                elif smash.condition == 8:
+                    smash.image = pygame.image.load('resources/attacking/smash_top_8.png')
+                elif smash.condition == 9:
+                    smash.kill()
+            elif smash.name == 'bottom':
+                if smash.condition == 1:
+                    smash.image = pygame.image.load('resources/attacking/smash_bottom_1.png')
+                elif smash.condition == 2:
+                    smash.image = pygame.image.load('resources/attacking/smash_bottom_2.png')
+                elif smash.condition == 3:
+                    smash.image = pygame.image.load('resources/attacking/smash_bottom_3.png')
+                elif smash.condition == 4:
+                    smash.image = pygame.image.load('resources/attacking/smash_bottom_4.png')
+                elif smash.condition == 5:
+                    smash.image = pygame.image.load('resources/attacking/smash_bottom_5.png')
+                elif smash.condition == 6:
+                    smash.image = pygame.image.load('resources/attacking/smash_bottom_6.png')
+                elif smash.condition == 7:
+                    smash.image = pygame.image.load('resources/attacking/smash_bottom_7.png')
+                elif smash.condition == 8:
+                    smash.image = pygame.image.load('resources/attacking/smash_bottom_8.png')
+                elif smash.condition == 9:
+                    smash.kill()
 
         draw_scores()
         pygame.display.update()
