@@ -3,9 +3,11 @@ import pygame
 import math
 import random
 import functions
+import pygame_menu
+from pygame_menu import Theme
 
 pygame.init()  # Инициализация pygame
-
+surface = pygame.display.set_mode((1400, 700))
 ############################# Параметры экрана #############################
 display_width = 1400
 display_height = 700
@@ -296,7 +298,6 @@ class Background(pygame.sprite.Sprite):
     def change_the_room(self, count_of_room):
         directory = 'resources\\level elements\\background-' + str(count_of_room + 1) + '.png'
         self.image = pygame.image.load(directory)
-
 
 def run_game():   # Основная функция игры
     game = True
@@ -2654,4 +2655,22 @@ def run_game():   # Основная функция игры
         pygame.display.flip()   # Переворчиваем экран
         clock.tick(60)   # FPS
 
-run_game()
+myimage = pygame_menu.baseimage.BaseImage(
+    image_path='resources/menu_resources/background.png',
+    drawing_mode=pygame_menu.baseimage.IMAGE_MODE_REPEAT_XY
+)
+
+mytheme = pygame_menu.themes.THEME_DARK
+mytheme.widget_font = pygame_menu.font.FONT_MUNRO
+mytheme.title_font = pygame_menu.font.FONT_MUNRO
+mytheme.widget_font_size = 50
+mytheme.title_font_size = 100
+mytheme.background_color = myimage
+mytheme.title_bar_style = pygame_menu.widgets.MENUBAR_STYLE_TITLE_ONLY_DIAGONAL
+
+menu = pygame_menu.Menu('   MyWalker   ', 1400, 700, theme=mytheme)
+menu.add.text_input('Name: ', default='')
+menu.add.button('Play', run_game)
+menu.add.button('Quit', pygame_menu.events.EXIT)
+
+menu.mainloop(surface)
