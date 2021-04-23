@@ -1,4 +1,5 @@
 import random
+import pygame
 
 def choose_the_drop_10():
     list = ['bow', 'heal_bottle']
@@ -60,3 +61,31 @@ def check_for_item(list):
 
 def chanse_to_broke_the_bow():
     return random.choice(range(100))
+
+def endgame():
+    while True:
+        ### Задаём параметры экрана ###
+        display_width = 350
+        display_height = 175
+
+        display = pygame.display.set_mode((display_width, display_height))
+        pygame.display.set_caption('Game Over')
+
+        background_image = pygame.image.load('resources\\endgame\\background.png')
+
+        clock = pygame.time.Clock()  # Переменная для подсчёта тиков
+        while True:
+            for event in pygame.event.get():  # Считываем все события
+                if event.type == pygame.QUIT:  # Считываем нажатие на крестик
+                    pygame.quit()  # Завершаем pygame
+                    quit()
+
+            display.blit(background_image, (0, 0))
+
+            keys = pygame.key.get_pressed()  # Инициализируем клавиатуру
+            if keys[pygame.K_SPACE]:
+                exit()
+
+            pygame.display.update()  # обновляем наш дисплей
+
+        clock.tick(60)  # FPS

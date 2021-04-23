@@ -26,6 +26,7 @@ class Player(pygame.sprite.Sprite):
         self.items = []
         self.scores = 0
         self.lvl = 9
+        self.lvl = 9
         self.time_to_realise = True
         self.time_spended_to_realise = 0
         self.sword_time = 1
@@ -1745,7 +1746,8 @@ def run_game():   # Основная функция игры
                 bar.image = pygame.image.load('resources\\health\\1.png')
             elif user.hp <= 0:
                 bar.image = pygame.image.load('resources\\health\\0.png')
-                exit()
+                pygame.time.wait(250)
+                functions.endgame()
 
             elif user.hp > 5:
                 user.hp = 5
