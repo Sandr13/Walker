@@ -65,8 +65,8 @@ def chanse_to_broke_the_bow():
 def endgame():
     while True:
         ### Задаём параметры экрана ###
-        display_width = 350
-        display_height = 175
+        display_width = 1400
+        display_height = 700
 
         display = pygame.display.set_mode((display_width, display_height))
         pygame.display.set_caption('Game Over')
@@ -80,7 +80,7 @@ def endgame():
                     pygame.quit()  # Завершаем pygame
                     quit()
 
-            display.blit(background_image, (0, 0))
+            display.blit(background_image, (700, 350))
 
             keys = pygame.key.get_pressed()  # Инициализируем клавиатуру
             if keys[pygame.K_SPACE]:

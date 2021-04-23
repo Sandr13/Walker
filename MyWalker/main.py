@@ -7,6 +7,7 @@ import pygame_menu
 from pygame_menu import Theme
 
 pygame.init()  # Инициализация pygame
+pygame.font.init()
 surface = pygame.display.set_mode((1400, 700))
 ############################# Параметры экрана #############################
 display_width = 1400
@@ -25,8 +26,7 @@ class Player(pygame.sprite.Sprite):
         self.hp = 5
         self.items = []
         self.scores = 0
-        self.lvl = 9
-        self.lvl = 9
+        self.lvl = 1
         self.time_to_realise = True
         self.time_spended_to_realise = 0
         self.sword_time = 1
@@ -336,6 +336,7 @@ def run_game():   # Основная функция игры
     all_portals = pygame.sprite.Group()   # Группа порталов босса-призрака
     all_sword_places = pygame.sprite.Group()   # Группа барьеров меча
     all_smashes = pygame.sprite.Group()   # Группа следов меча
+    all_disappeared = pygame.sprite.Group()   # Группа исчезновения призраков
 
     ############################# Задний фон ##############################
     background = Background()
@@ -1255,7 +1256,9 @@ def run_game():   # Основная функция игры
                         sound = pygame.mixer.Sound('resources/sounds/ghost_dying.wav')
                         sound.play()
                         ghost.bar.kill()
-                        ghost.kill()
+                        all_enemy.remove(ghost)
+                        all_ghosts.remove(ghost)
+                        all_disappeared.add(ghost)
                         sound = pygame.mixer.Sound('resources/sounds/taking_damage_by_user.wav')
                         sound.play()
                         user.hp -= 1
@@ -1270,7 +1273,9 @@ def run_game():   # Основная функция игры
                     if bars.follow.hp <= 0:
                         sound = pygame.mixer.Sound('resources/sounds/ghost_dying.wav')
                         sound.play()
-                        bars.follow.kill()
+                        all_enemy.remove(bars.follow)
+                        all_ghosts.remove(bars.follow)
+                        all_disappeared.add(bars.follow)
                         bars.kill()
                         user.scores+=1
 
@@ -2645,6 +2650,13 @@ def run_game():   # Основная функция игры
                     smash.image = pygame.image.load('resources/attacking/smash_bottom_8.png')
                 elif smash.condition == 9:
                     smash.kill()
+
+        for sprite in all_disappeared:
+            if sprite.image.get_alpha() >= 1:
+                sprite.image.set_alpha(sprite.image.get_alpha() - 10)
+            else:
+                sprite.kill()
+
         if user.sword_time != 1:
             user.sword_time -= 1
         if user.bow_time != 1:
@@ -2665,13 +2677,12 @@ myimage = pygame_menu.baseimage.BaseImage(
 mytheme = pygame_menu.themes.THEME_DARK
 mytheme.widget_font = pygame_menu.font.FONT_MUNRO
 mytheme.title_font = pygame_menu.font.FONT_MUNRO
-mytheme.widget_font_size = 50
 mytheme.title_font_size = 100
+mytheme.widget_font_size = 50
 mytheme.background_color = myimage
 mytheme.title_bar_style = pygame_menu.widgets.MENUBAR_STYLE_TITLE_ONLY_DIAGONAL
 
 menu = pygame_menu.Menu('   MyWalker   ', 1400, 700, theme=mytheme)
-menu.add.text_input('Name: ', default='')
 menu.add.button('Play', run_game)
 menu.add.button('Quit', pygame_menu.events.EXIT)
 
