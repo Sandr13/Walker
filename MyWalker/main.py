@@ -1,304 +1,26 @@
 import time
-import pygame
 import math
 import random
+
+import Objects
+import Ghost_boss
+import VisualEffects
 import functions
+
+import pygame
 import pygame_menu
 from pygame_menu import Theme
 
 pygame.init()  # Инициализация pygame
 pygame.font.init()
-surface = pygame.display.set_mode((1400, 700))
+
 ############################# Параметры экрана #############################
+surface = pygame.display.set_mode((1400, 700))
 display_width = 1400
 display_height = 700
 display = pygame.display.set_mode((display_width, display_height))
 pygame.display.set_caption("My Walker")
-clock = pygame.time.Clock()  # Переменная для подсчёта тиков
-
-############################# Класс объекта-игрока ##############################
-class Player(pygame.sprite.Sprite):
-    def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('resources\\knight\\front.png')
-        self.rect = self.image.get_rect()
-        self.rect.center = (display_width / 2, display_height / 2)
-        self.hp = 5
-        self.items = []
-        self.scores = 0
-        self.lvl = 1
-        self.time_to_realise = True
-        self.time_spended_to_realise = 0
-        self.sword_time = 1
-        self.bow_time = 1
-
-############################# Класс инвентаря ##############################
-class Inventory:
-    def __init__(self):
-        self.items = []
-
-############################# Класс объекта-бара прочности ##############################
-class Bar_DURABILITY(pygame.sprite.Sprite):
-    def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('resources\\inventory\\items\\empty_slot.png')
-        self.rect = self.image.get_rect()
-        self.rect.left = 350
-        self.rect.top = 5
-
-############################# Класс test ##############################
-class Smash(pygame.sprite.Sprite):
-    def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('resources/inventory/items/empty_slot.png')
-        self.rect = self.image.get_rect()
-        self.name = ''
-        self.condition = 1
-
-############################# Класс объекта-бара хп ##############################
-class Bar_HP(pygame.sprite.Sprite):
-    def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('resources\\health\\5.png')
-        self.rect = self.image.get_rect()
-        self.rect.center = (1215,675)
-
-############################# Класс объекта-бара хп босса ##############################
-class Boss_Bar_HP(pygame.sprite.Sprite):
-    def __init__(self, object=0):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('resources\\boss_bars\\1.png')
-        self.rect = self.image.get_rect()
-        self.rect.center = (500,500)
-        self.follow = object
-        self.condition = 1
-
-############################# Класс объекта-бара хп противника ##############################
-class Enemy_Bar_HP(pygame.sprite.Sprite):
-    def __init__(self, object):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('resources\\enemy health\\3.png')
-        self.rect = self.image.get_rect()
-        self.follow = object
-
-############################# Класс объекта-портала призраков ##############################
-class Ghost_portal(pygame.sprite.Sprite):
-    def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('resources/objects/portal_right_1.png')
-        self.rect = self.image.get_rect()
-        self.condition = 1
-        self.direction = ''
-        self.spawned_ghosts = 0
-        self.spawn_timer = 1
-
-################################ Класс призрака ##################################
-class Ghost(pygame.sprite.Sprite):
-    def __init__(self, object=0):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('resources\\enemy\\ghost_left.png')
-        self.rect = self.image.get_rect()
-        self.speed = 2
-        self.hp = 6
-        self.bar = object
-
-################################ Класс призрака-босса ##################################
-class Ghost_Boss(pygame.sprite.Sprite):
-    def __init__(self, object=0):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('resources\\enemy\\ghost_boss_left_1.png')
-        self.rect = self.image.get_rect()
-        self.bar = object
-        self.hp = 1
-        self.condition = 1
-        self.direction = 'left'
-        self.teleportation = 1
-        self.blue_ball_timer = 1
-        self.pink_ball_timer = 1
-        self.count_of_pink_balls = 0
-        self.portal_timer = 1
-        self.angry = False
-        self.created_portals = False
-        self.invisible = False
-
-################################ Класс импа ##################################
-class Imp(pygame.sprite.Sprite):
-    def __init__(self, object=0):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('resources\\enemy\\imp_front_1.png')
-        self.rect = self.image.get_rect()
-        self.speed = 1
-        self.hp = 10
-        self.bar = object
-        self.shoot_timming = 1
-        self.condition = 1
-        self.direction = ''
-
-############################# Класс объекта-снаряда Импа ##############################
-class Imp_Ball(pygame.sprite.Sprite):
-    def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('resources/inventory/items/empty_slot.png')
-        self.rect = self.image.get_rect()
-        self.condition = 1
-        self.direction = ''
-
-############################# Класс объекта-снаряда Импа ##############################
-class Ghost_boss_blue_ball(pygame.sprite.Sprite):
-    def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('resources/attacking/blue_ball_left_1.png')
-        self.rect = self.image.get_rect()
-        self.condition = 1
-        self.direction = ''
-
-############################# Класс объекта-снаряда Импа ##############################
-class Ghost_boss_pink_ball(pygame.sprite.Sprite):
-    def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('resources/attacking/pink_ball_left_1.png')
-        self.rect = self.image.get_rect()
-        self.condition = 1
-        self.direction =''
-################################ Класс ячейки инвентаря ##################################
-class Ceil_of_inventory(pygame.sprite.Sprite):
-    def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('resources\\inventory\\ceil_of_inventory.png')
-        self.rect = self.image.get_rect()
-        self.is_empty = True
-
-
-################################ Класс места для предмета в ячейке инвентаря ##################################
-class Place_for_item_in_ceil(pygame.sprite.Sprite):
-    def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('resources\\inventory\\items\\empty_slot.png')
-        self.rect = self.image.get_rect()
-
-################################ Класс сундука ##################################
-class Chest(pygame.sprite.Sprite):
-    def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('resources\\objects\\chest.png')
-        self.rect = self.image.get_rect()
-        self.opened = False
-        self.dropted = False
-
-############################# Класс right_left места для меча ##############################
-class Right_left_sword_barrier(pygame.sprite.Sprite):
-    def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('resources/attacking/left_and_right_sword_place.png')
-        self.rect = self.image.get_rect()
-        self.name = ''
-
-############################# Класс top_bottom места для меча ##############################
-class Top_bottom_sword_barrier(pygame.sprite.Sprite):
-    def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('resources/attacking/top_and_bottom_sword_place.png')
-        self.rect = self.image.get_rect()
-        self.name = ''
-
-############################# Класс гозизонтальной стены ##############################
-class Wall_Horizontal(pygame.sprite.Sprite):
-    def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('resources\\level elements\\wall-horizontal.png')
-        self.rect = self.image.get_rect()
-
-############################# Класс вертикальной стены ##############################
-class Wall_Vertical(pygame.sprite.Sprite):
-    def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('resources\\level elements\\wall-vertical.png')
-        self.rect = self.image.get_rect()
-
-############################# Класс временной вертикальной стены ##############################
-class Temporary_Wall_Vertical(pygame.sprite.Sprite):
-    def __init__(self, place):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('resources\\level elements\\temporary_vertical_wall.png')
-        self.rect = self.image.get_rect()
-        self.place = place
-
-############################# Класс временной горизонтальной стены ##############################
-class Temporary_Wall_Horizontal(pygame.sprite.Sprite):
-    def __init__(self, place):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('resources\\level elements\\temporary_horizontal_wall.png')
-        self.rect = self.image.get_rect()
-        self.place = place
-
-############################# Класс хилки ##############################
-class Heal_bottle(pygame.sprite.Sprite):
-    def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('resources/inventory/items/heal_bottle.png')
-        self.rect = self.image.get_rect()
-        self.name = 'heal_bottle'
-
-############################# Класс чёрного фона ##############################
-class Black(pygame.sprite.Sprite):
-    def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('resources/level elements/black.png')
-        self.rect = self.image.get_rect()
-        self.image.set_alpha(1)
-
-############################# Класс арбалета ##############################
-class Crossbow(pygame.sprite.Sprite):
-    def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('resources/inventory/items/crossbow.png')
-        self.rect = self.image.get_rect()
-        self.name = 'crossbow'
-
-############################# Класс меча ##############################
-class Sword(pygame.sprite.Sprite):
-    def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('resources/inventory/items/sword.png')
-        self.rect = self.image.get_rect()
-        self.name = 'sword'
-
-############################# Класс лука ##############################
-class Bow(pygame.sprite.Sprite):
-    def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('resources/inventory/items/bow.png')
-        self.rect = self.image.get_rect()
-        self.name = 'bow'
-        self.durability = 30
-
-############################# Класс сообщения ##############################
-class Message(pygame.sprite.Sprite):
-    def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('resources/inventory/items/empty_slot.png')
-        self.rect = self.image.get_rect()
-
-############################# Класс снаряда ##############################
-class Bullet(pygame.sprite.Sprite):
-    def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('resources\\attacking\\arrow.png')
-        self.rect = self.image.get_rect()
-        self.direction = 0
-        self.speed = 11
-
-################################ Класс заднего фона ##################################
-class Background(pygame.sprite.Sprite):
-    def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('resources\\level elements\\background-1.png')
-        self.rect = self.image.get_rect()
-        self.index_of_room = 1
-
-    def change_the_room(self, count_of_room):
-        directory = 'resources\\level elements\\background-' + str(count_of_room + 1) + '.png'
-        self.image = pygame.image.load(directory)
+clock = pygame.time.Clock()
 
 def run_game():   # Основная функция игры
     game = True
@@ -339,31 +61,31 @@ def run_game():   # Основная функция игры
     all_disappeared = pygame.sprite.Group()   # Группа исчезновения призраков
 
     ############################# Задний фон ##############################
-    background = Background()
+    background = Objects.Background()
     all_sprites.add(background)
     ############################# Создаём игрока ##############################
-    user = Player()
+    user = Objects.Player()
     all_sprites.add(user)
 
-    base_sword = Sword()
+    base_sword = Objects.Sword()
     user.items.append(base_sword)
 
-    left_place_for_sword = Right_left_sword_barrier()
+    left_place_for_sword = Objects.Right_left_sword_barrier()
     left_place_for_sword.rect.center = user.rect.center
     left_place_for_sword.rect.right = user.rect.left
     left_place_for_sword.name = 'left'
 
-    right_place_for_sword = Right_left_sword_barrier()
+    right_place_for_sword = Objects.Right_left_sword_barrier()
     right_place_for_sword.rect.center = user.rect.center
     right_place_for_sword.rect.left = user.rect.right
     right_place_for_sword.name = 'right'
 
-    top_place_for_sword = Top_bottom_sword_barrier()
+    top_place_for_sword = Objects.Top_bottom_sword_barrier()
     top_place_for_sword.rect.center = user.rect.center
     top_place_for_sword.rect.bottom = user.rect.top
     top_place_for_sword.name = 'top'
 
-    bottom_place_for_sword = Top_bottom_sword_barrier()
+    bottom_place_for_sword = Objects.Top_bottom_sword_barrier()
     bottom_place_for_sword.rect.center = user.rect.center
     bottom_place_for_sword.rect.top = user.rect.bottom
     bottom_place_for_sword.name = 'bottom'
@@ -397,7 +119,7 @@ def run_game():   # Основная функция игры
     def print_the_message(type_of_message):
         sound = pygame.mixer.Sound('resources/sounds/broke.wav')
         sound.play()
-        message = Message()
+        message = Objects.Message()
         all_sprites.add(message)
         all_messages.add(message)
         message.rect.center = (525, 500)
@@ -416,25 +138,22 @@ def run_game():   # Основная функция игры
                     sound = pygame.mixer.Sound('resources/sounds/user_shooting_from_bow.wav')
                     sound.play()
                     user.items[0].durability -= 1
-                    arrow = Bullet()
+                    arrow = Objects.Bullet()
                     all_sprites.add(arrow)
                     all_bullets.add(arrow)
                     arrow.rect.center = user.rect.center
                     if right:
                         arrow.direction = 'right'
-                        arrow.image = pygame.image.load('resources\\attacking\\arrow-right.png')
                     elif left:
                         arrow.direction = 'left'
-                        arrow.image = pygame.image.load('resources\\attacking\\arrow-left.png')
                     elif back:
                         arrow.direction = 'top'
-                        arrow.image = pygame.image.load('resources\\attacking\\arrow-top.png')
                     elif front:
                         arrow.direction = 'bottom'
-                        arrow.image = pygame.image.load('resources\\attacking\\arrow-bottom.png')
-
+                    VisualEffects.animate_arrow(arrow)
                     bullet_move(arrow, arrow.direction)
                     user.bow_time = 12
+
             elif user.items[0].name == 'crossbow':
                 sound = pygame.mixer.Sound('resources/sounds/user_shooting_from_bow.wav')
                 sound.play()
@@ -442,7 +161,7 @@ def run_game():   # Основная функция игры
                 if left or right:
                     for i in range(3):
                         count += 40
-                        arrow = Bullet()
+                        arrow = Objects.Bullet()
                         all_sprites.add(arrow)
                         all_bullets.add(arrow)
                         arrow.rect.center = (user.rect.center[0], user.rect.center[1] + count)
@@ -463,7 +182,7 @@ def run_game():   # Основная функция игры
                 elif front  or back:
                     for i in range(3):
                         count += 40
-                        arrow = Bullet()
+                        arrow = Objects.Bullet()
                         all_sprites.add(arrow)
                         all_bullets.add(arrow)
                         arrow.rect.center = (user.rect.center[0] + count, user.rect.center[1])
@@ -492,28 +211,28 @@ def run_game():   # Основная функция игры
                     sound.play()
                     if left:
                         list = pygame.sprite.spritecollide(left_place_for_sword, all_enemy, False)
-                        smash = Smash()
+                        smash = Objects.Smash()
                         all_smashes.add(smash)
                         all_sprites.add(smash)
                         smash.name = 'left'
                         smash.rect.center = (user.rect.center[0] - 30, user.rect.center[1])
                     elif right:
                         list = pygame.sprite.spritecollide(right_place_for_sword, all_enemy, False)
-                        smash = Smash()
+                        smash = Objects.Smash()
                         all_smashes.add(smash)
                         all_sprites.add(smash)
                         smash.name = 'right'
                         smash.rect.center = (user.rect.center[0] + 5, user.rect.center[1])
                     elif back:
                         list = pygame.sprite.spritecollide(top_place_for_sword, all_enemy, False)
-                        smash = Smash()
+                        smash = Objects.Smash()
                         all_smashes.add(smash)
                         all_sprites.add(smash)
                         smash.name = 'top'
                         smash.rect.center = (user.rect.center[0] - 20, user.rect.center[1] - 20)
                     elif front:
                         list = pygame.sprite.spritecollide(bottom_place_for_sword, all_enemy, False)
-                        smash = Smash()
+                        smash = Objects.Smash()
                         all_smashes.add(smash)
                         all_sprites.add(smash)
                         smash.name = 'bottom'
@@ -528,13 +247,13 @@ def run_game():   # Основная функция игры
     def generate_ghosts():
         number_of_enemy = functions.chanse_to_spawn_the_enemy(user.lvl)
         for i in range(number_of_enemy):
-            ghost = Ghost()
+            ghost = Objects.Ghost()
             all_sprites.add(ghost)
             all_ghosts.add(ghost)
             all_enemy.add(ghost)
             ghost.rect.center = functions.random_position_of_spawn(display_width, display_height)
 
-            ghost_bar = Enemy_Bar_HP(ghost)
+            ghost_bar = Objects.Enemy_Bar_HP(ghost)
             ghost.bar = ghost_bar
             all_sprites.add(ghost_bar)
             all_ghost_bars.add(ghost_bar)
@@ -542,40 +261,40 @@ def run_game():   # Основная функция игры
             ghost_bar.rect.center = ghost_bar.follow.rect.center
 
     def generate_boss_of_ghost():
-        temporary_wall1 = Temporary_Wall_Vertical('left')
+        temporary_wall1 = Objects.Temporary_Wall_Vertical('left')
         walls.add(temporary_wall1)
         all_temporary_walls.add(temporary_wall1)
         all_sprites.add(temporary_wall1)
         temporary_wall1.rect.bottom = 200
 
-        temporary_wall2 = Temporary_Wall_Vertical('right')
+        temporary_wall2 = Objects.Temporary_Wall_Vertical('right')
         walls.add(temporary_wall2)
         all_temporary_walls.add(temporary_wall2)
         all_sprites.add(temporary_wall2)
         temporary_wall2.rect.bottom = 200
         temporary_wall2.rect.x = display_width - 50
 
-        temporary_wall3 = Temporary_Wall_Horizontal('bottom')
+        temporary_wall3 = Objects.Temporary_Wall_Horizontal('bottom')
         walls.add(temporary_wall3)
         all_temporary_walls.add(temporary_wall3)
         all_sprites.add(temporary_wall3)
         temporary_wall3.rect.right = 350
         temporary_wall3.rect.y = display_height - 50
 
-        temporary_wall4 = Temporary_Wall_Horizontal('top')
+        temporary_wall4 = Objects.Temporary_Wall_Horizontal('top')
         walls.add(temporary_wall4)
         all_temporary_walls.add(temporary_wall4)
         all_sprites.add(temporary_wall4)
         temporary_wall4.rect.right = 700
 
-        boss = Ghost_Boss()
+        boss = Objects.Ghost_Boss()
         boss.rect.center = (display_width/2, display_height/2)
         boss.image.set_alpha(1)
         all_enemy.add(boss)
         all_bosses.add(boss)
         all_sprites.add(boss)
 
-        boss_bar = Boss_Bar_HP(boss)
+        boss_bar = Objects.Boss_Bar_HP(boss)
         boss_bar.image.set_alpha(1)
         all_sprites.add(boss_bar)
         all_boss_bars.add(boss_bar)
@@ -585,13 +304,13 @@ def run_game():   # Основная функция игры
     def generate_imps():
         number_of_enemy = functions.chanse_to_spawn_the_enemy()
         for i in range(number_of_enemy):
-            imp = Imp()
+            imp = Objects.Imp()
             all_sprites.add(imp)
             all_imps.add(imp)
             all_enemy.add(imp)
             imp.rect.center = functions.random_position_of_spawn(display_width, display_height)
 
-            imp_bar = Enemy_Bar_HP(imp)
+            imp_bar = Objects.Enemy_Bar_HP(imp)
             imp.bar = imp_bar
             all_sprites.add(imp_bar)
             all_enemy_bars.add(imp_bar)
@@ -601,7 +320,7 @@ def run_game():   # Основная функция игры
     ############################# ф-я генерации сундуков ##############################
     def generate_chests():
         for i in range(functions.chanse_to_spawn_the_chest()):
-            chest = Chest()
+            chest = Objects.Chest()
             all_sprites.add(chest)
             all_chests.add(chest)
             chest.rect.center = functions.random_position_of_spawn_chest(display_width, display_height)
@@ -611,56 +330,56 @@ def run_game():   # Основная функция игры
     ############################# Генерация противников ##############################
     generate_ghosts()
     ############################# Создаём стены ##############################
-    wall_top_1 = Wall_Horizontal()
+    wall_top_1 = Objects.Wall_Horizontal()
     all_sprites.add(wall_top_1)
     walls.add(wall_top_1)
     wall_top_1.rect.left = 0
 
-    wall_top_2 = Wall_Horizontal()
+    wall_top_2 = Objects.Wall_Horizontal()
     all_sprites.add(wall_top_2)
     walls.add(wall_top_2)
     wall_top_2.rect.left = 350
 
-    wall_top_3 = Wall_Horizontal()
+    wall_top_3 = Objects.Wall_Horizontal()
     all_sprites.add(wall_top_3)
     walls.add(wall_top_3)
     wall_top_3.rect.left = 1050
 
-    wall_top_4 = Wall_Horizontal()
+    wall_top_4 = Objects.Wall_Horizontal()
     all_sprites.add(wall_top_4)
     walls.add(wall_top_4)
     wall_top_4.rect.left = 0
     wall_top_4.rect.bottom = display_height
 
-    wall_top_5 = Wall_Horizontal()
+    wall_top_5 = Objects.Wall_Horizontal()
     all_sprites.add(wall_top_5)
     walls.add(wall_top_5)
     wall_top_5.rect.left = 750
     wall_top_5.rect.bottom = display_height
 
-    wall_top_6 = Wall_Horizontal()
+    wall_top_6 = Objects.Wall_Horizontal()
     all_sprites.add(wall_top_6)
     walls.add(wall_top_6)
     wall_top_6.rect.left = 1050
     wall_top_6.rect.bottom = display_height
 
-    wall_top_7 = Wall_Vertical()
+    wall_top_7 = Objects.Wall_Vertical()
     all_sprites.add(wall_top_7)
     walls.add(wall_top_7)
     wall_top_7.rect.top = -150
 
-    wall_top_8 = Wall_Vertical()
+    wall_top_8 = Objects.Wall_Vertical()
     all_sprites.add(wall_top_8)
     walls.add(wall_top_8)
     wall_top_8.rect.top = 500
 
-    wall_top_9 = Wall_Vertical()
+    wall_top_9 = Objects.Wall_Vertical()
     all_sprites.add(wall_top_9)
     walls.add(wall_top_9)
     wall_top_9.rect.top = -150
     wall_top_9.rect.right = 1400
 
-    wall_top_10 = Wall_Vertical()
+    wall_top_10 = Objects.Wall_Vertical()
     all_sprites.add(wall_top_10)
     walls.add(wall_top_10)
     wall_top_10.rect.right = 1400
@@ -672,13 +391,13 @@ def run_game():   # Основная функция игры
     blocked_bottom = False
 
     ############################# Бар-хп ##############################
-    bar = Bar_HP()   # бар
+    bar = Objects.Bar_HP()   # бар
     all_sprites.add(bar)
     index_of_room = 0
     count_of_room = 1
 
     ############################# Бар-прочности ##############################
-    bar_durability = Bar_DURABILITY()   # бар
+    bar_durability = Objects.Bar_DURABILITY()   # бар
     all_sprites.add(bar_durability)
 
     ######################### Отрисовка очков ############################
@@ -690,36 +409,22 @@ def run_game():   # Основная функция игры
 
     def drop(number, item):
         last_not_empty = len(user.items) - 1
-
         remember = user.items[number-1]
-
         user.items.pop(number-1)
 
-        if number == 1:
-            empty_1.image = pygame.image.load('resources\\inventory\\items\\empty_slot.png')
-        elif number == 2:
-            empty_2.image = pygame.image.load('resources\\inventory\\items\\empty_slot.png')
-        elif number == 3:
-            empty_3.image = pygame.image.load('resources\\inventory\\items\\empty_slot.png')
-        elif number == 4:
-            empty_4.image = pygame.image.load('resources\\inventory\\items\\empty_slot.png')
-        elif number == 5:
-            empty_5.image = pygame.image.load('resources\\inventory\\items\\empty_slot.png')
-
+        VisualEffects.upload_empty_slots(number, empty_1, empty_2, empty_3, empty_4, empty_5)
         print_items()
 
         if item == 'heal_bottle':
-            dropted = Heal_bottle()
+            dropted = Objects.Heal_bottle()
         elif item == 'bow':
-            dropted = Bow()
+            dropted = Objects.Bow()
             dropted.durability = remember.durability
         elif item == 'crossbow':
-            dropted = Crossbow()
+            dropted = Objects.Crossbow()
         elif item == 'sword':
-            dropted = Sword()
+            dropted = Objects.Sword()
 
-        all_sprites.add(dropted)
-        all_items_ont_the_ground.add(dropted)
         if right:
             dropted.rect.center = (user.rect.center[0] - 100, user.rect.center[1])
         elif left:
@@ -729,16 +434,11 @@ def run_game():   # Основная функция игры
         elif back:
             dropted.rect.center = (user.rect.center[0], user.rect.center[1] + 100)
 
-        if last_not_empty == 0:
-            empty_1.image = pygame.image.load('resources\\inventory\\items\\empty_slot.png')
-        elif last_not_empty == 1:
-            empty_2.image = pygame.image.load('resources\\inventory\\items\\empty_slot.png')
-        elif last_not_empty == 2:
-            empty_3.image = pygame.image.load('resources\\inventory\\items\\empty_slot.png')
-        elif last_not_empty == 3:
-            empty_4.image = pygame.image.load('resources\\inventory\\items\\empty_slot.png')
-        elif last_not_empty == 4:
-            empty_5.image = pygame.image.load('resources\\inventory\\items\\empty_slot.png')
+        all_sprites.add(dropted)
+        all_items_ont_the_ground.add(dropted)
+
+        VisualEffects.upload_last_empty_slots(last_not_empty, empty_1, empty_2, empty_3, empty_4, empty_5)
+
 
     def delete():
         last_not_empty = len(user.items) - 1
@@ -747,67 +447,58 @@ def run_game():   # Основная функция игры
         empty_1.image = pygame.image.load('resources\\inventory\\items\\empty_slot.png')
 
         print_items()
+        VisualEffects.upload_last_empty_slots(last_not_empty, empty_1, empty_2, empty_3, empty_4, empty_5)
 
-        if last_not_empty == 0:
-            empty_1.image = pygame.image.load('resources\\inventory\\items\\empty_slot.png')
-        elif last_not_empty == 1:
-            empty_2.image = pygame.image.load('resources\\inventory\\items\\empty_slot.png')
-        elif last_not_empty == 2:
-            empty_3.image = pygame.image.load('resources\\inventory\\items\\empty_slot.png')
-        elif last_not_empty == 3:
-            empty_4.image = pygame.image.load('resources\\inventory\\items\\empty_slot.png')
-        elif last_not_empty == 4:
-            empty_5.image = pygame.image.load('resources\\inventory\\items\\empty_slot.png')
 
-    inventory = Inventory()
+    inventory = Objects.Inventory()
 
-    block_1 = Ceil_of_inventory()
+    block_1 = Objects.Ceil_of_inventory()
     all_sprites.add(block_1)
     block_1.rect.center = (75,25)
     inventory.items.append(block_1)
 
-    empty_1 = Place_for_item_in_ceil()
+    empty_1 = Objects.Place_for_item_in_ceil()
     all_sprites.add(empty_1)
     empty_1.rect.center = (75,25)
     empty_1.image = pygame.image.load('resources/inventory/items/sword.png')
 
 
-    block_2 = Ceil_of_inventory()
+    block_2 = Objects.Ceil_of_inventory()
     all_sprites.add(block_2)
     block_2.rect.center = (125,25)
     inventory.items.append(block_2)
 
-    empty_2 = Place_for_item_in_ceil()
+    empty_2 = Objects.Place_for_item_in_ceil()
     all_sprites.add(empty_2)
     empty_2.rect.center = (125, 25)
 
 
-    block_3 = Ceil_of_inventory()
+    block_3 = Objects.Ceil_of_inventory()
     all_sprites.add(block_3)
     block_3.rect.center = (175,25)
     inventory.items.append(block_3)
 
-    empty_3 = Place_for_item_in_ceil()
+    empty_3 = Objects.Place_for_item_in_ceil()
     all_sprites.add(empty_3)
     empty_3.rect.center = (175, 25)
 
 
-    block_4 = Ceil_of_inventory()
+    block_4 = Objects.Ceil_of_inventory()
     all_sprites.add(block_4)
     block_4.rect.center = (225,25)
     inventory.items.append(block_4)
 
-    empty_4 = Place_for_item_in_ceil()
+    empty_4 = Objects.Place_for_item_in_ceil()
     all_sprites.add(empty_4)
     empty_4.rect.center = (225, 25)
 
 
-    block_5 = Ceil_of_inventory()
+    block_5 = Objects.Ceil_of_inventory()
     all_sprites.add(block_5)
     block_5.rect.center = (275,25)
     inventory.items.append(block_5)
 
-    empty_5 = Place_for_item_in_ceil()
+    empty_5 = Objects.Place_for_item_in_ceil()
     all_sprites.add(empty_5)
     empty_5.rect.center = (275, 25)
 
@@ -864,13 +555,8 @@ def run_game():   # Основная функция игры
                             pass
 
             keys = pygame.key.get_pressed()   # Инициализируем клавиатуру
-            ############################# Стрельба ##############################
-
-
             ############################# Движение игрока ##############################
 
-            ghost_right = True   # Направления, куда смотрит призрак
-            ghost_left = False
 
             imp_right = True   # Направление, куда смотрит имп
             imp_left = False
@@ -1092,7 +778,7 @@ def run_game():   # Основная функция игры
                     user.rect.bottom = display_height - 50
             ############################# Смена уровня ##############################
             def pause():
-                black = Black()
+                black = Objects.Black()
                 all_sprites.add(black)
                 all_black_elements.add(black)
 
@@ -1119,7 +805,7 @@ def run_game():   # Основная функция игры
                 remember = user
                 user.kill()
 
-                user = Player()
+                user = Objects.Player()
                 user.items = remember.items
                 user.hp = remember.hp
                 user.rect.center = remember.rect.center
@@ -1137,7 +823,7 @@ def run_game():   # Основная функция игры
                     blocked_top = False
                     blocked_bottom = False
 
-                    temporary_wall = Temporary_Wall_Vertical('left')
+                    temporary_wall = Objects.Temporary_Wall_Vertical('left')
                     walls.add(temporary_wall)
                     all_temporary_walls.add(temporary_wall)
                     all_sprites.add(temporary_wall)
@@ -1153,7 +839,7 @@ def run_game():   # Основная функция игры
                     blocked_top = False
                     blocked_bottom = False
 
-                    temporary_wall = Temporary_Wall_Vertical('right')
+                    temporary_wall = Objects.Temporary_Wall_Vertical('right')
                     walls.add(temporary_wall)
                     all_temporary_walls.add(temporary_wall)
                     all_sprites.add(temporary_wall)
@@ -1171,7 +857,7 @@ def run_game():   # Основная функция игры
                     blocked_top = False
                     blocked_bottom = False
 
-                    temporary_wall = Temporary_Wall_Horizontal('bottom')
+                    temporary_wall = Objects.Temporary_Wall_Horizontal('bottom')
                     walls.add(temporary_wall)
                     all_temporary_walls.add(temporary_wall)
                     all_sprites.add(temporary_wall)
@@ -1189,7 +875,7 @@ def run_game():   # Основная функция игры
                     blocked_top = False
                     blocked_bottom = False
 
-                    temporary_wall = Temporary_Wall_Horizontal('top')
+                    temporary_wall = Objects.Temporary_Wall_Horizontal('top')
                     walls.add(temporary_wall)
                     all_temporary_walls.add(temporary_wall)
                     all_sprites.add(temporary_wall)
@@ -1240,11 +926,9 @@ def run_game():   # Основная функция игры
                 if math.fabs(user.rect.center[0] - ghost.rect.center[0]) >= 50 or math.fabs(user.rect.center[1] - ghost.rect.center[1]) >= 50:
                     if user.rect.x - ghost.rect.x > 0:
                         ghost.rect.x = ghost.rect.x + ghost.speed
-                        ghost_right = True
-                        ghost_left = False
+                        ghost.direction = 'right'
                     if user.rect.x - ghost.rect.x < 0:
-                        ghost_right = False
-                        ghost_left = True
+                        ghost.direction = 'left'
                         ghost.rect.x = ghost.rect.x - ghost.speed
 
                     if user.rect.y - ghost.rect.y > 0:
@@ -1266,18 +950,8 @@ def run_game():   # Основная функция игры
                 for bars in all_ghost_bars:
                     bars.rect.bottom = bars.follow.rect.top
                     bars.rect.x = bars.follow.rect.center[0] - 17
-                    if 4 <= bars.follow.hp <= 5:
-                        bars.image = pygame.image.load('resources\\enemy health\\2.png')
-                    if 1 <= bars.follow.hp <= 3:
-                        bars.image = pygame.image.load('resources\\enemy health\\1.png')
-                    if bars.follow.hp <= 0:
-                        sound = pygame.mixer.Sound('resources/sounds/ghost_dying.wav')
-                        sound.play()
-                        all_enemy.remove(bars.follow)
-                        all_ghosts.remove(bars.follow)
-                        all_disappeared.add(bars.follow)
-                        bars.kill()
-                        user.scores+=1
+
+                    VisualEffects.update_ghost_bar(bars, all_enemy, all_ghosts, all_disappeared, user)
 
                 if ghost.rect.top < 50:
                     if ghost.rect.left >= 700 and ghost.rect.right <= 1050:
@@ -1300,11 +974,11 @@ def run_game():   # Основная функция игры
                     else:
                         ghost.rect.left = 50
 
-                ############################# Отрисовка призрака ##############################
-                if ghost_right:
-                    ghost.image = pygame.image.load('resources\enemy\ghost_right.png')
-                elif ghost_left:
-                    ghost.image = pygame.image.load('resources\enemy\ghost_left.png')
+                VisualEffects.animate_ghost(ghost)
+
+            ##########################################################################
+            ##########################################################################
+            ##########################################################################
 
             ############################# Движение импа ##############################
             for imp in all_imps:
@@ -1416,228 +1090,6 @@ def run_game():   # Основная функция игры
                         imp.image = pygame.image.load('resources/enemy/imp_front_3.png')
                         imp.condition = 1
 
-            ############################# Предметы и взаимодействие с ними ##############################
-            def pick_up():
-                if len(user.items) < 5:
-                    list = pygame.sprite.spritecollide(user, all_items_ont_the_ground, True)
-                    sound = pygame.mixer.Sound('resources/sounds/pick_items_up.wav')
-                    sound.play()
-                    for i in range(len(list)):
-                        if len(user.items) < 5:
-                            user.items.append(list[i])
-                    print_items()
-
-            if pygame.sprite.spritecollide(user, all_items_ont_the_ground, False):
-                pick_up()
-
-            ############################# Сундуки и взаимодействие с ними ##############################
-            def drop_items_from_chest(chest):
-                if user.rect.center[0] >= chest.rect.center[0]:   # Если игрок стоит справа от сундука
-                    item = functions.choose_the_drop_10()
-                    if item == 'bow':
-                        item = Bow()
-                        all_sprites.add(item)
-                        all_items_ont_the_ground.add(item)
-                        item.rect.center = (chest.rect.center[0] - 64, chest.rect.center[1])
-                    elif item == 'heal_bottle':
-                        item = Heal_bottle()
-                        all_sprites.add(item)
-                        all_items_ont_the_ground.add(item)
-                        item.rect.center = (chest.rect.center[0] - 64, chest.rect.center[1])
-                    elif item == 'crossbow':
-                        item = Crossbow()
-                        all_sprites.add(item)
-                        all_items_ont_the_ground.add(item)
-                        item.rect.center = (chest.rect.center[0] - 83, chest.rect.center[1])
-                elif user.rect.center[0] <= chest.rect.center[0]:   # Если игрок стоит слева от сундука
-                    item = functions.choose_the_drop_10()
-                    if item == 'bow':
-                        item = Bow()
-                        all_sprites.add(item)
-                        all_items_ont_the_ground.add(item)
-                        item.rect.center = (chest.rect.center[0] + 64, chest.rect.center[1])
-                    elif item == 'heal_bottle':
-                        item = Heal_bottle()
-                        all_sprites.add(item)
-                        all_items_ont_the_ground.add(item)
-                        item.rect.center = (chest.rect.center[0] + 64, chest.rect.center[1])
-                    elif item == 'crossbow':
-                        item = Crossbow()
-                        all_sprites.add(item)
-                        all_items_ont_the_ground.add(item)
-                        item.rect.center = (chest.rect.center[0] + 83, chest.rect.center[1])
-
-            def open_chest():
-                list = pygame.sprite.spritecollide(user, all_chests, False)
-                for chest in list:
-                    sound = pygame.mixer.Sound('resources/sounds/chest_sound.wav')
-                    sound.play()
-                    if chest.opened:
-                        chest.image = pygame.image.load('resources/objects/chest.png')
-                        chest.opened = False
-                    else:
-                        chest.image = pygame.image.load('resources/objects/chest_opened.png')
-                        chest.opened = True
-                        if not chest.dropted:
-                            drop_items_from_chest(chest)
-                        chest.dropted = True
-
-
-
-
-            ############################# Выдвижение стен ##############################
-            for block in all_temporary_walls:
-                if isinstance(block, Temporary_Wall_Vertical):
-                    if block.place == 'left':
-                        if user.rect.x > 125:
-                            if block.rect.bottom < 500:
-                                block.rect.y += 5
-                            elif user.lvl != 10:
-                                blocked_left = True
-                                blocked_right = False
-                                blocked_top = False
-                                blocked_bottom = False
-                            else:
-                                blocked_left = True
-                    else:
-                        if user.rect.x < display_width - 125:
-                            if block.rect.bottom < 500:
-                                block.rect.y += 5
-                            elif user.lvl != 10:
-                                blocked_left = False
-                                blocked_right = True
-                                blocked_top = False
-                                blocked_bottom = False
-                            else:
-                                blocked_right = True
-                else:
-                    if block.place == 'bottom':
-                        if user.rect.y < display_height - 125:
-                            if block.rect.right < 750:
-                                block.rect.x += 5
-                            elif user.lvl != 10:
-                                blocked_left = False
-                                blocked_right = False
-                                blocked_top = False
-                                blocked_bottom = True
-                            else:
-                                blocked_bottom = True
-                    else:
-                        if user.rect.y > 125:
-                            if block.rect.right < 1050:
-                                block.rect.x += 5
-                            elif user.lvl != 10:
-                                blocked_left = False
-                                blocked_right = False
-                                blocked_top = True
-                                blocked_bottom = False
-                            else:
-                                blocked_top = True
-
-            ############################# Перестановка предметов из инвентаря ##############################
-            def permutation():
-                if len(user.items) > 1:
-                    # sound = pygame.mixer.Sound('resources/sounds/scroll_the_inventory.wav')
-                    # sound.play()
-                    remember = user.items[0]
-                    for i in range(len(user.items) - 1):
-                        user.items[i] = user.items[i+1]
-                    user.items[len(user.items) - 1] = remember
-                    print_items()
-
-                    if user.items[0].name == 'sword':
-                        sound = pygame.mixer.Sound('resources/sounds/take_sword.wav')
-                        sound.play()
-                    elif user.items[0].name == 'bow':
-                        sound = pygame.mixer.Sound('resources/sounds/take_bow.wav')
-                        sound.play()
-                    elif user.items[0].name == 'heal_bottle':
-                        sound = pygame.mixer.Sound('resources/sounds/take_potion.wav')
-                        sound.play()
-                else:
-                    pass
-            ############################# Отрисовка предметов из инвентаря ##############################
-            def print_items():
-                for i in range(5):
-                    inventory.items[i].is_empty = True
-
-                for item in user.items:
-                    if item.name == 'heal_bottle':
-
-                        directory = 'resources\\inventory\\items\\heal_bottle.png'
-
-                        if inventory.items[0].is_empty:
-                            empty_1.image = pygame.image.load(directory)
-                            inventory.items[0].is_empty = False
-                        elif inventory.items[1].is_empty:
-                            empty_2.image = pygame.image.load(directory)
-                            inventory.items[1].is_empty = False
-                        elif inventory.items[2].is_empty:
-                            empty_3.image = pygame.image.load(directory)
-                            inventory.items[2].is_empty = False
-                        elif inventory.items[3].is_empty:
-                            empty_4.image = pygame.image.load(directory)
-                            inventory.items[3].is_empty = False
-                        elif inventory.items[4].is_empty:
-                            empty_5.image = pygame.image.load(directory)
-                            inventory.items[4].is_empty = False
-
-                    elif item.name == 'bow':
-                        directory = 'resources\\inventory\\items\\bow.png'
-
-                        if inventory.items[0].is_empty:
-                            empty_1.image = pygame.image.load(directory)
-                            inventory.items[0].is_empty = False
-                        elif inventory.items[1].is_empty:
-                            empty_2.image = pygame.image.load(directory)
-                            inventory.items[1].is_empty = False
-                        elif inventory.items[2].is_empty:
-                            empty_3.image = pygame.image.load(directory)
-                            inventory.items[2].is_empty = False
-                        elif inventory.items[3].is_empty:
-                            empty_4.image = pygame.image.load(directory)
-                            inventory.items[3].is_empty = False
-                        elif inventory.items[4].is_empty:
-                            empty_5.image = pygame.image.load(directory)
-                            inventory.items[4].is_empty = False
-
-                    elif item.name == 'crossbow':
-                        directory = 'resources\\inventory\\items\\crossbow.png'
-
-                        if inventory.items[0].is_empty:
-                            empty_1.image = pygame.image.load(directory)
-                            inventory.items[0].is_empty = False
-                        elif inventory.items[1].is_empty:
-                            empty_2.image = pygame.image.load(directory)
-                            inventory.items[1].is_empty = False
-                        elif inventory.items[2].is_empty:
-                            empty_3.image = pygame.image.load(directory)
-                            inventory.items[2].is_empty = False
-                        elif inventory.items[3].is_empty:
-                            empty_4.image = pygame.image.load(directory)
-                            inventory.items[3].is_empty = False
-                        elif inventory.items[4].is_empty:
-                            empty_5.image = pygame.image.load(directory)
-                            inventory.items[4].is_empty = False
-
-                    elif item.name == 'sword':
-                        directory = 'resources\\inventory\\items\\sword.png'
-
-                        if inventory.items[0].is_empty:
-                            empty_1.image = pygame.image.load(directory)
-                            inventory.items[0].is_empty = False
-                        elif inventory.items[1].is_empty:
-                            empty_2.image = pygame.image.load(directory)
-                            inventory.items[1].is_empty = False
-                        elif inventory.items[2].is_empty:
-                            empty_3.image = pygame.image.load(directory)
-                            inventory.items[2].is_empty = False
-                        elif inventory.items[3].is_empty:
-                            empty_4.image = pygame.image.load(directory)
-                            inventory.items[3].is_empty = False
-                        elif inventory.items[4].is_empty:
-                            empty_5.image = pygame.image.load(directory)
-                            inventory.items[4].is_empty = False
             ############################# Отрисовка анимеции снарядов импа ##############################
             for ball in all_imp_fireballs:
                 ball.condition += 1
@@ -1715,12 +1167,11 @@ def run_game():   # Основная функция игры
             def imp_shoot(imp):
                 sound = pygame.mixer.Sound('resources/sounds/imp_shooting.wav')
                 sound.play()
-                imp_ball = Imp_Ball()
+                imp_ball = Objects.Imp_Ball()
                 imp_ball.direction = imp.direction
                 all_sprites.add(imp_ball)
                 all_imp_fireballs.add(imp_ball)
                 imp_ball.rect.center = imp.rect.center
-
 
             for imp in all_imps:
                 imp.shoot_timming += 1
@@ -1728,63 +1179,146 @@ def run_game():   # Основная функция игры
                     imp_shoot(imp)
                     imp.shoot_timming = 1
 
-            ############################# Отрисовка игрока ##############################
-            if front:
-                user.image = pygame.image.load('resources\knight\\front.png')  # Переменная-картинка игрока
-            elif back:
-                user.image = pygame.image.load('resources\knight\\back.png')  # Переменная-картинка игрока
-            elif right:
-                user.image = pygame.image.load('resources\knight\\right.png')  # Переменная-картинка игрока
-            elif left:
-                user.image = pygame.image.load('resources\knight\\left.png')  # Переменная-картинка игрока
+            ##########################################################################
+            ##########################################################################
+            ##########################################################################
 
-            ############################# Отрисовка hp игрока ##############################
-            if user.hp == 5:
-                bar.image = pygame.image.load('resources\\health\\5.png')
-            elif user.hp == 4:
-                bar.image = pygame.image.load('resources\\health\\4.png')
-            elif user.hp == 3:
-                bar.image = pygame.image.load('resources\\health\\3.png')
-            elif user.hp == 2:
-                bar.image = pygame.image.load('resources\\health\\2.png')
-            elif user.hp == 1:
-                bar.image = pygame.image.load('resources\\health\\1.png')
-            elif user.hp <= 0:
-                bar.image = pygame.image.load('resources\\health\\0.png')
-                pygame.time.wait(250)
-                functions.endgame()
 
-            elif user.hp > 5:
-                user.hp = 5
+
+            ############################# Предметы и взаимодействие с ними ##############################
+            def pick_up():
+                if len(user.items) < 5:
+                    list = pygame.sprite.spritecollide(user, all_items_ont_the_ground, True)
+                    sound = pygame.mixer.Sound('resources/sounds/pick_items_up.wav')
+                    sound.play()
+                    for i in range(len(list)):
+                        if len(user.items) < 5:
+                            user.items.append(list[i])
+                    print_items()
+
+            if pygame.sprite.spritecollide(user, all_items_ont_the_ground, False):
+                pick_up()
+
+            ############################# Сундуки и взаимодействие с ними ##############################
+            def drop_items_from_chest(chest):
+                if user.rect.center[0] >= chest.rect.center[0]:   # Если игрок стоит справа от сундука
+                    item = functions.choose_the_drop_10()
+                    distanse = -64
+                    if item == 'bow':
+                        item = Objects.Bow()
+                    elif item == 'heal_bottle':
+                        item = Objects.Heal_bottle()
+                elif user.rect.center[0] < chest.rect.center[0]:   # Если игрок стоит слева от сундука
+                    item = functions.choose_the_drop_10()
+                    distanse = 64
+                    if item == 'bow':
+                        item = Objects.Bow()
+                    elif item == 'heal_bottle':
+                        item = Objects.Heal_bottle()
+
+                all_sprites.add(item)
+                all_items_ont_the_ground.add(item)
+                item.rect.center = (chest.rect.center[0] + distanse, chest.rect.center[1])
+
+            def open_chest():
+                list = pygame.sprite.spritecollide(user, all_chests, False)
+                for chest in list:
+                    sound = pygame.mixer.Sound('resources/sounds/chest_sound.wav')
+                    sound.play()
+                    if chest.opened:
+                        chest.image = pygame.image.load('resources/objects/chest.png')
+                        chest.opened = False
+                    else:
+                        chest.image = pygame.image.load('resources/objects/chest_opened.png')
+                        chest.opened = True
+                        if not chest.dropted:
+                            drop_items_from_chest(chest)
+                        chest.dropted = True
+
+            ############################# Выдвижение стен ##############################
+            for block in all_temporary_walls:
+                if isinstance(block, Objects.Temporary_Wall_Vertical):
+                    if block.place == 'left':
+                        if user.rect.x > 125:
+                            if block.rect.bottom < 500:
+                                block.rect.y += 5
+                            elif user.lvl != 10:
+                                blocked_left = True
+                                blocked_right = False
+                                blocked_top = False
+                                blocked_bottom = False
+                            else:
+                                blocked_left = True
+                    else:
+                        if user.rect.x < display_width - 125:
+                            if block.rect.bottom < 500:
+                                block.rect.y += 5
+                            elif user.lvl != 10:
+                                blocked_left = False
+                                blocked_right = True
+                                blocked_top = False
+                                blocked_bottom = False
+                            else:
+                                blocked_right = True
+                else:
+                    if block.place == 'bottom':
+                        if user.rect.y < display_height - 125:
+                            if block.rect.right < 750:
+                                block.rect.x += 5
+                            elif user.lvl != 10:
+                                blocked_left = False
+                                blocked_right = False
+                                blocked_top = False
+                                blocked_bottom = True
+                            else:
+                                blocked_bottom = True
+                    else:
+                        if user.rect.y > 125:
+                            if block.rect.right < 1050:
+                                block.rect.x += 5
+                            elif user.lvl != 10:
+                                blocked_left = False
+                                blocked_right = False
+                                blocked_top = True
+                                blocked_bottom = False
+                            else:
+                                blocked_top = True
+
+            ############################# Перестановка предметов из инвентаря ##############################
+            def permutation():
+                if len(user.items) > 1:
+                    # sound = pygame.mixer.Sound('resources/sounds/scroll_the_inventory.wav')
+                    # sound.play()
+                    remember = user.items[0]
+                    for i in range(len(user.items) - 1):
+                        user.items[i] = user.items[i+1]
+                    user.items[len(user.items) - 1] = remember
+                    print_items()
+
+                    if user.items[0].name == 'sword':
+                        sound = pygame.mixer.Sound('resources/sounds/take_sword.wav')
+                        sound.play()
+                    elif user.items[0].name == 'bow':
+                        sound = pygame.mixer.Sound('resources/sounds/take_bow.wav')
+                        sound.play()
+                    elif user.items[0].name == 'heal_bottle':
+                        sound = pygame.mixer.Sound('resources/sounds/take_potion.wav')
+                        sound.play()
+                else:
+                    pass
+            ############################# Отрисовка предметов из инвентаря ##############################
+            def print_items():
+                for i in range(5):
+                    inventory.items[i].is_empty = True
+
+                for item in user.items:
+                    VisualEffects.upload_current_item(item, inventory, empty_1, empty_2, empty_3, empty_4, empty_5)
+
+            ############################# Отрисовка игрока и его хп ##############################
+            VisualEffects.animate_player_and_his_bar(user, bar, front, back, right, left)
 
         ############################# Работа с баром прочности ##############################
-        if len(user.items) != 0:
-            item = user.items[0]
-            if item.name == 'bow':
-                if 28 <= item.durability <= 30:
-                    bar_durability.image = pygame.image.load('resources/durability/10.png')
-                elif 25 <= item.durability <= 27:
-                    bar_durability.image = pygame.image.load('resources/durability/9.png')
-                elif 22 <= item.durability <= 24:
-                    bar_durability.image = pygame.image.load('resources/durability/8.png')
-                elif 19 <= item.durability <= 21:
-                    bar_durability.image = pygame.image.load('resources/durability/7.png')
-                elif 16 <= item.durability <= 18:
-                    bar_durability.image = pygame.image.load('resources/durability/6.png')
-                elif 13 <= item.durability <= 15:
-                    bar_durability.image = pygame.image.load('resources/durability/5.png')
-                elif 10 <= item.durability <= 12:
-                    bar_durability.image = pygame.image.load('resources/durability/4.png')
-                elif 7 <= item.durability <= 9:
-                    bar_durability.image = pygame.image.load('resources/durability/3.png')
-                elif 4 <= item.durability <= 6:
-                    bar_durability.image = pygame.image.load('resources/durability/2.png')
-                elif 1 <= item.durability <= 3:
-                    bar_durability.image = pygame.image.load('resources/durability/1.png')
-            else:
-                bar_durability.image = pygame.image.load('resources/inventory/items/empty_slot.png')
-        else:
-            bar_durability.image = pygame.image.load('resources/inventory/items/empty_slot.png')
+        VisualEffects.upload_bar_of_duraility(user, bar_durability)
 
         ############################# Работа с боссом ##############################
         boss_printed = False
@@ -1818,497 +1352,31 @@ def run_game():   # Основная функция игры
 
         # Изменение состояния бара босса
         for i in all_boss_bars:
-            i.rect.center = (i.follow.rect.center[0], i.follow.rect.top - 20)
-            if i.follow.hp == 55:
-                i.image = pygame.image.load('resources/boss_bars/55.png')
-            if i.follow.hp == 54:
-                i.image = pygame.image.load('resources/boss_bars/54.png')
-            elif i.follow.hp == 53:
-                i.image = pygame.image.load('resources/boss_bars/53.png')
-            elif i.follow.hp == 52:
-                i.image = pygame.image.load('resources/boss_bars/52.png')
-            elif i.follow.hp == 51:
-                i.image = pygame.image.load('resources/boss_bars/51.png')
-            elif i.follow.hp == 50:
-                i.image = pygame.image.load('resources/boss_bars/50.png')
-            elif i.follow.hp == 49:
-                i.image = pygame.image.load('resources/boss_bars/49.png')
-            elif i.follow.hp == 48:
-                i.image = pygame.image.load('resources/boss_bars/48.png')
-            elif i.follow.hp == 47:
-                i.image = pygame.image.load('resources/boss_bars/47.png')
-            elif i.follow.hp == 46:
-                i.image = pygame.image.load('resources/boss_bars/46.png')
-            elif i.follow.hp == 45:
-                i.image = pygame.image.load('resources/boss_bars/45.png')
-            elif i.follow.hp == 44:
-                i.image = pygame.image.load('resources/boss_bars/44.png')
-            elif i.follow.hp == 43:
-                i.image = pygame.image.load('resources/boss_bars/43.png')
-            elif i.follow.hp == 42:
-                i.image = pygame.image.load('resources/boss_bars/42.png')
-            elif i.follow.hp == 41:
-                i.image = pygame.image.load('resources/boss_bars/41.png')
-            elif i.follow.hp == 40:
-                i.image = pygame.image.load('resources/boss_bars/40.png')
-            elif i.follow.hp == 39:
-                i.image = pygame.image.load('resources/boss_bars/39.png')
-            elif i.follow.hp == 38:
-                i.image = pygame.image.load('resources/boss_bars/38.png')
-            elif i.follow.hp == 37:
-                i.image = pygame.image.load('resources/boss_bars/37.png')
-            elif i.follow.hp == 36:
-                i.image = pygame.image.load('resources/boss_bars/36.png')
-            elif i.follow.hp == 35:
-                i.image = pygame.image.load('resources/boss_bars/35.png')
-            elif i.follow.hp == 34:
-                i.image = pygame.image.load('resources/boss_bars/34.png')
-            elif i.follow.hp == 33:
-                i.image = pygame.image.load('resources/boss_bars/33.png')
-            elif i.follow.hp == 32:
-                i.image = pygame.image.load('resources/boss_bars/32.png')
-            elif i.follow.hp == 31:
-                i.image = pygame.image.load('resources/boss_bars/31.png')
-            elif i.follow.hp == 30:
-                i.image = pygame.image.load('resources/boss_bars/30.png')
-            elif i.follow.hp == 29:
-                i.image = pygame.image.load('resources/boss_bars/29.png')
-            elif i.follow.hp == 28:
-                i.image = pygame.image.load('resources/boss_bars/28.png')
-            elif i.follow.hp == 27:
-                i.image = pygame.image.load('resources/boss_bars/27.png')
-            elif i.follow.hp == 26:
-                i.image = pygame.image.load('resources/boss_bars/26.png')
-            elif i.follow.hp == 25:
-                i.image = pygame.image.load('resources/boss_bars/25.png')
-            elif i.follow.hp == 24:
-                i.image = pygame.image.load('resources/boss_bars/24.png')
-            elif i.follow.hp == 23:
-                i.image = pygame.image.load('resources/boss_bars/23.png')
-            elif i.follow.hp == 22:
-                i.image = pygame.image.load('resources/boss_bars/22.png')
-            elif i.follow.hp == 21:
-                i.image = pygame.image.load('resources/boss_bars/21.png')
-            elif i.follow.hp == 20:
-                i.image = pygame.image.load('resources/boss_bars/20.png')
-            elif i.follow.hp == 19:
-                i.image = pygame.image.load('resources/boss_bars/19.png')
-            elif i.follow.hp == 18:
-                i.image = pygame.image.load('resources/boss_bars/18.png')
-            elif i.follow.hp == 17:
-                i.image = pygame.image.load('resources/boss_bars/17.png')
-            elif i.follow.hp == 16:
-                i.image = pygame.image.load('resources/boss_bars/16.png')
-            elif i.follow.hp == 15:
-                i.image = pygame.image.load('resources/boss_bars/15.png')
-            elif i.follow.hp == 14:
-                i.image = pygame.image.load('resources/boss_bars/14.png')
-            elif i.follow.hp == 13:
-                i.image = pygame.image.load('resources/boss_bars/13.png')
-            elif i.follow.hp == 12:
-                i.image = pygame.image.load('resources/boss_bars/12.png')
-            elif i.follow.hp == 11:
-                i.image = pygame.image.load('resources/boss_bars/11.png')
-            elif i.follow.hp == 10:
-                i.image = pygame.image.load('resources/boss_bars/10.png')
-            elif i.follow.hp == 9:
-                i.image = pygame.image.load('resources/boss_bars/9.png')
-            elif i.follow.hp == 8:
-                i.image = pygame.image.load('resources/boss_bars/8.png')
-            elif i.follow.hp == 7:
-                i.image = pygame.image.load('resources/boss_bars/7.png')
-            elif i.follow.hp == 6:
-                i.image = pygame.image.load('resources/boss_bars/6.png')
-            elif i.follow.hp == 5:
-                i.image = pygame.image.load('resources/boss_bars/5.png')
-            elif i.follow.hp == 4:
-                i.image = pygame.image.load('resources/boss_bars/4.png')
-            elif i.follow.hp == 3:
-                i.image = pygame.image.load('resources/boss_bars/3.png')
-            elif i.follow.hp == 2:
-                i.image = pygame.image.load('resources/boss_bars/2.png')
-            elif i.follow.hp == 1:
-                i.image = pygame.image.load('resources/boss_bars/1.png')
-            elif i.follow.hp <= 0:
-                for boss in all_bosses:
-                    boss.kill()
-                i.kill()
+            VisualEffects.upload_boss_of_ghosts_bar(i, all_disappeared)
 
         # Атаки босса и анимация его самого
         if boss_printed:
             if not boss.angry:
                 for boss in all_bosses:
-                    if boss.direction == 'left':
-                        if boss.condition == 1:
-                            boss.image = pygame.image.load('resources/enemy/ghost_boss_left_1.png')
-                        elif boss.condition == 12:
-                            boss.image = pygame.image.load('resources/enemy/ghost_boss_left_2.png')
-                        elif boss.condition == 24:
-                            boss.image = pygame.image.load('resources/enemy/ghost_boss_left_3.png')
-                        elif boss.condition == 36:
-                            boss.image = pygame.image.load('resources/enemy/ghost_boss_left_4.png')
-                        elif boss.condition == 48:
-                            boss.image = pygame.image.load('resources/enemy/ghost_boss_left_5.png')
-                        elif boss.condition == 60:
-                            boss.image = pygame.image.load('resources/enemy/ghost_boss_left_6.png')
-                        elif boss.condition == 72:
-                            boss.image = pygame.image.load('resources/enemy/ghost_boss_left_7.png')
-                        elif boss.condition == 84:
-                            boss.image = pygame.image.load('resources/enemy/ghost_boss_left_8.png')
-                            boss.condition = 1
-                    elif boss.direction == 'right':
-                        if boss.condition == 1:
-                            boss.image = pygame.image.load('resources/enemy/ghost_boss_right_1.png')
-                        elif boss.condition == 12:
-                            boss.image = pygame.image.load('resources/enemy/ghost_boss_right_2.png')
-                        elif boss.condition == 24:
-                            boss.image = pygame.image.load('resources/enemy/ghost_boss_right_3.png')
-                        elif boss.condition == 36:
-                            boss.image = pygame.image.load('resources/enemy/ghost_boss_right_4.png')
-                        elif boss.condition == 48:
-                            boss.image = pygame.image.load('resources/enemy/ghost_boss_right_5.png')
-                        elif boss.condition == 60:
-                            boss.image = pygame.image.load('resources/enemy/ghost_boss_right_6.png')
-                        elif boss.condition == 72:
-                            boss.image = pygame.image.load('resources/enemy/ghost_boss_right_7.png')
-                        elif boss.condition == 84:
-                            boss.image = pygame.image.load('resources/enemy/ghost_boss_right_8.png')
-                            boss.condition = 1
-                    boss.condition += 1
+                    VisualEffects.upload_boss_of_ghosts(boss)
 
+            ####### Атаки #######
             for boss in all_bosses:
-                # Телепортация
-                if boss.teleportation == 150:
-                    sound = pygame.mixer.Sound('resources/sounds/teleportation_of_ghost_boss.wav')
-                    sound.play()
-                    boss.rect.center = functions.random_place_to_teleportation_of_boss_ghost(
-                        display_width,
-                        display_height,
-                        user.rect.center[0],
-                        user.rect.center[1]
-                    )
-                    boss.teleportation = 1
-                else:
-                    boss.teleportation += 1
+                Ghost_boss.upload_boss_teleportation(user, boss, display_width, display_height)
 
-                # Стрельба синими файерболлами
-                if boss.blue_ball_timer == 200:
-                    boss.blue_ball_timer = 1
+                Ghost_boss.upload_boss_blue_balls_attack(boss, all_sprites, all_blue_boss_balls)
+                for ball in all_blue_boss_balls:
+                    VisualEffects.update_boss_blue_fireballs(ball)
 
-                    sound = pygame.mixer.Sound('resources/sounds/blue_fireballs.wav')
-                    sound.play()
+                Ghost_boss.upload_boss_pink_balls_attack(boss, left_top, left_bottom, right_top, right_bottom, display_height, display_width)
+                for ball in all_pink_boss_balls:
+                    VisualEffects.update_boss_pink_fireballs(ball)
 
-                    ball1 = Ghost_boss_blue_ball()
-                    all_sprites.add(ball1)
-                    all_blue_boss_balls.add(ball1)
-                    ball1.rect.center = boss.rect.center
-                    ball1.direction = 'bottom'
-
-                    ball2 = Ghost_boss_blue_ball()
-                    all_sprites.add(ball2)
-                    all_blue_boss_balls.add(ball2)
-                    ball2.rect.center = boss.rect.center
-                    ball2.direction = 'bottom_left'
-
-                    ball3 = Ghost_boss_blue_ball()
-                    all_sprites.add(ball3)
-                    all_blue_boss_balls.add(ball3)
-                    ball3.rect.center = boss.rect.center
-                    ball3.direction = 'left'
-
-                    ball4 = Ghost_boss_blue_ball()
-                    all_sprites.add(ball4)
-                    all_blue_boss_balls.add(ball4)
-                    ball4.rect.center = boss.rect.center
-                    ball4.direction = 'top_left'
-
-                    ball5 = Ghost_boss_blue_ball()
-                    all_sprites.add(ball5)
-                    all_blue_boss_balls.add(ball5)
-                    ball5.rect.center = boss.rect.center
-                    ball5.direction = 'top'
-
-                    ball6 = Ghost_boss_blue_ball()
-                    all_sprites.add(ball6)
-                    all_blue_boss_balls.add(ball6)
-                    ball6.rect.center = boss.rect.center
-                    ball6.direction = 'top_right'
-
-                    ball7 = Ghost_boss_blue_ball()
-                    all_sprites.add(ball7)
-                    all_blue_boss_balls.add(ball7)
-                    ball7.rect.center = boss.rect.center
-                    ball7.direction = 'right'
-
-                    ball8 = Ghost_boss_blue_ball()
-                    all_sprites.add(ball8)
-                    all_blue_boss_balls.add(ball8)
-                    ball8.rect.center = boss.rect.center
-                    ball8.direction = 'bottom_right'
-                else:
-                    boss.blue_ball_timer += 1
-
-                # Стрельба розовыми файерболлами
-                if boss.pink_ball_timer == 500:
-                    boss.portal_timer -= 200
-                    place = random.choice(['left_top', 'left_bottom', 'right_top', 'right_bottom'])
-                    if place == 'left_top':
-                        boss.rect.top = 50
-                        boss.rect.left = 50
-                        left_top.add(boss)
-                    elif place == 'left_bottom':
-                        boss.rect.bottom = display_height - 50
-                        boss.rect.left = 50
-                        left_bottom.add(boss)
-                    elif place == 'right_top':
-                        boss.rect.top = 50
-                        boss.rect.right = display_width - 50
-                        right_top.add(boss)
-                    elif place == 'right_bottom':
-                        boss.rect.bottom = display_height - 50
-                        boss.rect.right = display_width - 50
-                        right_bottom.add(boss)
-                    boss.pink_ball_timer = 1
-                else:
-                    boss.pink_ball_timer += 1
-
-                # Создание порталов
-                if boss.portal_timer == 700:
-                    creating_portals.add(boss)
-                    boss.portal_timer = 1
-                else:
-                    boss.portal_timer += 1
+                Ghost_boss.upload_boss_portals(boss, creating_portals)
 
         # Создание порталов
         for boss in creating_portals:
-            boss.pink_ball_timer = 1
-            boss.blue_ball_timer = 1
-            boss.teleportation = 1
-            boss.portal_timer = 1
-
-            sound = pygame.mixer.Sound('resources/sounds/creating_a_portal.wav')
-            sound.play()
-
-            boss.angry = True
-            if boss.direction == 'left':
-                boss.image = pygame.image.load('resources/enemy/ghost_boss_angry_left.png')
-            elif boss.direction == 'right':
-                boss.image = pygame.image.load('resources/enemy/ghost_boss_angry_right.png')
-
-            for i in range(random.choice([1, 2, 3])):
-                portal = Ghost_portal()
-                all_sprites.add(portal)
-                all_portals.add(portal)
-                portal.rect.center = functions.random_position_of_spawn(display_width, display_height)
-                if portal.rect.center[0] >= user.rect.center[0]:
-                    portal.direction = 'right'
-                else:
-                    portal.direction = 'left'
-            creating_portals.remove(boss)
-
-        # Анимация синих файерболлов
-        for ball in all_blue_boss_balls:
-            ball.condition += 1
-            if ball.direction == 'bottom':
-                ball.rect.y += 4
-                if ball.condition == 8:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_bottom_1.png')
-                elif ball.condition == 16:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_bottom_2.png')
-                elif ball.condition == 24:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_bottom_3.png')
-                elif ball.condition == 32:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_bottom_4.png')
-                elif ball.condition == 40:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_bottom_5.png')
-                elif ball.condition == 48:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_bottom_6.png')
-                elif ball.condition == 56:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_bottom_7.png')
-                elif ball.condition == 64:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_bottom_8.png')
-                    ball.condition = 1
-            elif ball.direction == 'bottom_left':
-                ball.rect.y += 2
-                ball.rect.x -= 2
-                if ball.condition == 8:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_bottom_left_1.png')
-                elif ball.condition == 16:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_bottom_left_2.png')
-                elif ball.condition == 24:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_bottom_left_3.png')
-                elif ball.condition == 32:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_bottom_left_4.png')
-                elif ball.condition == 40:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_bottom_left_5.png')
-                elif ball.condition == 48:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_bottom_left_6.png')
-                elif ball.condition == 56:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_bottom_left_7.png')
-                elif ball.condition == 64:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_bottom_left_8.png')
-                    ball.condition = 1
-            elif ball.direction == 'left':
-                ball.rect.x -= 4
-                if ball.condition == 8:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_left_1.png')
-                elif ball.condition == 16:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_left_2.png')
-                elif ball.condition == 24:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_left_3.png')
-                elif ball.condition == 32:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_left_4.png')
-                elif ball.condition == 40:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_left_5.png')
-                elif ball.condition == 48:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_left_6.png')
-                elif ball.condition == 56:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_left_7.png')
-                elif ball.condition == 64:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_left_8.png')
-                    ball.condition = 1
-            elif ball.direction == 'top_left':
-                ball.rect.x -= 2
-                ball.rect.y -= 2
-                if ball.condition == 8:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_top_left_1.png')
-                elif ball.condition == 16:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_top_left_2.png')
-                elif ball.condition == 24:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_top_left_3.png')
-                elif ball.condition == 32:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_top_left_4.png')
-                elif ball.condition == 40:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_top_left_5.png')
-                elif ball.condition == 48:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_top_left_6.png')
-                elif ball.condition == 56:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_top_left_7.png')
-                elif ball.condition == 64:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_top_left_8.png')
-                    ball.condition = 1
-            elif ball.direction == 'top':
-                ball.rect.y -= 4
-                if ball.condition == 8:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_top_1.png')
-                elif ball.condition == 16:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_top_2.png')
-                elif ball.condition == 24:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_top_3.png')
-                elif ball.condition == 32:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_top_4.png')
-                elif ball.condition == 40:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_top_5.png')
-                elif ball.condition == 48:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_top_6.png')
-                elif ball.condition == 56:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_top_7.png')
-                elif ball.condition == 64:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_top_8.png')
-                    ball.condition = 1
-            elif ball.direction == 'top_right':
-                ball.rect.x += 2
-                ball.rect.y -= 2
-                if ball.condition == 8:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_top_right_1.png')
-                elif ball.condition == 16:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_top_right_2.png')
-                elif ball.condition == 24:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_top_right_3.png')
-                elif ball.condition == 32:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_top_right_4.png')
-                elif ball.condition == 40:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_top_right_5.png')
-                elif ball.condition == 48:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_top_right_6.png')
-                elif ball.condition == 56:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_top_right_7.png')
-                elif ball.condition == 64:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_top_right_8.png')
-                    ball.condition = 1
-            elif ball.direction == 'right':
-                ball.rect.x += 4
-                if ball.condition == 8:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_right_1.png')
-                elif ball.condition == 16:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_right_2.png')
-                elif ball.condition == 24:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_right_3.png')
-                elif ball.condition == 32:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_right_4.png')
-                elif ball.condition == 40:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_right_5.png')
-                elif ball.condition == 48:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_right_6.png')
-                elif ball.condition == 56:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_right_7.png')
-                elif ball.condition == 64:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_right_8.png')
-                    ball.condition = 1
-            elif ball.direction == 'bottom_right':
-                ball.rect.x += 2
-                ball.rect.y += 2
-                if ball.condition == 8:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_bottom_right_1.png')
-                elif ball.condition == 16:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_bottom_right_2.png')
-                elif ball.condition == 24:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_bottom_right_3.png')
-                elif ball.condition == 32:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_bottom_right_4.png')
-                elif ball.condition == 40:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_bottom_right_5.png')
-                elif ball.condition == 48:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_bottom_right_6.png')
-                elif ball.condition == 56:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_bottom_right_7.png')
-                elif ball.condition == 64:
-                    ball.image = pygame.image.load('resources/attacking/blue_ball_bottom_right_8.png')
-                    ball.condition = 1   # Анимация синих
-
-        # Анимация порталов-призраков
-        for portal in all_portals:
-            portal.condition += 1
-            if portal.direction == 'left':
-                if portal.condition == 1:
-                    portal.image = pygame.image.load('resources/objects/portal_left_1.png')
-                elif portal.condition == 8:
-                    portal.image = pygame.image.load('resources/objects/portal_left_2.png')
-                elif portal.condition == 16:
-                    portal.image = pygame.image.load('resources/objects/portal_left_3.png')
-                elif portal.condition == 24:
-                    portal.image = pygame.image.load('resources/objects/portal_left_4.png')
-                elif portal.condition == 32:
-                    portal.image = pygame.image.load('resources/objects/portal_left_5.png')
-                elif portal.condition == 40:
-                    portal.image = pygame.image.load('resources/objects/portal_left_6.png')
-                elif portal.condition == 48:
-                    portal.image = pygame.image.load('resources/objects/portal_left_7.png')
-                elif portal.condition == 56:
-                    portal.image = pygame.image.load('resources/objects/portal_left_8.png')
-                elif portal.condition == 64:
-                    portal.image = pygame.image.load('resources/objects/portal_left_9.png')
-                    portal.condition = 1
-            elif portal.direction == 'right':
-                if portal.condition == 1:
-                    portal.image = pygame.image.load('resources/objects/portal_right_1.png')
-                elif portal.condition == 8:
-                    portal.image = pygame.image.load('resources/objects/portal_right_2.png')
-                elif portal.condition == 16:
-                    portal.image = pygame.image.load('resources/objects/portal_right_3.png')
-                elif portal.condition == 24:
-                    portal.image = pygame.image.load('resources/objects/portal_right_4.png')
-                elif portal.condition == 32:
-                    portal.image = pygame.image.load('resources/objects/portal_right_5.png')
-                elif portal.condition == 40:
-                    portal.image = pygame.image.load('resources/objects/portal_right_6.png')
-                elif portal.condition == 48:
-                    portal.image = pygame.image.load('resources/objects/portal_right_7.png')
-                elif portal.condition == 56:
-                    portal.image = pygame.image.load('resources/objects/portal_right_8.png')
-                elif portal.condition == 64:
-                    portal.image = pygame.image.load('resources/objects/portal_right_9.png')
-                    portal.condition = 1
+            Ghost_boss.creating_boss_portals(user, boss, all_sprites, all_portals, creating_portals, display_width, display_height)
 
         # Анимация "злого" босса
         for boss in all_bosses:
@@ -2317,31 +1385,10 @@ def run_game():   # Основная функция игры
 
         # Спавн порталов- призраков
         for portal in all_portals:
-            boss.pink_ball_timer = 1
-            boss.blue_ball_timer = 1
-            boss.teleportation = 1
-            boss.portal_timer = 1
-            if portal.spawned_ghosts != 2:
-                portal.spawn_timer += 1
-                if portal.spawn_timer == 200:
-                    portal.spawned_ghosts += 1
-                    portal.spawn_timer = 1
+            Ghost_boss.upload_ghosts_into_the_portals(boss, portal, all_sprites, all_ghosts, all_enemy, all_ghost_bars,
+                                           all_enemy_bars)
+            VisualEffects.update_boss_portals(portal)
 
-                    ghost = Ghost()
-                    all_sprites.add(ghost)
-                    all_ghosts.add(ghost)
-                    all_enemy.add(ghost)
-                    ghost.rect.center = portal.rect.center
-
-                    ghost_bar = Enemy_Bar_HP(ghost)
-                    ghost.bar = ghost_bar
-                    all_sprites.add(ghost_bar)
-                    all_ghost_bars.add(ghost_bar)
-                    all_enemy_bars.add(ghost_bar)
-                    ghost_bar.rect.center = ghost_bar.follow.rect.center
-
-            else:
-                portal.kill()
 
         # Коллизия синих файерболлов и стен
         for wall in walls:
@@ -2355,151 +1402,16 @@ def run_game():   # Основная функция игры
 
         # Выстрелы розовых файерболлов
         for boss in left_top:
-            boss.pink_ball_timer = 1
-            boss.blue_ball_timer = 1
-            boss.teleportation = 1
-            boss.invisible = True
-
-            if boss.rect.bottom < display_height - 50:
-                boss.rect.y += 2
-                boss.count_of_pink_balls += 1
-                if boss.count_of_pink_balls % 40 == 0:
-
-                    sound = pygame.mixer.Sound('resources/sounds/pink_fireballs.wav')
-                    sound.play()
-
-                    ball = Ghost_boss_pink_ball()
-                    all_sprites.add(ball)
-                    all_pink_boss_balls.add(ball)
-                    ball.rect.center = boss.rect.center
-                    ball.direction = 'right'
-                else:
-                    pass
-            else:
-                left_top.remove(boss)
-                boss.count_of_pink_balls = 0
-                boss.invisible = False
+            Ghost_boss.shoot_boss_pink_balls_attack_left_top(boss, all_sprites, all_pink_boss_balls, left_top, display_width, display_height)
 
         for boss in left_bottom:
-            boss.pink_ball_timer = 1
-            boss.blue_ball_timer = 1
-            boss.teleportation = 1
-            boss.invisible = True
-
-            if boss.rect.top > 50:
-                boss.rect.y -= 2
-                boss.count_of_pink_balls += 1
-                if boss.count_of_pink_balls % 40 == 0:
-
-                    sound = pygame.mixer.Sound('resources/sounds/pink_fireballs.wav')
-                    sound.play()
-
-                    ball = Ghost_boss_pink_ball()
-                    all_sprites.add(ball)
-                    all_pink_boss_balls.add(ball)
-                    ball.rect.center = boss.rect.center
-                    ball.direction = 'right'
-                else:
-                    pass
-            else:
-                left_bottom.remove(boss)
-                boss.count_of_pink_balls = 0
-                boss.invisible = False
+            Ghost_boss.shoot_boss_pink_balls_attack_left_bottom(boss, all_sprites, all_pink_boss_balls, left_bottom, display_width, display_height)
 
         for boss in right_top:
-            boss.pink_ball_timer = 1
-            boss.blue_ball_timer = 1
-            boss.teleportation = 1
-            boss.invisible = True
-
-            if boss.rect.bottom < display_height - 50:
-                boss.rect.y += 2
-                boss.count_of_pink_balls += 1
-                if boss.count_of_pink_balls % 40 == 0:
-
-                    sound = pygame.mixer.Sound('resources/sounds/pink_fireballs.wav')
-                    sound.play()
-
-                    ball = Ghost_boss_pink_ball()
-                    all_sprites.add(ball)
-                    all_pink_boss_balls.add(ball)
-                    ball.rect.center = boss.rect.center
-                    ball.direction = 'left'
-                else:
-                    pass
-            else:
-                right_top.remove(boss)
-                boss.count_of_pink_balls = 0
-                boss.invisible = False
+            Ghost_boss.shoot_boss_pink_balls_attack_right_top(boss, all_sprites, all_pink_boss_balls, right_top, display_width, display_height)
 
         for boss in right_bottom:
-            boss.pink_ball_timer = 1
-            boss.blue_ball_timer = 1
-            boss.teleportation = 1
-            boss.invisible = True
-
-            if boss.rect.top > 50:
-                boss.rect.y -= 2
-                boss.count_of_pink_balls += 1
-                if boss.count_of_pink_balls % 40 == 0:
-
-                    sound = pygame.mixer.Sound('resources/sounds/pink_fireballs.wav')
-                    sound.play()
-
-                    ball = Ghost_boss_pink_ball()
-                    all_sprites.add(ball)
-                    all_pink_boss_balls.add(ball)
-                    ball.rect.center = boss.rect.center
-                    ball.direction = 'left'
-                else:
-                    pass
-            else:
-                right_bottom.remove(boss)
-                boss.count_of_pink_balls = 0
-                boss.invisible = False
-
-        # Анимация розовых файерболлов
-        for ball in all_pink_boss_balls:
-            if ball.direction == 'left':
-                ball.rect.x -= 10
-                ball.condition += 1
-                if ball.condition == 8:
-                    ball.image = pygame.image.load('resources/attacking/pink_ball_left_1.png')
-                elif ball.condition == 16:
-                    ball.image = pygame.image.load('resources/attacking/pink_ball_left_2.png')
-                elif ball.condition == 24:
-                    ball.image = pygame.image.load('resources/attacking/pink_ball_left_3.png')
-                elif ball.condition == 32:
-                    ball.image = pygame.image.load('resources/attacking/pink_ball_left_4.png')
-                elif ball.condition == 40:
-                    ball.image = pygame.image.load('resources/attacking/pink_ball_left_5.png')
-                elif ball.condition == 48:
-                    ball.image = pygame.image.load('resources/attacking/pink_ball_left_6.png')
-                elif ball.condition == 56:
-                    ball.image = pygame.image.load('resources/attacking/pink_ball_left_7.png')
-                elif ball.condition == 64:
-                    ball.image = pygame.image.load('resources/attacking/pink_ball_left_8.png')
-                    ball.condition = 1
-            elif ball.direction == 'right':
-                ball.rect.x += 10
-                ball.condition += 1
-                if ball.condition == 8:
-                    ball.image = pygame.image.load('resources/attacking/pink_ball_right_1.png')
-                elif ball.condition == 16:
-                    ball.image = pygame.image.load('resources/attacking/pink_ball_right_2.png')
-                elif ball.condition == 24:
-                    ball.image = pygame.image.load('resources/attacking/pink_ball_right_3.png')
-                elif ball.condition == 32:
-                    ball.image = pygame.image.load('resources/attacking/pink_ball_right_4.png')
-                elif ball.condition == 40:
-                    ball.image = pygame.image.load('resources/attacking/pink_ball_right_5.png')
-                elif ball.condition == 48:
-                    ball.image = pygame.image.load('resources/attacking/pink_ball_right_6.png')
-                elif ball.condition == 56:
-                    ball.image = pygame.image.load('resources/attacking/pink_ball_right_7.png')
-                elif ball.condition == 64:
-                    ball.image = pygame.image.load('resources/attacking/pink_ball_right_8.png')
-                    ball.condition = 1
+            Ghost_boss.shoot_boss_pink_balls_attack_right_bottom(boss, all_sprites, all_pink_boss_balls, right_bottom, display_width, display_height)
 
         # Коллизия розовых файерболлов и стен
         for wall in walls:
@@ -2573,83 +1485,7 @@ def run_game():   # Основная функция игры
                 sword_place.rect.top = user.rect.bottom
 
         for smash in all_smashes:
-            smash.condition += 1
-            if smash.name == 'left':
-                if smash.condition == 1:
-                    smash.image = pygame.image.load('resources/attacking/smash_left_1.png')
-                elif smash.condition == 2:
-                    smash.image = pygame.image.load('resources/attacking/smash_left_2.png')
-                elif smash.condition == 3:
-                    smash.image = pygame.image.load('resources/attacking/smash_left_3.png')
-                elif smash.condition == 4:
-                    smash.image = pygame.image.load('resources/attacking/smash_left_4.png')
-                elif smash.condition == 5:
-                    smash.image = pygame.image.load('resources/attacking/smash_left_5.png')
-                elif smash.condition == 6:
-                    smash.image = pygame.image.load('resources/attacking/smash_left_6.png')
-                elif smash.condition == 7:
-                    smash.image = pygame.image.load('resources/attacking/smash_left_7.png')
-                elif smash.condition == 8:
-                    smash.image = pygame.image.load('resources/attacking/smash_left_8.png')
-                elif smash.condition == 9:
-                    smash.kill()
-            elif smash.name == 'right':
-                if smash.condition == 1:
-                    smash.image = pygame.image.load('resources/attacking/smash_right_1.png')
-                elif smash.condition == 2:
-                    smash.image = pygame.image.load('resources/attacking/smash_right_2.png')
-                elif smash.condition == 3:
-                    smash.image = pygame.image.load('resources/attacking/smash_right_3.png')
-                elif smash.condition == 4:
-                    smash.image = pygame.image.load('resources/attacking/smash_right_4.png')
-                elif smash.condition == 5:
-                    smash.image = pygame.image.load('resources/attacking/smash_right_5.png')
-                elif smash.condition == 6:
-                    smash.image = pygame.image.load('resources/attacking/smash_right_6.png')
-                elif smash.condition == 7:
-                    smash.image = pygame.image.load('resources/attacking/smash_right_7.png')
-                elif smash.condition == 8:
-                    smash.image = pygame.image.load('resources/attacking/smash_right_8.png')
-                elif smash.condition == 9:
-                    smash.kill()
-            elif smash.name == 'top':
-                if smash.condition == 1:
-                    smash.image = pygame.image.load('resources/attacking/smash_top_1.png')
-                elif smash.condition == 2:
-                    smash.image = pygame.image.load('resources/attacking/smash_top_2.png')
-                elif smash.condition == 3:
-                    smash.image = pygame.image.load('resources/attacking/smash_top_3.png')
-                elif smash.condition == 4:
-                    smash.image = pygame.image.load('resources/attacking/smash_top_4.png')
-                elif smash.condition == 5:
-                    smash.image = pygame.image.load('resources/attacking/smash_top_5.png')
-                elif smash.condition == 6:
-                    smash.image = pygame.image.load('resources/attacking/smash_top_6.png')
-                elif smash.condition == 7:
-                    smash.image = pygame.image.load('resources/attacking/smash_top_7.png')
-                elif smash.condition == 8:
-                    smash.image = pygame.image.load('resources/attacking/smash_top_8.png')
-                elif smash.condition == 9:
-                    smash.kill()
-            elif smash.name == 'bottom':
-                if smash.condition == 1:
-                    smash.image = pygame.image.load('resources/attacking/smash_bottom_1.png')
-                elif smash.condition == 2:
-                    smash.image = pygame.image.load('resources/attacking/smash_bottom_2.png')
-                elif smash.condition == 3:
-                    smash.image = pygame.image.load('resources/attacking/smash_bottom_3.png')
-                elif smash.condition == 4:
-                    smash.image = pygame.image.load('resources/attacking/smash_bottom_4.png')
-                elif smash.condition == 5:
-                    smash.image = pygame.image.load('resources/attacking/smash_bottom_5.png')
-                elif smash.condition == 6:
-                    smash.image = pygame.image.load('resources/attacking/smash_bottom_6.png')
-                elif smash.condition == 7:
-                    smash.image = pygame.image.load('resources/attacking/smash_bottom_7.png')
-                elif smash.condition == 8:
-                    smash.image = pygame.image.load('resources/attacking/smash_bottom_8.png')
-                elif smash.condition == 9:
-                    smash.kill()
+            VisualEffects.upload_user_sword_smashes(smash)
 
         for sprite in all_disappeared:
             if sprite.image.get_alpha() >= 1:
