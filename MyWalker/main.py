@@ -1518,7 +1518,7 @@ mytheme.widget_font_size = 50
 mytheme.background_color = myimage
 mytheme.title_bar_style = pygame_menu.widgets.MENUBAR_STYLE_TITLE_ONLY_DIAGONAL
 
-menu = pygame_menu.Menu('   MyWalker   ', 1400, 700, theme=mytheme)
+menu = pygame_menu.Menu('   Paul Waker   ', 1400, 700, theme=mytheme)
 menu.add.button('Play', run_game)
 menu.add.button('Quit', pygame_menu.events.EXIT)
 
