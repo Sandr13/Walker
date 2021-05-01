@@ -911,16 +911,30 @@ def run_game():   # Основная функция игры
             for ghost in all_ghosts:
                 if math.fabs(user.rect.center[0] - ghost.rect.center[0]) >= 50 or math.fabs(user.rect.center[1] - ghost.rect.center[1]) >= 50:
                     if user.rect.x - ghost.rect.x > 0:
-                        ghost.rect.x = ghost.rect.x + ghost.speed
                         ghost.direction = 'right'
-                    if user.rect.x - ghost.rect.x < 0:
+                        if user.rect.y - ghost.rect.y > 0:
+                            ghost.rect.y = ghost.rect.y + ghost.speed / 2
+                            ghost.rect.x = ghost.rect.x + ghost.speed / 2
+                        elif user.rect.y - ghost.rect.y < 0:
+                            ghost.rect.y = ghost.rect.y - ghost.speed / 2
+                            ghost.rect.x = ghost.rect.x + ghost.speed / 2
+                        else:
+                            ghost.rect.x = ghost.rect.x + ghost.speed
+                    elif user.rect.x - ghost.rect.x < 0:
                         ghost.direction = 'left'
-                        ghost.rect.x = ghost.rect.x - ghost.speed
-
-                    if user.rect.y - ghost.rect.y > 0:
-                        ghost.rect.y = ghost.rect.y + ghost.speed
-                    if user.rect.y - ghost.rect.y < 0:
-                        ghost.rect.y = ghost.rect.y - ghost.speed
+                        if user.rect.y - ghost.rect.y > 0:
+                            ghost.rect.y = ghost.rect.y + ghost.speed / 2
+                            ghost.rect.x = ghost.rect.x - ghost.speed / 2
+                        elif user.rect.y - ghost.rect.y < 0:
+                            ghost.rect.y = ghost.rect.y - ghost.speed / 2
+                            ghost.rect.x = ghost.rect.x - ghost.speed / 2
+                        else:
+                            ghost.rect.x = ghost.rect.x - ghost.speed
+                    else:
+                        if user.rect.y - ghost.rect.y > 0:
+                            ghost.rect.y = ghost.rect.y + ghost.speed
+                        elif user.rect.y - ghost.rect.y < 0:
+                            ghost.rect.y = ghost.rect.y - ghost.speed
                 else:
                     if pygame.sprite.spritecollide(user, all_ghosts, False):
                         sound = pygame.mixer.Sound('resources/sounds/ghost_dying.wav')
