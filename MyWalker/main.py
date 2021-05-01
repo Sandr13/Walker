@@ -615,8 +615,8 @@ def run_game():   # Основная функция игры
                 elif user.rect.top <= -100 and 700 <= user.rect.x <= 975 and index_of_room == 4:
                     pass
                 else:
-                    user.rect.y -= 2
-                    user.rect.x -= 2
+                    user.rect.y -= user.speed / 2
+                    user.rect.x -= user.speed / 2
             elif keys[pygame.K_w]:
                 if user.rect.x <= 50 and 200 <= user.rect.y <= 205:
                     pass
@@ -625,7 +625,7 @@ def run_game():   # Основная функция игры
                 elif user.rect.top <= -100 and 700 <= user.rect.x <= 975 and index_of_room == 4:
                     pass
                 else:
-                    user.rect.y -= 4
+                    user.rect.y -= user.speed
                     back = True
                     front = False
                     right = False
@@ -638,7 +638,7 @@ def run_game():   # Основная функция игры
                 elif user.rect.left <= -100 and 200 <= user.rect.y <= 400 and index_of_room == 1:
                     pass
                 else:
-                    user.rect.x -= 4
+                    user.rect.x -= user.speed
                     back = False
                     front = False
                     right = False
@@ -658,8 +658,8 @@ def run_game():   # Основная функция игры
                 elif user.rect.top <= -100 and 700 <= user.rect.x <= 975 and index_of_room == 4:
                     pass
                 else:
-                    user.rect.y -= 2
-                    user.rect.x += 2
+                    user.rect.y -= user.speed / 2
+                    user.rect.x += user.speed / 2
             elif keys[pygame.K_w]:
                 if user.rect.x <= 50 and 200 <= user.rect.y <= 205:
                     pass
@@ -668,7 +668,7 @@ def run_game():   # Основная функция игры
                 elif user.rect.top <= -100 and 700 <= user.rect.x <= 975 and index_of_room == 4:
                     pass
                 else:
-                    user.rect.y -= 4
+                    user.rect.y -= user.speed
                     back = True
                     front = False
                     right = False
@@ -681,7 +681,7 @@ def run_game():   # Основная функция игры
                 elif user.rect.right > display_width + 100 and 200 <= user.rect.y <= 400 and index_of_room == 2:
                     pass
                 else:
-                    user.rect.x += 4
+                    user.rect.x += user.speed
                     back = False
                     front = False
                     right = True
@@ -701,8 +701,8 @@ def run_game():   # Основная функция игры
                 elif user.rect.bottom > display_height + 100 and 345 <= user.rect.x <= 675 and index_of_room == 3:
                     pass
                 else:
-                    user.rect.x += 2
-                    user.rect.y += 2
+                    user.rect.x += user.speed / 2
+                    user.rect.y += user.speed / 2
             elif keys[pygame.K_d]:
                 if 669 <= user.rect.x <= 675 and user.rect.bottom > 650:
                     pass
@@ -711,7 +711,7 @@ def run_game():   # Основная функция игры
                 elif user.rect.right > display_width + 100 and 200 <= user.rect.y <= 400 and index_of_room == 2:
                     pass
                 else:
-                    user.rect.x += 4
+                    user.rect.x += user.speed
                     back = False
                     front = False
                     right = True
@@ -724,7 +724,7 @@ def run_game():   # Основная функция игры
                 elif user.rect.bottom > display_height + 100 and 345 <= user.rect.x <= 675 and index_of_room == 3:
                     pass
                 else:
-                    user.rect.y += 4
+                    user.rect.y += user.speed
                     back = False
                     front = True
                     right = False
@@ -743,8 +743,8 @@ def run_game():   # Основная функция игры
                 elif user.rect.bottom > display_height + 100 and 345 <= user.rect.x <= 675 and index_of_room == 3:
                     pass
                 else:
-                    user.rect.y += 2
-                    user.rect.x -= 2
+                    user.rect.y += user.speed / 2
+                    user.rect.x -= user.speed / 2
             elif keys[pygame.K_s]:
                 if user.rect.x <= 50 and 490 <= user.rect.bottom <= 500:
                     pass
@@ -753,7 +753,7 @@ def run_game():   # Основная функция игры
                 elif user.rect.bottom > display_height + 100 and 345 <= user.rect.x <= 675 and index_of_room == 3:
                     pass
                 else:
-                    user.rect.y += 4
+                    user.rect.y += user.speed
                     back = False
                     front = True
                     right = False
@@ -766,7 +766,7 @@ def run_game():   # Основная функция игры
                 elif user.rect.left <= -100 and 200 <= user.rect.y <= 400 and index_of_room == 1:
                     pass
                 else:
-                    user.rect.x -= 4
+                    user.rect.x -= user.speed
                     back = False
                     front = False
                     right = False

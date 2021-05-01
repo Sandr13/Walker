@@ -10,6 +10,7 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = (display_width / 2, display_height / 2)
         self.hp = 5
+        self.speed = 2
         self.items = []
         self.scores = 0
         self.lvl = 1
