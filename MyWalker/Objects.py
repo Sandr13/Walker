@@ -209,6 +209,7 @@ class Temporary_Wall_Vertical(pygame.sprite.Sprite):
         self.image = pygame.image.load('resources\\level elements\\temporary_vertical_wall.png')
         self.rect = self.image.get_rect()
         self.place = place
+        self.index = ''
 
 ############################# Класс временной горизонтальной стены ##############################
 class Temporary_Wall_Horizontal(pygame.sprite.Sprite):

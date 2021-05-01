@@ -441,7 +441,7 @@ def update_boss_blue_fireballs(ball):
             ball.image = pygame.image.load('resources/attacking/blue_ball_bottom_right_8.png')
             ball.condition = 1
 
-def upload_boss_of_ghosts_bar(i, all_disappeared):
+def upload_boss_of_ghosts_bar(i, all_disappeared, all_enemy):
     i.rect.center = (i.follow.rect.center[0], i.follow.rect.top - 20)
     if i.follow.hp == 55:
         i.image = pygame.image.load('resources/boss_bars/55.png')
@@ -555,6 +555,7 @@ def upload_boss_of_ghosts_bar(i, all_disappeared):
         i.image = pygame.image.load('resources/boss_bars/1.png')
     elif i.follow.hp <= 0:
         all_disappeared.add(i.follow)
+        all_enemy.remove(i.follow)
         i.kill()
 
 def upload_boss_of_ghosts(boss):

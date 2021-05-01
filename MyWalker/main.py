@@ -42,7 +42,8 @@ def run_game():   # Основная функция игры
     all_enemy_bars = pygame.sprite.Group()   # Группа баров противников
     all_ghost_bars = pygame.sprite.Group()   # Группа баров призраков
     all_imp_bars = pygame.sprite.Group()  # Группа баров импов
-    all_temporary_walls = pygame.sprite.Group()   # Группа временных стен
+    all_closing_walls = pygame.sprite.Group()   # Группа временных стен
+    all_opening_walls = pygame.sprite.Group()   # Группа временных стен
     all_black_elements = pygame.sprite.Group()   # Группа чёрных фонов
     all_chests = pygame.sprite.Group()   # Группа сундуков
     all_messages = pygame.sprite.Group()   # Группа сообщений
@@ -100,6 +101,59 @@ def run_game():   # Основная функция игры
     all_sword_places.add(top_place_for_sword)
     all_sword_places.add(bottom_place_for_sword)
 
+    def open_walls(index_of_room):
+        if index_of_room == 1:
+            for i in all_closing_walls:
+                if i.place != 'left':
+                    all_closing_walls.remove(i)
+                    all_opening_walls.add(i)
+        elif index_of_room == 2:
+            for i in all_closing_walls:
+                if i.place != 'right':
+                    all_closing_walls.remove(i)
+                    all_opening_walls.add(i)
+        elif index_of_room == 3:
+            for i in all_closing_walls:
+                if i.place != 'bottom':
+                    all_closing_walls.remove(i)
+                    all_opening_walls.add(i)
+        elif index_of_room == 4:
+            for i in all_closing_walls:
+                if i.place != 'top':
+                    all_closing_walls.remove(i)
+                    all_opening_walls.add(i)
+        else:
+            for i in all_closing_walls:
+                all_closing_walls.remove(i)
+                all_opening_walls.add(i)
+
+
+    def close_dors():
+        temporary_wall1 = Objects.Temporary_Wall_Vertical('left')
+        walls.add(temporary_wall1)
+        all_closing_walls.add(temporary_wall1)
+        all_sprites.add(temporary_wall1)
+        temporary_wall1.rect.bottom = 200
+
+        temporary_wall2 = Objects.Temporary_Wall_Vertical('right')
+        walls.add(temporary_wall2)
+        all_closing_walls.add(temporary_wall2)
+        all_sprites.add(temporary_wall2)
+        temporary_wall2.rect.bottom = 200
+        temporary_wall2.rect.x = display_width - 50
+
+        temporary_wall3 = Objects.Temporary_Wall_Horizontal('bottom')
+        walls.add(temporary_wall3)
+        all_closing_walls.add(temporary_wall3)
+        all_sprites.add(temporary_wall3)
+        temporary_wall3.rect.right = 350
+        temporary_wall3.rect.y = display_height - 50
+
+        temporary_wall4 = Objects.Temporary_Wall_Horizontal('top')
+        walls.add(temporary_wall4)
+        all_closing_walls.add(temporary_wall4)
+        all_sprites.add(temporary_wall4)
+        temporary_wall4.rect.right = 700
 
     ############################# Стрельба ##############################
     def bullet_move(arrow, direction):
@@ -261,32 +315,6 @@ def run_game():   # Основная функция игры
             ghost_bar.rect.center = ghost_bar.follow.rect.center
 
     def generate_boss_of_ghost():
-        temporary_wall1 = Objects.Temporary_Wall_Vertical('left')
-        walls.add(temporary_wall1)
-        all_temporary_walls.add(temporary_wall1)
-        all_sprites.add(temporary_wall1)
-        temporary_wall1.rect.bottom = 200
-
-        temporary_wall2 = Objects.Temporary_Wall_Vertical('right')
-        walls.add(temporary_wall2)
-        all_temporary_walls.add(temporary_wall2)
-        all_sprites.add(temporary_wall2)
-        temporary_wall2.rect.bottom = 200
-        temporary_wall2.rect.x = display_width - 50
-
-        temporary_wall3 = Objects.Temporary_Wall_Horizontal('bottom')
-        walls.add(temporary_wall3)
-        all_temporary_walls.add(temporary_wall3)
-        all_sprites.add(temporary_wall3)
-        temporary_wall3.rect.right = 350
-        temporary_wall3.rect.y = display_height - 50
-
-        temporary_wall4 = Objects.Temporary_Wall_Horizontal('top')
-        walls.add(temporary_wall4)
-        all_temporary_walls.add(temporary_wall4)
-        all_sprites.add(temporary_wall4)
-        temporary_wall4.rect.right = 700
-
         boss = Objects.Ghost_Boss()
         boss.rect.center = (display_width/2, display_height/2)
         boss.image.set_alpha(1)
@@ -325,6 +353,8 @@ def run_game():   # Основная функция игры
             all_chests.add(chest)
             chest.rect.center = functions.random_position_of_spawn_chest(display_width, display_height)
 
+
+    close_dors()
     ############################# Генерация сундуков ##############################
     generate_chests()
     ############################# Генерация противников ##############################
@@ -786,7 +816,7 @@ def run_game():   # Основная функция игры
                 count_of_room += 1
                 count_of_room %= 4
                 background.change_the_room(count_of_room)
-                for i in all_temporary_walls:
+                for i in all_closing_walls:
                     if i in walls:
                         walls.remove(i)
                     i.kill()
@@ -817,71 +847,27 @@ def run_game():   # Основная функция игры
                     user.lvl += 1
                     user.rect.left = -100
                     index_of_room = 1
-
-                    blocked_left = False
-                    blocked_right = False
-                    blocked_top = False
-                    blocked_bottom = False
-
-                    temporary_wall = Objects.Temporary_Wall_Vertical('left')
-                    walls.add(temporary_wall)
-                    all_temporary_walls.add(temporary_wall)
-                    all_sprites.add(temporary_wall)
-                    temporary_wall.rect.bottom = 200
+                    close_dors()
 
                 elif user.rect.left <= -150:
                     user.lvl += 1
                     user.rect.right = display_width + 100
                     index_of_room = 2
-
-                    blocked_left = False
-                    blocked_right = False
-                    blocked_top = False
-                    blocked_bottom = False
-
-                    temporary_wall = Objects.Temporary_Wall_Vertical('right')
-                    walls.add(temporary_wall)
-                    all_temporary_walls.add(temporary_wall)
-                    all_sprites.add(temporary_wall)
-                    temporary_wall.rect.bottom = 200
-                    temporary_wall.rect.x = display_width - 50
+                    close_dors()
 
                 elif user.rect.top <= -150:
                     user.lvl += 1
                     user.rect.bottom = display_height + 100
                     user.rect.x = 500
                     index_of_room = 3
-
-                    blocked_left = False
-                    blocked_right = False
-                    blocked_top = False
-                    blocked_bottom = False
-
-                    temporary_wall = Objects.Temporary_Wall_Horizontal('bottom')
-                    walls.add(temporary_wall)
-                    all_temporary_walls.add(temporary_wall)
-                    all_sprites.add(temporary_wall)
-                    temporary_wall.rect.right = 350
-                    temporary_wall.rect.y = display_height - 50
+                    close_dors()
 
                 elif user.rect.bottom >= display_height + 150:
                     user.lvl += 1
                     user.rect.top = -100
                     user.rect.x = 835
                     index_of_room = 4
-
-                    blocked_left = False
-                    blocked_right = False
-                    blocked_top = False
-                    blocked_bottom = False
-
-                    temporary_wall = Objects.Temporary_Wall_Horizontal('top')
-                    walls.add(temporary_wall)
-                    all_temporary_walls.add(temporary_wall)
-                    all_sprites.add(temporary_wall)
-                    temporary_wall.rect.right = 700
-
-
+                    close_dors()
 
                 if user.lvl < 10:
                     generate_ghosts()
@@ -1236,7 +1222,7 @@ def run_game():   # Основная функция игры
                         chest.dropted = True
 
             ############################# Выдвижение стен ##############################
-            for block in all_temporary_walls:
+            for block in all_closing_walls:
                 if isinstance(block, Objects.Temporary_Wall_Vertical):
                     if block.place == 'left':
                         if user.rect.x > 125:
@@ -1244,9 +1230,9 @@ def run_game():   # Основная функция игры
                                 block.rect.y += 5
                             elif user.lvl != 10:
                                 blocked_left = True
-                                blocked_right = False
-                                blocked_top = False
-                                blocked_bottom = False
+                                blocked_right = True
+                                blocked_top = True
+                                blocked_bottom = True
                             else:
                                 blocked_left = True
                     else:
@@ -1254,10 +1240,10 @@ def run_game():   # Основная функция игры
                             if block.rect.bottom < 500:
                                 block.rect.y += 5
                             elif user.lvl != 10:
-                                blocked_left = False
+                                blocked_left = True
                                 blocked_right = True
-                                blocked_top = False
-                                blocked_bottom = False
+                                blocked_top = True
+                                blocked_bottom = True
                             else:
                                 blocked_right = True
                 else:
@@ -1266,9 +1252,9 @@ def run_game():   # Основная функция игры
                             if block.rect.right < 750:
                                 block.rect.x += 5
                             elif user.lvl != 10:
-                                blocked_left = False
-                                blocked_right = False
-                                blocked_top = False
+                                blocked_left = True
+                                blocked_right = True
+                                blocked_top = True
                                 blocked_bottom = True
                             else:
                                 blocked_bottom = True
@@ -1277,13 +1263,35 @@ def run_game():   # Основная функция игры
                             if block.rect.right < 1050:
                                 block.rect.x += 5
                             elif user.lvl != 10:
-                                blocked_left = False
-                                blocked_right = False
+                                blocked_left = True
+                                blocked_right = True
                                 blocked_top = True
-                                blocked_bottom = False
+                                blocked_bottom = True
                             else:
                                 blocked_top = True
-
+            for block in all_opening_walls:
+                if isinstance(block, Objects.Temporary_Wall_Vertical):
+                    if block.place == 'left':
+                        if block.rect.bottom != 200:
+                            block.rect.y -= 5
+                        else:
+                            block.kill()
+                    else:
+                        if block.rect.bottom != 200:
+                            block.rect.y -= 5
+                        else:
+                            block.kill()
+                else:
+                    if block.place == 'bottom':
+                        if block.rect.right != 350:
+                            block.rect.x -= 5
+                        else:
+                            block.kill()
+                    else:
+                        if block.rect.right != 700:
+                            block.rect.x -= 5
+                        else:
+                            block.kill()
             ############################# Перестановка предметов из инвентаря ##############################
             def permutation():
                 if len(user.items) > 1:
@@ -1352,7 +1360,7 @@ def run_game():   # Основная функция игры
 
         # Изменение состояния бара босса
         for i in all_boss_bars:
-            VisualEffects.upload_boss_of_ghosts_bar(i, all_disappeared)
+            VisualEffects.upload_boss_of_ghosts_bar(i, all_disappeared, all_enemy)
 
         # Атаки босса и анимация его самого
         if boss_printed:
@@ -1497,6 +1505,23 @@ def run_game():   # Основная функция игры
             user.sword_time -= 1
         if user.bow_time != 1:
             user.bow_time -= 1
+
+        if not all_enemy:
+            blocked_left = False
+            blocked_right = False
+            blocked_top = False
+            blocked_bottom = False
+
+            if index_of_room == 1:
+                blocked_left = True
+            elif index_of_room == 2:
+                blocked_right = True
+            elif index_of_room == 3:
+                blocked_bottom = True
+            elif index_of_room == 4:
+                blocked_top = True
+
+            open_walls(index_of_room)
 
         draw_scores()
         pygame.display.update()
