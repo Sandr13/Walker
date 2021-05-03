@@ -1343,7 +1343,7 @@ def run_game():   # Основная функция игры
         # Первое заполнение бара хп босса
         for sprite in all_boss_bars:
             if not bar_printed:
-                if sprite.follow.hp != 55:
+                if sprite.follow.hp != 10:
                     if sprite.condition == 4:
                         sprite.follow.hp += 1
                         sprite.condition = 1
@@ -1353,8 +1353,8 @@ def run_game():   # Основная функция игры
                     bar_printed = True
 
         # Изменение состояния бара босса
-        for i in all_boss_bars:
-            VisualEffects.upload_boss_of_ghosts_bar(i, all_disappeared, all_enemy)
+        for bars in all_boss_bars:
+            VisualEffects.upload_boss_of_ghosts_bar(bars, all_disappeared, all_enemy, all_ghosts, all_bosses)
 
         # Атаки босса и анимация его самого
         if boss_printed:
@@ -1517,9 +1517,6 @@ def run_game():   # Основная функция игры
                 blocked_top = True
 
             open_walls(index_of_room)
-
-        for boss in all_bosses:
-            print(boss.image.get_alpha())
 
         draw_scores()
         pygame.display.update()
