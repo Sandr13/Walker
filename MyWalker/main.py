@@ -910,31 +910,31 @@ def run_game():   # Основная функция игры
             ############################# Движение Призрака ##############################
             for ghost in all_ghosts:
                 if math.fabs(user.rect.center[0] - ghost.rect.center[0]) >= 50 or math.fabs(user.rect.center[1] - ghost.rect.center[1]) >= 50:
-                    if user.rect.x - ghost.rect.x > 0:
+                    if user.rect.x > ghost.rect.x:
                         ghost.direction = 'right'
-                        if user.rect.y - ghost.rect.y > 0:
-                            ghost.rect.y = ghost.rect.y + ghost.speed / 2
-                            ghost.rect.x = ghost.rect.x + ghost.speed / 2
-                        elif user.rect.y - ghost.rect.y < 0:
-                            ghost.rect.y = ghost.rect.y - ghost.speed / 2
-                            ghost.rect.x = ghost.rect.x + ghost.speed / 2
+                        if user.rect.y > ghost.rect.y:
+                            ghost.rect.y += ghost.speed / 2
+                            ghost.rect.x += ghost.speed / 2
+                        elif user.rect.y < ghost.rect.y:
+                            ghost.rect.y -= ghost.speed / 2
+                            ghost.rect.x += ghost.speed / 2
                         else:
-                            ghost.rect.x = ghost.rect.x + ghost.speed
-                    elif user.rect.x - ghost.rect.x < 0:
+                            ghost.rect.x += ghost.speed
+                    elif user.rect.x < ghost.rect.x:
                         ghost.direction = 'left'
-                        if user.rect.y - ghost.rect.y > 0:
-                            ghost.rect.y = ghost.rect.y + ghost.speed / 2
-                            ghost.rect.x = ghost.rect.x - ghost.speed / 2
-                        elif user.rect.y - ghost.rect.y < 0:
-                            ghost.rect.y = ghost.rect.y - ghost.speed / 2
-                            ghost.rect.x = ghost.rect.x - ghost.speed / 2
+                        if user.rect.y > ghost.rect.y:
+                            ghost.rect.y += ghost.speed / 2
+                            ghost.rect.x -= ghost.speed / 2
+                        elif user.rect.y < ghost.rect.y:
+                            ghost.rect.y -= ghost.speed / 2
+                            ghost.rect.x -= ghost.speed / 2
                         else:
-                            ghost.rect.x = ghost.rect.x - ghost.speed
+                            ghost.rect.x -= ghost.speed
                     else:
-                        if user.rect.y - ghost.rect.y > 0:
-                            ghost.rect.y = ghost.rect.y + ghost.speed
-                        elif user.rect.y - ghost.rect.y < 0:
-                            ghost.rect.y = ghost.rect.y - ghost.speed
+                        if user.rect.y > ghost.rect.y :
+                            ghost.rect.y += ghost.speed
+                        elif user.rect.y < ghost.rect.y:
+                            ghost.rect.y -= ghost.speed
                 else:
                     if pygame.sprite.spritecollide(user, all_ghosts, False):
                         sound = pygame.mixer.Sound('resources/sounds/ghost_dying.wav')
@@ -1242,22 +1242,12 @@ def run_game():   # Основная функция игры
                         if user.rect.x > 125:
                             if block.rect.bottom < 500:
                                 block.rect.y += 5
-                            elif user.lvl != 10:
-                                blocked_left = True
-                                blocked_right = True
-                                blocked_top = True
-                                blocked_bottom = True
                             else:
                                 blocked_left = True
                     else:
                         if user.rect.x < display_width - 125:
                             if block.rect.bottom < 500:
                                 block.rect.y += 5
-                            elif user.lvl != 10:
-                                blocked_left = True
-                                blocked_right = True
-                                blocked_top = True
-                                blocked_bottom = True
                             else:
                                 blocked_right = True
                 else:
@@ -1265,22 +1255,12 @@ def run_game():   # Основная функция игры
                         if user.rect.y < display_height - 125:
                             if block.rect.right < 750:
                                 block.rect.x += 5
-                            elif user.lvl != 10:
-                                blocked_left = True
-                                blocked_right = True
-                                blocked_top = True
-                                blocked_bottom = True
                             else:
                                 blocked_bottom = True
                     else:
                         if user.rect.y > 125:
                             if block.rect.right < 1050:
                                 block.rect.x += 5
-                            elif user.lvl != 10:
-                                blocked_left = True
-                                blocked_right = True
-                                blocked_top = True
-                                blocked_bottom = True
                             else:
                                 blocked_top = True
             for block in all_opening_walls:
@@ -1387,14 +1367,15 @@ def run_game():   # Основная функция игры
                 Ghost_boss.upload_boss_teleportation(user, boss, display_width, display_height)
 
                 Ghost_boss.upload_boss_blue_balls_attack(boss, all_sprites, all_blue_boss_balls)
-                for ball in all_blue_boss_balls:
-                    VisualEffects.update_boss_blue_fireballs(ball)
 
                 Ghost_boss.upload_boss_pink_balls_attack(boss, left_top, left_bottom, right_top, right_bottom, display_height, display_width)
-                for ball in all_pink_boss_balls:
-                    VisualEffects.update_boss_pink_fireballs(ball)
 
                 Ghost_boss.upload_boss_portals(boss, creating_portals)
+
+        for ball in all_pink_boss_balls:
+            VisualEffects.update_boss_pink_fireballs(ball)
+        for ball in all_blue_boss_balls:
+            VisualEffects.update_boss_blue_fireballs(ball)
 
         # Создание порталов
         for boss in creating_portals:
@@ -1537,12 +1518,15 @@ def run_game():   # Основная функция игры
 
             open_walls(index_of_room)
 
+        for boss in all_bosses:
+            print(boss.image.get_alpha())
+
         draw_scores()
         pygame.display.update()
         all_sprites.update()   # Обновление спрайтов
         all_sprites.draw(display)  # Прорисовка всех спрайтов
         pygame.display.flip()   # Переворчиваем экран
-        clock.tick(60)   # FPS
+        clock.tick(75)   # FPS
 
 myimage = pygame_menu.baseimage.BaseImage(
     image_path='resources/menu_resources/background.png',
