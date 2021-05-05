@@ -60,8 +60,6 @@ def run_game():   # Основная функция игры
     all_sword_places = pygame.sprite.Group()   # Группа барьеров меча
     all_smashes = pygame.sprite.Group()   # Группа следов меча
     all_disappeared = pygame.sprite.Group()   # Группа исчезновения призраков
-    all_abilities_1 = pygame.sprite.Group()   # Группа первых абилок
-    all_blue_user_balls = pygame.sprite.Group()  # Группа синих файерболлов боссов
 
     ############################# Задний фон ##############################
     background = Objects.Background()
@@ -182,8 +180,6 @@ def run_game():   # Основная функция игры
         if type_of_message == 'bow_is_broken':
             message.image = pygame.image.load('resources/messages/bow_is_broken.png')
             delete()
-        elif type_of_message == 'unlock_ability_1':
-            message.image = pygame.image.load('resources/messages/unlock_ability_1.png')
 
     def use_first_item():
         if user.time_to_realise:
@@ -263,14 +259,6 @@ def run_game():   # Основная функция игры
                 sound.play()
                 user.hp += 1
                 delete()
-
-            elif user.items[0].name == 'paper_1':
-                print_the_message('unlock_ability_1')
-                delete()
-                ability_cell_1.image = pygame.image.load('resources/Abilities/1_8.png')
-                user.can_use_ability_1 = True
-
-
             elif user.items[0].name == 'sword':
                 if user.sword_time == 1:
                     sound = pygame.mixer.Sound('resources/sounds/sword_sound.wav')
@@ -442,12 +430,6 @@ def run_game():   # Основная функция игры
     bar_durability = Objects.Bar_DURABILITY()   # бар
     all_sprites.add(bar_durability)
 
-    ############################# Ячейки абилок ##############################
-    ability_cell_1 = Objects.Ability_cell_1()
-    ability_cell_1.rect.top = display_height - 100
-
-    all_sprites.add(ability_cell_1)
-
     ######################### Отрисовка очков ############################
     def draw_scores():
         font = pygame.font.Font(None, 72)
@@ -472,8 +454,6 @@ def run_game():   # Основная функция игры
             dropted = Objects.Crossbow()
         elif item == 'sword':
             dropted = Objects.Sword()
-        elif item == 'paper_1':
-            dropted = Objects.Paper_1()
 
         if right:
             dropted.rect.center = (user.rect.center[0] - 100, user.rect.center[1])
@@ -602,12 +582,6 @@ def run_game():   # Основная функция игры
                         try:
                             open_chest()
                         except:
-                            pass
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_1:
-                        if user.can_use_ability_1:
-                            use_ability_1(ability_cell_1)
-                        else:
                             pass
 
             keys = pygame.key.get_pressed()   # Инициализируем клавиатуру
@@ -858,13 +832,10 @@ def run_game():   # Основная функция игры
                     sprite.kill()
                 for sprite in all_chests:
                     sprite.kill()
-                for sprite in all_blue_user_balls:
-                    sprite.kill()
                 remember = user
                 user.kill()
 
                 user = Objects.Player()
-                user.can_use_ability_1 = remember.can_use_ability_1
                 user.items = remember.items
                 user.hp = remember.hp
                 user.rect.center = remember.rect.center
@@ -902,10 +873,8 @@ def run_game():   # Основная функция игры
                     generate_ghosts()
                     generate_chests()
                 elif user.lvl == 10:
+                    ################################# Битва с босом призраков #################################
                     generate_boss_of_ghost()
-                elif user.lvl > 10:
-                    generate_ghosts()
-                    generate_chests()
 
                 pause()
 
@@ -1216,11 +1185,6 @@ def run_game():   # Основная функция игры
 
 
 
-            def use_ability_1(ability_cell_1):
-                all_abilities_1.add(ability_cell_1)
-                user.can_use_ability_1 = False
-
-                VisualEffects.upload_user_blue_balls_attack(user, all_sprites, all_blue_user_balls)
             ############################# Предметы и взаимодействие с ними ##############################
             def pick_up():
                 if len(user.items) < 5:
@@ -1379,7 +1343,7 @@ def run_game():   # Основная функция игры
         # Первое заполнение бара хп босса
         for sprite in all_boss_bars:
             if not bar_printed:
-                if sprite.follow.hp != 5:
+                if sprite.follow.hp != 10:
                     if sprite.condition == 4:
                         sprite.follow.hp += 1
                         sprite.condition = 1
@@ -1390,7 +1354,7 @@ def run_game():   # Основная функция игры
 
         # Изменение состояния бара босса
         for bars in all_boss_bars:
-            VisualEffects.upload_boss_of_ghosts_bar(bars, all_disappeared, all_enemy, all_ghosts, all_bosses, all_sprites, all_items_ont_the_ground)
+            VisualEffects.upload_boss_of_ghosts_bar(bars, all_disappeared, all_enemy, all_ghosts, all_bosses)
 
         # Атаки босса и анимация его самого
         if boss_printed:
@@ -1531,23 +1495,6 @@ def run_game():   # Основная функция игры
                 sprite.image.set_alpha(sprite.image.get_alpha() - 10)
             else:
                 sprite.kill()
-
-        # Коллизия синих файерболлов и стен
-        for wall in walls:
-            pygame.sprite.spritecollide(wall, all_blue_user_balls, True)
-
-        for abil in all_abilities_1:
-            VisualEffects.update_ability_1(user, abil, all_abilities_1)
-
-        for ball in all_blue_user_balls:
-            VisualEffects.update_boss_blue_fireballs(ball)
-            if ball.rect.x <= -100 or ball.rect.x >= display_width + 100 or ball.rect.y <= -100 or ball.rect.y >= display_height + 100:
-                ball.kill()
-
-        # Коллизия синих файерболлов и противников
-        for enemy in all_enemy:
-            list = pygame.sprite.spritecollide(enemy, all_blue_user_balls, True)
-            enemy.hp -= 2*len(list)
 
         if user.sword_time != 1:
             user.sword_time -= 1
