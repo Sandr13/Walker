@@ -60,6 +60,8 @@ def run_game():   # Основная функция игры
     all_sword_places = pygame.sprite.Group()   # Группа барьеров меча
     all_smashes = pygame.sprite.Group()   # Группа следов меча
     all_disappeared = pygame.sprite.Group()   # Группа исчезновения призраков
+    all_blue_user_balls = pygame.sprite.Group()  # Группа розовых файерболлов игрока
+    all_abilities_1 = pygame.sprite.Group()  # Группа абилки 1
 
     ############################# Задний фон ##############################
     background = Objects.Background()
