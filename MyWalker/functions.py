@@ -18,7 +18,7 @@ def random_place_to_teleportation_of_boss_ghost(display_width, display_height, u
 
 
 def chanse_to_spawn_the_enemy(lvl):   # Генерация рандомного числа противников
-    if lvl < 10:
+    if lvl <= 10:
         if lvl == 1:
             return 1
         elif 2 <= lvl <= 5:
@@ -31,6 +31,10 @@ def chanse_to_spawn_the_enemy(lvl):   # Генерация рандомного 
             return 5
         elif lvl == 10:
             return 0
+    elif lvl <= 20:
+        if lvl == 11:
+            return 6
+
 
 def chanse_to_spawn_the_chest():   # Генерация рандомного числа сундуков
     choice = random.choice(range(100))

@@ -1,5 +1,6 @@
 import pygame
 import functions
+import Objects
 
 ############################# Игрок ##############################
 def animate_player_and_his_bar(user, bar, front, back, right, left):
@@ -156,6 +157,25 @@ def upload_current_item(item, inventory, empty_1, empty_2, empty_3, empty_4, emp
 
     elif item.name == 'sword':
         directory = 'resources\\inventory\\items\\sword.png'
+
+        if inventory.items[0].is_empty:
+            empty_1.image = pygame.image.load(directory)
+            inventory.items[0].is_empty = False
+        elif inventory.items[1].is_empty:
+            empty_2.image = pygame.image.load(directory)
+            inventory.items[1].is_empty = False
+        elif inventory.items[2].is_empty:
+            empty_3.image = pygame.image.load(directory)
+            inventory.items[2].is_empty = False
+        elif inventory.items[3].is_empty:
+            empty_4.image = pygame.image.load(directory)
+            inventory.items[3].is_empty = False
+        elif inventory.items[4].is_empty:
+            empty_5.image = pygame.image.load(directory)
+            inventory.items[4].is_empty = False
+
+    elif item.name == 'paper_1':
+        directory = 'resources\\inventory\\items\\open_1.png'
 
         if inventory.items[0].is_empty:
             empty_1.image = pygame.image.load(directory)
@@ -441,7 +461,7 @@ def update_boss_blue_fireballs(ball):
             ball.image = pygame.image.load('resources/attacking/blue_ball_bottom_right_8.png')
             ball.condition = 1
 
-def upload_boss_of_ghosts_bar(bars, all_disappeared, all_enemy, all_ghosts, all_bosses):
+def upload_boss_of_ghosts_bar(bars, all_disappeared, all_enemy, all_ghosts, all_bosses, all_sprites, all_items_ont_the_ground):
     bars.rect.center = (bars.follow.rect.center[0], bars.follow.rect.top - 20)
     if bars.follow.hp == 55:
         bars.image = pygame.image.load('resources/boss_bars/55.png')
@@ -554,6 +574,13 @@ def upload_boss_of_ghosts_bar(bars, all_disappeared, all_enemy, all_ghosts, all_
     elif bars.follow.hp == 1:
         bars.image = pygame.image.load('resources/boss_bars/1.png')
     elif bars.follow.hp <= 0:
+
+        # Дроп разблокировки первого перка
+        droppted_item = Objects.Paper_1()
+        droppted_item.rect.center = bars.follow.rect.center
+        all_sprites.add(droppted_item)
+        all_items_ont_the_ground.add(droppted_item)
+
         all_enemy.remove(bars.follow)
         all_ghosts.remove(bars.follow)
         all_bosses.remove(bars.follow)
@@ -677,3 +704,78 @@ def upload_user_sword_smashes(smash):
             smash.image = pygame.image.load('resources/attacking/smash_bottom_8.png')
         elif smash.condition == 9:
             smash.kill()
+
+def update_ability_1(user, abil, all_abilities_1):
+    if abil.condition < 150:
+        abil.image = pygame.image.load('resources/Abilities/1_1.png')
+    elif abil.condition == 150:
+        abil.image = pygame.image.load('resources/Abilities/1_2.png')
+    elif abil.condition == 300:
+        abil.image = pygame.image.load('resources/Abilities/1_3.png')
+    elif abil.condition == 450:
+        abil.image = pygame.image.load('resources/Abilities/1_4.png')
+    elif abil.condition == 600:
+        abil.image = pygame.image.load('resources/Abilities/1_5.png')
+    elif abil.condition == 750:
+        abil.image = pygame.image.load('resources/Abilities/1_6.png')
+    elif abil.condition == 900:
+        abil.image = pygame.image.load('resources/Abilities/1_7.png')
+    elif abil.condition == 1150:
+        abil.image = pygame.image.load('resources/Abilities/1_8.png')
+        abil.condition = 1
+        user.can_use_ability_1 = True
+        all_abilities_1.remove(abil)
+
+    abil.condition += 1
+
+def upload_user_blue_balls_attack(user, all_sprites, all_blue_user_balls):
+    sound = pygame.mixer.Sound('resources/sounds/blue_fireballs.wav')
+    sound.play()
+
+    ball1 = Objects.Ghost_boss_blue_ball()
+    all_sprites.add(ball1)
+    all_blue_user_balls.add(ball1)
+    ball1.rect.center = user.rect.center
+    ball1.direction = 'bottom'
+
+    ball2 = Objects.Ghost_boss_blue_ball()
+    all_sprites.add(ball2)
+    all_blue_user_balls.add(ball2)
+    ball2.rect.center = user.rect.center
+    ball2.direction = 'bottom_left'
+
+    ball3 = Objects.Ghost_boss_blue_ball()
+    all_sprites.add(ball3)
+    all_blue_user_balls.add(ball3)
+    ball3.rect.center = user.rect.center
+    ball3.direction = 'left'
+
+    ball4 = Objects.Ghost_boss_blue_ball()
+    all_sprites.add(ball4)
+    all_blue_user_balls.add(ball4)
+    ball4.rect.center = user.rect.center
+    ball4.direction = 'top_left'
+
+    ball5 = Objects.Ghost_boss_blue_ball()
+    all_sprites.add(ball5)
+    all_blue_user_balls.add(ball5)
+    ball5.rect.center = user.rect.center
+    ball5.direction = 'top'
+
+    ball6 = Objects.Ghost_boss_blue_ball()
+    all_sprites.add(ball6)
+    all_blue_user_balls.add(ball6)
+    ball6.rect.center = user.rect.center
+    ball6.direction = 'top_right'
+
+    ball7 = Objects.Ghost_boss_blue_ball()
+    all_sprites.add(ball7)
+    all_blue_user_balls.add(ball7)
+    ball7.rect.center = user.rect.center
+    ball7.direction = 'right'
+
+    ball8 = Objects.Ghost_boss_blue_ball()
+    all_sprites.add(ball8)
+    all_blue_user_balls.add(ball8)
+    ball8.rect.center = user.rect.center
+    ball8.direction = 'bottom_right'

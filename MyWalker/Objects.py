@@ -18,11 +18,20 @@ class Player(pygame.sprite.Sprite):
         self.time_spended_to_realise = 0
         self.sword_time = 1
         self.bow_time = 1
+        self.can_use_ability_1 = False
 
 ############################# Класс инвентаря ##############################
 class Inventory:
     def __init__(self):
         self.items = []
+
+############################# Класс объекта-ячейки абилки ##############################
+class Ability_cell_1(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('resources/Abilities/1_blocked.png')
+        self.rect = self.image.get_rect()
+        self.condition = 1
 
 ############################# Класс объекта-бара прочности ##############################
 class Bar_DURABILITY(pygame.sprite.Sprite):
@@ -227,6 +236,14 @@ class Heal_bottle(pygame.sprite.Sprite):
         self.image = pygame.image.load('resources/inventory/items/heal_bottle.png')
         self.rect = self.image.get_rect()
         self.name = 'heal_bottle'
+
+############################# Класс пергамента абилки_1 ##############################
+class Paper_1(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('resources/Abilities/open_ability_1.png')
+        self.rect = self.image.get_rect()
+        self.name = 'paper_1'
 
 ############################# Класс чёрного фона ##############################
 class Black(pygame.sprite.Sprite):
