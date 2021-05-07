@@ -779,3 +779,108 @@ def upload_user_blue_balls_attack(user, all_sprites, all_blue_user_balls):
     all_blue_user_balls.add(ball8)
     ball8.rect.center = user.rect.center
     ball8.direction = 'bottom_right'
+
+def update_imp_bar(bars, user):
+    bars.rect.bottom = bars.follow.rect.top
+    bars.rect.x = bars.follow.rect.center[0] - 10
+    if bars.follow.hp <= 7:
+        bars.image = pygame.image.load('resources\\enemy health\\2.png')
+    if bars.follow.hp <= 4:
+        bars.image = pygame.image.load('resources\\enemy health\\1.png')
+    if bars.follow.hp <= 0:
+        sound = pygame.mixer.Sound('resources/sounds/imp_dying.wav')
+        sound.play()
+        bars.follow.kill()
+        bars.kill()
+        user.scores += 3
+
+def update_imp(imp):
+    imp.condition += 1
+    if imp.direction == 'right':
+        if imp.condition == 1:
+            imp.image = pygame.image.load('resources/enemy/imp_right_1.png')
+        if imp.condition == 20:
+            imp.image = pygame.image.load('resources/enemy/imp_right_2.png')
+        if imp.condition == 40:
+            imp.image = pygame.image.load('resources/enemy/imp_right_3.png')
+            imp.condition = 1
+    if imp.direction == 'left':
+        if imp.condition == 1:
+            imp.image = pygame.image.load('resources/enemy/imp_left_1.png')
+        if imp.condition == 20:
+            imp.image = pygame.image.load('resources/enemy/imp_left_2.png')
+        if imp.condition == 40:
+            imp.image = pygame.image.load('resources/enemy/imp_left_3.png')
+            imp.condition = 1
+    if imp.direction == 'top':
+        if imp.condition == 1:
+            imp.image = pygame.image.load('resources/enemy/imp_back_1.png')
+        if imp.condition == 20:
+            imp.image = pygame.image.load('resources/enemy/imp_back_2.png')
+        if imp.condition == 40:
+            imp.image = pygame.image.load('resources/enemy/imp_back_3.png')
+            imp.condition = 1
+    if imp.direction == 'bottom':
+        if imp.condition == 1:
+            imp.image = pygame.image.load('resources/enemy/imp_front_1.png')
+        if imp.condition == 20:
+            imp.image = pygame.image.load('resources/enemy/imp_front_2.png')
+        if imp.condition == 40:
+            imp.image = pygame.image.load('resources/enemy/imp_front_3.png')
+            imp.condition = 1
+
+def update_imp_fireball(ball):
+    ball.condition += 1
+
+    if ball.direction == 'left':
+        if ball.condition == 1:
+            ball.image = pygame.image.load('resources/attacking/fireball_1_left.png')
+        if ball.condition == 10:
+            ball.image = pygame.image.load('resources/attacking/fireball_2_left.png')
+        if ball.condition == 20:
+            ball.image = pygame.image.load('resources/attacking/fireball_3_left.png')
+        if ball.condition == 30:
+            ball.image = pygame.image.load('resources/attacking/fireball_4_left.png')
+        if ball.condition == 40:
+            ball.image = pygame.image.load('resources/attacking/fireball_5_left.png')
+            ball.condition = 1
+        ball.rect.x -= 5
+    if ball.direction == 'right':
+        if ball.condition == 1:
+            ball.image = pygame.image.load('resources/attacking/fireball_1_right.png')
+        if ball.condition == 10:
+            ball.image = pygame.image.load('resources/attacking/fireball_2_right.png')
+        if ball.condition == 20:
+            ball.image = pygame.image.load('resources/attacking/fireball_3_right.png')
+        if ball.condition == 30:
+            ball.image = pygame.image.load('resources/attacking/fireball_4_right.png')
+        if ball.condition == 40:
+            ball.image = pygame.image.load('resources/attacking/fireball_5_right.png')
+            ball.condition = 1
+        ball.rect.x += 5
+    if ball.direction == 'top':
+        if ball.condition == 1:
+            ball.image = pygame.image.load('resources/attacking/fireball_1_top.png')
+        if ball.condition == 10:
+            ball.image = pygame.image.load('resources/attacking/fireball_2_top.png')
+        if ball.condition == 20:
+            ball.image = pygame.image.load('resources/attacking/fireball_3_top.png')
+        if ball.condition == 30:
+            ball.image = pygame.image.load('resources/attacking/fireball_4_top.png')
+        if ball.condition == 40:
+            ball.image = pygame.image.load('resources/attacking/fireball_5_top.png')
+            ball.condition = 1
+        ball.rect.y -= 5
+    if ball.direction == 'bottom':
+        if ball.condition == 1:
+            ball.image = pygame.image.load('resources/attacking/fireball_1_bottom.png')
+        if ball.condition == 10:
+            ball.image = pygame.image.load('resources/attacking/fireball_2_bottom.png')
+        if ball.condition == 20:
+            ball.image = pygame.image.load('resources/attacking/fireball_3_bottom.png')
+        if ball.condition == 30:
+            ball.image = pygame.image.load('resources/attacking/fireball_4_bottom.png')
+        if ball.condition == 40:
+            ball.image = pygame.image.load('resources/attacking/fireball_5_bottom.png')
+            ball.condition = 1
+        ball.rect.y += 5
