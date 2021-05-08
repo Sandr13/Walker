@@ -1301,7 +1301,7 @@ def run_game():   # Основная функция игры
         # Первое заполнение бара хп босса
         for sprite in all_ghost_boss_bars:
             if not bar_printed:
-                if sprite.follow.hp != 5:
+                if sprite.follow.hp != 55:
                     if sprite.condition == 4:
                         sprite.follow.hp += 1
                         sprite.condition = 1
@@ -1407,7 +1407,7 @@ def run_game():   # Основная функция игры
 
         for boss in all_imp_bosses:
             if not boss.printed:
-                if boss.hp != 11:
+                if boss.hp != 111:
                     boss.hp += 1
                 else:
                     boss.printed = True
