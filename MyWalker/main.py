@@ -2,6 +2,7 @@ import time
 import math
 import random
 
+import Imp_boss
 import Objects
 import Ghost_boss
 import VisualEffects
@@ -47,8 +48,10 @@ def run_game():   # Основная функция игры
     all_black_elements = pygame.sprite.Group()   # Группа чёрных фонов
     all_chests = pygame.sprite.Group()   # Группа сундуков
     all_messages = pygame.sprite.Group()   # Группа сообщений
-    all_bosses = pygame.sprite.Group()   # Группа боссов
-    all_boss_bars = pygame.sprite.Group()   # Группа баров боссов
+    all_ghost_bosses = pygame.sprite.Group()   # Группа боссов
+    all_ghost_boss_bars = pygame.sprite.Group()   # Группа баров боссов
+    all_imp_bosses = pygame.sprite.Group()   # Группа боссов
+    all_imp_boss_bars = pygame.sprite.Group()   # Группа баров боссов
     all_blue_boss_balls = pygame.sprite.Group()   # Группа синих файерболлов боссов
     all_pink_boss_balls = pygame.sprite.Group()   # Группа розовых файерболлов боссов
     right_top = pygame.sprite.Group()   ####### Стрельба розовыми файерболлами
@@ -62,6 +65,16 @@ def run_game():   # Основная функция игры
     all_disappeared = pygame.sprite.Group()   # Группа исчезновения призраков
     all_blue_user_balls = pygame.sprite.Group()  # Группа розовых файерболлов игрока
     all_abilities_1 = pygame.sprite.Group()  # Группа абилки 1
+    imp_boss_run_left = pygame.sprite.Group()   ####### Бег босса импов
+    imp_boss_run_right = pygame.sprite.Group()
+    imp_boss_run_top = pygame.sprite.Group()
+    imp_boss_run_bottom = pygame.sprite.Group()   ####### Бег босса импов
+    all_imp_boss_fireballs = pygame.sprite.Group()
+    all_pentagramms = pygame.sprite.Group()
+    imp_boss_attack_cooldown = pygame.sprite.Group()
+    all_imps_portals = pygame.sprite.Group()
+    creating_imp_portals = pygame.sprite.Group()
+    deleting_imp_portals = pygame.sprite.Group()
 
     ############################# Задний фон ##############################
     background = Objects.Background()
@@ -131,6 +144,9 @@ def run_game():   # Основная функция игры
 
 
     def close_dors():
+        sound = pygame.mixer.Sound('resources/sounds/mooving_wall_low.wav')
+        sound.play()
+
         temporary_wall1 = Objects.Temporary_Wall_Vertical('left')
         walls.add(temporary_wall1)
         all_closing_walls.add(temporary_wall1)
@@ -173,17 +189,20 @@ def run_game():   # Основная функция игры
                 arrow.rect.right += 1
 
     def print_the_message(type_of_message):
-        sound = pygame.mixer.Sound('resources/sounds/broke.wav')
-        sound.play()
+
         message = Objects.Message()
         all_sprites.add(message)
         all_messages.add(message)
         message.rect.center = (525, 500)
         if type_of_message == 'bow_is_broken':
             message.image = pygame.image.load('resources/messages/bow_is_broken.png')
+            sound = pygame.mixer.Sound('resources/sounds/broke.wav')
+            sound.play()
             delete()
         elif type_of_message == 'unlock_ability_1':
             message.image = pygame.image.load('resources/messages/unlock_ability_1.png')
+            sound = pygame.mixer.Sound('resources/sounds/unlock_ability_1.wav')
+            sound.play()
 
     def use_first_item():
         if user.time_to_realise:
@@ -310,18 +329,30 @@ def run_game():   # Основная функция игры
         else:
             pass
     ############################# Противники ##############################
+    def generate_boss_of_imps():
+        boss = Objects.Imp_Boss()
+        boss.rect.center = (display_width/2, display_height/2)
+        all_enemy.add(boss)
+        all_imp_bosses.add(boss)
+        all_sprites.add(boss)
+
+        boss_bar = Objects.Boss_Bar_HP(boss)
+        all_sprites.add(boss_bar)
+        all_imp_boss_bars.add(boss_bar)
+        boss.bar = boss_bar
+
     def generate_boss_of_ghost():
         boss = Objects.Ghost_Boss()
         boss.rect.center = (display_width/2, display_height/2)
         boss.image.set_alpha(1)
         all_enemy.add(boss)
-        all_bosses.add(boss)
+        all_ghost_bosses.add(boss)
         all_sprites.add(boss)
 
         boss_bar = Objects.Boss_Bar_HP(boss)
         boss_bar.image.set_alpha(1)
         all_sprites.add(boss_bar)
-        all_boss_bars.add(boss_bar)
+        all_ghost_boss_bars.add(boss_bar)
         boss.bar = boss_bar
 
 
@@ -431,6 +462,8 @@ def run_game():   # Основная функция игры
     blocked_left = False
     blocked_top = False
     blocked_bottom = False
+
+    music_of_opening_walls = False
 
     ############################# Бар-хп ##############################
     bar = Objects.Bar_HP()   # бар
@@ -890,18 +923,19 @@ def run_game():   # Основная функция игры
                 index_of_room = 4
                 close_dors()
 
-            if user.lvl < 10:
+            if 1 <= user.lvl <= 9:
                 generate_ghosts()
                 generate_chests()
-            elif user.lvl == 10:
+            if user.lvl == 10:
                 generate_boss_of_ghost()
-            elif user.lvl > 10:
+            if 11 <= user.lvl <= 19:
                 generate_ghosts()
                 generate_imps()
                 generate_chests()
+            if user.lvl == 20:
+                generate_boss_of_imps()
 
             pause()
-
 
         for bullet in all_bullets:
             ### Направление движения ###
@@ -1144,12 +1178,18 @@ def run_game():   # Основная функция игры
                 if block.place == 'left':
                     if user.rect.x > 125:
                         if block.rect.bottom < 500:
+                            if block.rect.bottom == 250:
+                                sound = pygame.mixer.Sound('resources/sounds/mooving_wall_low.wav')
+                                sound.play()
                             block.rect.y += 5
                         else:
                             blocked_left = True
                 else:
                     if user.rect.x < display_width - 125:
                         if block.rect.bottom < 500:
+                            if block.rect.bottom == 250:
+                                sound = pygame.mixer.Sound('resources/sounds/mooving_wall_low.wav')
+                                sound.play()
                             block.rect.y += 5
                         else:
                             blocked_right = True
@@ -1157,16 +1197,26 @@ def run_game():   # Основная функция игры
                 if block.place == 'bottom':
                     if user.rect.y < display_height - 125:
                         if block.rect.right < 750:
+                            if block.rect.right == 400:
+                                sound = pygame.mixer.Sound('resources/sounds/mooving_wall_low.wav')
+                                sound.play()
                             block.rect.x += 5
                         else:
                             blocked_bottom = True
                 else:
                     if user.rect.y > 125:
                         if block.rect.right < 1050:
+                            if block.rect.right == 700:
+                                sound = pygame.mixer.Sound('resources/sounds/mooving_wall_low.wav')
+                                sound.play()
                             block.rect.x += 5
                         else:
                             blocked_top = True
         for block in all_opening_walls:
+            if not music_of_opening_walls:
+                sound = pygame.mixer.Sound('resources/sounds/mooving_wall.wav')
+                sound.play()
+                music_of_opening_walls = True
             if isinstance(block, Objects.Temporary_Wall_Vertical):
                 if block.place == 'left':
                     if block.rect.bottom != 200:
@@ -1189,11 +1239,13 @@ def run_game():   # Основная функция игры
                         block.rect.x -= 5
                     else:
                         block.kill()
+
+        if not all_opening_walls:
+            music_of_opening_walls = False
+
         ############################# Перестановка предметов из инвентаря ##############################
         def permutation():
             if len(user.items) > 1:
-                # sound = pygame.mixer.Sound('resources/sounds/scroll_the_inventory.wav')
-                # sound.play()
                 remember = user.items[0]
                 for i in range(len(user.items) - 1):
                     user.items[i] = user.items[i+1]
@@ -1208,6 +1260,9 @@ def run_game():   # Основная функция игры
                     sound.play()
                 elif user.items[0].name == 'heal_bottle':
                     sound = pygame.mixer.Sound('resources/sounds/take_potion.wav')
+                    sound.play()
+                elif user.items[0].name == 'paper_1':
+                    sound = pygame.mixer.Sound('resources/sounds/take_paper_1.wav')
                     sound.play()
             else:
                 pass
@@ -1228,25 +1283,25 @@ def run_game():   # Основная функция игры
         ############################# Работа с боссом ##############################
         boss_printed = False
 
-        for i in all_boss_bars:
+        for i in all_ghost_boss_bars:
             i.rect.center = (i.follow.rect.center[0], i.follow.rect.top - 20)
 
-        for boss in all_bosses:   # Разворачивание босса в сторону игрока
+        for boss in all_ghost_bosses:   # Разворачивание босса в сторону игрока
             if user.rect.center[0] >= boss.rect.center[0]:
                 boss.direction = 'right'
             else:
                 boss.direction = 'left'
         ####### Проявление босса на карте #######
-        for sprite in all_bosses:
+        for sprite in all_ghost_bosses:
             if sprite.image.get_alpha() != 255:
                 sprite.image.set_alpha(sprite.image.get_alpha() + 1)
             else:
                 boss_printed = True
 
         # Первое заполнение бара хп босса
-        for sprite in all_boss_bars:
+        for sprite in all_ghost_boss_bars:
             if not bar_printed:
-                if sprite.follow.hp != 55:
+                if sprite.follow.hp != 5:
                     if sprite.condition == 4:
                         sprite.follow.hp += 1
                         sprite.condition = 1
@@ -1256,17 +1311,17 @@ def run_game():   # Основная функция игры
                     bar_printed = True
 
         # Изменение состояния бара босса
-        for bars in all_boss_bars:
-            VisualEffects.upload_boss_of_ghosts_bar(bars, all_disappeared, all_enemy, all_ghosts, all_bosses, all_sprites, all_items_ont_the_ground)
+        for bars in all_ghost_boss_bars:
+            VisualEffects.upload_boss_of_ghosts_bar(bars, all_disappeared, all_enemy, all_ghosts, all_ghost_bosses, all_sprites, all_items_ont_the_ground)
 
         # Атаки босса и анимация его самого
         if boss_printed:
             if not boss.angry:
-                for boss in all_bosses:
+                for boss in all_ghost_bosses:
                     VisualEffects.upload_boss_of_ghosts(boss)
 
             ####### Атаки #######
-            for boss in all_bosses:
+            for boss in all_ghost_bosses:
                 Ghost_boss.upload_boss_teleportation(user, boss, display_width, display_height)
 
                 Ghost_boss.upload_boss_blue_balls_attack(boss, all_sprites, all_blue_boss_balls)
@@ -1285,7 +1340,7 @@ def run_game():   # Основная функция игры
             Ghost_boss.creating_boss_portals(user, boss, all_sprites, all_portals, creating_portals, display_width, display_height)
 
         # Анимация "злого" босса
-        for boss in all_bosses:
+        for boss in all_ghost_bosses:
             if not all_portals:
                 boss.angry = False
 
@@ -1330,12 +1385,12 @@ def run_game():   # Основная функция игры
             user.hp -= 1
 
         # Коллизия игрока и босса
-        for boss in all_bosses:
+        for boss in all_ghost_bosses:
             if not boss.invisible:
-                if pygame.sprite.spritecollide(user, all_bosses, False):
+                if pygame.sprite.spritecollide(user, all_ghost_bosses, False):
                     sound = pygame.mixer.Sound('resources/sounds/taking_damage_by_user.wav')
                     sound.play()
-                    for boss in all_bosses:
+                    for boss in all_ghost_bosses:
                         sound = pygame.mixer.Sound('resources/sounds/teleportation_of_ghost_boss.wav')
                         sound.play()
                         user.hp -= 1
@@ -1347,6 +1402,169 @@ def run_game():   # Основная функция игры
                         )
                         boss.teleportation = 1
 
+        ############################# Работа с боссом ##############################
+
+
+        for boss in all_imp_bosses:
+            if not boss.printed:
+                if boss.hp != 11:
+                    boss.hp += 1
+                else:
+                    boss.printed = True
+
+        for bars in all_imp_boss_bars:
+            bars.rect.bottom = bars.follow.rect.top
+            bars.rect.x = bars.follow.rect.x - 65
+            VisualEffects.upload_boss_of_imps_bar(bars, all_disappeared, all_imp_bosses, all_enemy)
+
+        # Бег босса
+        for boss in all_imp_bosses:
+            Imp_boss.imp_boss_run(boss, user, imp_boss_run_left, imp_boss_run_right, imp_boss_run_top, imp_boss_run_bottom, display_width, display_height)
+
+        for boss in imp_boss_run_left:
+            if boss.need_to_run != 0:
+                boss.rect.x -= 5
+                boss.need_to_run -= 1
+                boss.direction = 'left'
+                VisualEffects.update_imp_boss_running(boss)
+                if boss.rect.left < 50:
+                    boss.rect.left = 50
+                    boss.image = pygame.image.load('resources/enemy/boss_imp_left_4.png')
+                    imp_boss_run_left.remove(boss)
+                    boss.need_to_run = 0
+            else:
+                imp_boss_run_left.remove(boss)
+                boss.image = pygame.image.load('resources/enemy/boss_imp_left_4.png')
+
+        for boss in imp_boss_run_right:
+            if boss.need_to_run != 0:
+                boss.rect.x += 5
+                boss.need_to_run -= 1
+                boss.direction = 'right'
+                VisualEffects.update_imp_boss_running(boss)
+                if boss.rect.right > display_width - 50:
+                    boss.rect.right = display_width - 50
+                    boss.image = pygame.image.load('resources/enemy/boss_imp_right_4.png')
+                    imp_boss_run_left.remove(boss)
+                    boss.need_to_run = 0
+            else:
+                imp_boss_run_right.remove(boss)
+                boss.image = pygame.image.load('resources/enemy/boss_imp_right_4.png')
+
+        for boss in imp_boss_run_top:
+            if boss.need_to_run != 0:
+                boss.rect.y -= 5
+                boss.need_to_run -= 1
+                boss.direction = 'top'
+                VisualEffects.update_imp_boss_running(boss)
+                if boss.rect.top < 50:
+                    boss.rect.top = 50
+                    boss.image = pygame.image.load('resources/enemy/boss_imp_top_3.png')
+                    imp_boss_run_left.remove(boss)
+                    boss.need_to_run = 0
+            else:
+                imp_boss_run_top.remove(boss)
+                boss.image = pygame.image.load('resources/enemy/boss_imp_top_3.png')
+
+        for boss in imp_boss_run_bottom:
+            if boss.need_to_run != 0:
+                boss.rect.y += 5
+                boss.need_to_run -= 1
+                boss.direction = 'bottom'
+                VisualEffects.update_imp_boss_running(boss)
+                if boss.rect.bottom > display_height - 50:
+                    boss.rect.bottom = display_height - 50
+                    boss.image = pygame.image.load('resources/enemy/boss_imp_bottom_3.png')
+                    imp_boss_run_left.remove(boss)
+                    boss.need_to_run = 0
+            else:
+                imp_boss_run_bottom.remove(boss)
+                boss.image = pygame.image.load('resources/enemy/boss_imp_bottom_3.png')
+
+        #Выход босса за границы карты
+        for boss in all_imp_bosses:
+            if boss.rect.bottom > display_height - 50:
+                boss.rect.bottom = display_height - 50
+
+        for boss in all_imp_bosses:
+            Imp_boss.upload_imp_boss_fireballs(boss, user, all_sprites, all_imp_boss_fireballs, all_pentagramms)
+
+            if boss.spawning_fireballs:
+                boss.count_of_spawned_fireballs += 1
+                if boss.count_of_spawned_fireballs <= 250:
+                    if boss.count_of_spawned_fireballs%50 == 0:
+                        ball = Objects.Boss_imp_fireball()
+                        all_sprites.add(ball)
+                        all_imp_boss_fireballs.add(ball)
+                        ball.rect.center = (random.choice(range(boss.position_of_attacking[0]-100, boss.position_of_attacking[0]+100)), random.choice(range(boss.position_of_attacking[1]-100, boss.position_of_attacking[1]+100)) - 700)
+                        ball.position_to_die = (ball.rect.center[0], ball.rect.center[1] + 700)
+                else:
+                    boss.spawning_fireballs = False
+                    boss.count_of_spawned_fireballs = 0
+
+        for ball in all_imp_boss_fireballs:
+            VisualEffects.update_imp_boss_fireball(ball)
+
+        for penta in all_pentagramms:
+            penta.condition += 1
+
+            if not penta.spawned:
+                if penta.image.get_alpha() != 251:
+                    penta.image.set_alpha(penta.image.get_alpha() + 10)
+                else:
+                    penta.spawned = True
+            if penta.condition == 350:
+                penta.killing = True
+
+            if penta.killing:
+                if penta.image.get_alpha() != 1:
+                    penta.image.set_alpha(penta.image.get_alpha() - 10)
+                else:
+                    penta.kill()
+
+        if pygame.sprite.spritecollide(user, all_imp_boss_fireballs, False):
+            list = pygame.sprite.spritecollide(user, all_imp_boss_fireballs, False)
+            if boss.position_of_attacking[0] - 115 <= list[0].rect.center[0] <= boss.position_of_attacking[0] + 115:
+                if boss.position_of_attacking[1] - 115 <= list[0].rect.center[1] <= boss.position_of_attacking[1] + 115:
+                    if pygame.sprite.spritecollide(user, all_imp_boss_fireballs, True):
+                        sound = pygame.mixer.Sound('resources/sounds/taking_damage_by_user.wav')
+                        sound.play()
+                        user.hp -= 1
+
+        if pygame.sprite.spritecollide(user, all_imp_bosses, False):
+            for boss in all_imp_bosses:
+                if not boss.attacked:
+                    sound = pygame.mixer.Sound('resources/sounds/taking_damage_by_user.wav')
+                    sound.play()
+                    user.hp -= 1
+                    boss.attacked = True
+                    boss.attack_cooldown = 50
+
+        for boss in all_imp_bosses:
+            if boss.attack_cooldown != 1:
+                boss.attack_cooldown -= 1
+            else:
+                boss.attacked = False
+
+        for boss in all_imp_bosses:
+            Imp_boss.upload_imp_portals(boss, all_sprites, display_width, display_height, creating_imp_portals)
+
+        for portal in creating_imp_portals:
+            if portal.image.get_alpha() != 251:
+                portal.image.set_alpha(portal.image.get_alpha() + 10)
+            else:
+                creating_imp_portals.remove(portal)
+                all_imps_portals.add(portal)
+
+        for portal in deleting_imp_portals:
+            if portal.image.get_alpha() != 1:
+                portal.image.set_alpha(portal.image.get_alpha() - 10)
+            else:
+                portal.kill()
+
+        for portal in all_imps_portals:
+            VisualEffects.update_imp_portals(portal)
+            Imp_boss.upload_imps_in_portal(boss, portal, all_imps_portals, all_sprites, all_imps, all_enemy, all_enemy_bars, all_imp_bars, deleting_imp_portals)
 
         ############################# Работа с сообщениями ##############################
         for block in all_messages:
@@ -1435,6 +1653,7 @@ def run_game():   # Основная функция игры
                 blocked_bottom = True
             elif index_of_room == 4:
                 blocked_top = True
+
 
             open_walls(index_of_room)
 

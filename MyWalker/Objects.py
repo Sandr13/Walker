@@ -13,7 +13,7 @@ class Player(pygame.sprite.Sprite):
         self.speed = 2
         self.items = []
         self.scores = 0
-        self.lvl = 1
+        self.lvl = 9
         self.time_to_realise = True
         self.time_spended_to_realise = 0
         self.sword_time = 1
@@ -88,6 +88,20 @@ class Ghost_portal(pygame.sprite.Sprite):
         self.spawned_ghosts = 0
         self.spawn_timer = 1
 
+############################# Класс объекта-портала импов ##############################
+class Imp_portal(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('resources/inventory/items/empty_slot.png')
+        self.image.set_alpha(1)
+        self.rect = self.image.get_rect()
+        self.condition = 1
+        self.direction = ''
+        self.created = False
+        self.destroyings = False
+        self.spawn_timer = 1
+
+
 ################################ Класс призрака ##################################
 class Ghost(pygame.sprite.Sprite):
     def __init__(self, object=0):
@@ -98,6 +112,27 @@ class Ghost(pygame.sprite.Sprite):
         self.hp = 6
         self.bar = object
         self.direction = ''
+
+################################ Класс импа-босса ##################################
+class Imp_Boss(pygame.sprite.Sprite):
+    def __init__(self, object=0):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('resources/enemy/boss_imp_bottom_1.png')
+        self.rect = self.image.get_rect()
+        self.bar = object
+        self.hp = 1
+        self.printed = False
+        self.run_timer = 1
+        self.fireballs_timer = 1
+        self.need_to_run = 0
+        self.direction = ''
+        self.condition = 1
+        self.count_of_spawned_fireballs = 0
+        self.spawning_fireballs = False
+        self.position_of_attacking = (0, 0)
+        self.attacked = False
+        self.attack_cooldown = 1
+        self.portal_timer = 1
 
 ################################ Класс призрака-босса ##################################
 class Ghost_Boss(pygame.sprite.Sprite):
@@ -117,6 +152,26 @@ class Ghost_Boss(pygame.sprite.Sprite):
         self.angry = False
         self.created_portals = False
         self.invisible = False
+
+############################# Класс объекта-верхнего файерболла босса импов ##############################
+class Boss_imp_fireball(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('resources/inventory/items/empty_slot.png')
+        self.rect = self.image.get_rect()
+        self.condition = 1
+        self.position_to_die = 0
+
+############################# Класс пентаграммы ##############################
+class Pentagramm(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('resources/objects/pentagramm.png')
+        self.image.set_alpha(1)
+        self.rect = self.image.get_rect()
+        self.spawned = False
+        self.condition = 1
+        self.killing = False
 
 ################################ Класс импа ##################################
 class Imp(pygame.sprite.Sprite):
@@ -220,6 +275,7 @@ class Temporary_Wall_Vertical(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.place = place
         self.index = ''
+        self.sound = False
 
 ############################# Класс временной горизонтальной стены ##############################
 class Temporary_Wall_Horizontal(pygame.sprite.Sprite):
