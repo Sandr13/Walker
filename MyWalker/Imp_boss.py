@@ -56,6 +56,9 @@ def upload_imp_portals(boss, all_sprites, display_width, display_height, creatin
     boss.portal_timer += 1
 
     if boss.portal_timer == 600:
+        sound = pygame.mixer.Sound('resources/sounds/creating_a_portal_imp.wav')
+        sound.play()
+
         boss.portal_timer = 1
         boss.fireballs_timer = 1
         for i in range(random.choice([1, 2])):

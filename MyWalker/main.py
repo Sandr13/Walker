@@ -1493,6 +1493,9 @@ def run_game():   # Основная функция игры
                 boss.count_of_spawned_fireballs += 1
                 if boss.count_of_spawned_fireballs <= 250:
                     if boss.count_of_spawned_fireballs%50 == 0:
+                        sound = pygame.mixer.Sound('resources/sounds/imp_fireballs.wav')
+                        sound.play()
+
                         ball = Objects.Boss_imp_fireball()
                         all_sprites.add(ball)
                         all_imp_boss_fireballs.add(ball)

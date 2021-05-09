@@ -599,6 +599,9 @@ def upload_boss_of_imps_bar(bars, all_dissapeared, all_imp_bosses, all_enemy):
         all_enemy.remove(bars.follow)
         bars.kill()
 
+        sound = pygame.mixer.Sound('resources/sounds/killing_boss_of_imps.wav')
+        sound.play()
+
 def update_imp_portals(portal):
     if portal.direction == 'left':
         if portal.condition == 8:
@@ -756,6 +759,9 @@ def upload_boss_of_ghosts_bar(bars, all_disappeared, all_enemy, all_ghosts, all_
     elif bars.follow.hp == 1:
         bars.image = pygame.image.load('resources/boss_bars/1.png')
     elif bars.follow.hp <= 0:
+
+        sound = pygame.mixer.Sound('resources/sounds/killing_boss_of_ghosts.wav')
+        sound.play()
 
         # Дроп разблокировки первого перка
         droppted_item = Objects.Paper_1()
