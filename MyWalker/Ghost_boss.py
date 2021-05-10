@@ -54,7 +54,7 @@ def creating_boss_portals(user, boss, all_sprites, all_portals, creating_portals
     elif boss.direction == 'right':
         boss.image = pygame.image.load('resources/enemy/ghost_boss_angry_right.png')
 
-    for i in range(random.choice([1, 2, 3])):
+    for i in range(random.choice([1, 2])):
         portal = Objects.Ghost_portal()
         all_sprites.add(portal)
         all_portals.add(portal)
