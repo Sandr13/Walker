@@ -47,6 +47,7 @@ def run_game():   # Основная функция игры
     all_opening_walls = pygame.sprite.Group()   # Группа временных стен
     all_black_elements = pygame.sprite.Group()   # Группа чёрных фонов
     all_chests = pygame.sprite.Group()   # Группа сундуков
+    all_red_chests = pygame.sprite.Group()  # Группа 'красных' сундуков
     all_messages = pygame.sprite.Group()   # Группа сообщений
     all_ghost_bosses = pygame.sprite.Group()   # Группа боссов
     all_ghost_boss_bars = pygame.sprite.Group()   # Группа баров боссов
@@ -396,6 +397,14 @@ def run_game():   # Основная функция игры
             all_chests.add(chest)
             chest.rect.center = functions.random_position_of_spawn_chest(display_width, display_height)
 
+    ############################# ф-я генерации 'красного' сундука ##############################
+    def generate_red_chest():
+        red_chest = Objects.Red_Chest()
+        all_sprites.add(red_chest)
+        all_red_chests.add(red_chest)
+        red_chest.rect.center = functions.random_position_of_spawn_chest(display_width, display_height)
+
+
 
     close_dors()
     ############################# Генерация сундуков ##############################
@@ -648,6 +657,7 @@ def run_game():   # Основная функция игры
                     if event.key == pygame.K_c:
                         try:
                             open_chest()
+                            open_red_chest()
                         except:
                             pass
                 if event.type == pygame.KEYDOWN:
@@ -943,10 +953,15 @@ def run_game():   # Основная функция игры
                     generate_chests()
                 if user.lvl == 10:
                     generate_boss_of_ghost()
-                if 11 <= user.lvl <= 19:
+                if 11 <= user.lvl < 19:
                     generate_ghosts()
                     generate_imps()
                     generate_chests()
+                if user.lvl == 19:
+                    generate_ghosts()
+                    generate_imps()
+                    generate_chests()
+                    generate_red_chest()
                 if user.lvl == 20:
                     generate_boss_of_imps()
 
@@ -1172,6 +1187,27 @@ def run_game():   # Основная функция игры
                 all_items_ont_the_ground.add(item)
                 item.rect.center = (chest.rect.center[0] + distanse, chest.rect.center[1])
 
+            ############################# 'Красный' сундук и взаимодействие с ним ##############################
+            def drop_items_from_red_chest(chest):
+                if user.rect.center[0] >= chest.rect.center[0]:  # Если игрок стоит справа от сундука
+                    item = functions.choose_the_drop_19()
+                    distanse = -64
+                    if item == 'bow':
+                        item = Objects.Bow()
+                    elif item == 'heal_bottle':
+                        item = Objects.Heal_bottle()
+                elif user.rect.center[0] < chest.rect.center[0]:  # Если игрок стоит слева от сундука
+                    item = functions.choose_the_drop_19()
+                    distanse = 64
+                    if item == 'bow':
+                        item = Objects.Bow()
+                    elif item == 'heal_bottle':
+                        item = Objects.Heal_bottle()
+
+                all_sprites.add(item)
+                all_items_ont_the_ground.add(item)
+                item.rect.center = (chest.rect.center[0] + distanse, chest.rect.center[1])
+
             def open_chest():
                 list = pygame.sprite.spritecollide(user, all_chests, False)
                 for chest in list:
@@ -1186,6 +1222,21 @@ def run_game():   # Основная функция игры
                         if not chest.dropted:
                             drop_items_from_chest(chest)
                         chest.dropted = True
+
+            def open_red_chest():
+                list = pygame.sprite.spritecollide(user, all_red_chests, False)
+                for red_chest in list:
+                    sound = pygame.mixer.Sound('resources/sounds/chest_sound.wav')
+                    sound.play()
+                    if red_chest.opened:
+                        red_chest.image = pygame.image.load('resources/objects/red_chest.png')
+                        red_chest.opened = False
+                    else:
+                        red_chest.image = pygame.image.load('resources/objects/red_chest_opened.png')
+                        red_chest.opened = True
+                        if not red_chest.dropted:
+                            drop_items_from_red_chest(red_chest)
+                        red_chest.dropted = True
 
             ############################# Выдвижение стен ##############################
             for block in all_closing_walls:

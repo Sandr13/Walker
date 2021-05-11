@@ -13,7 +13,7 @@ class Player(pygame.sprite.Sprite):
         self.speed = 2
         self.items = []
         self.scores = 0
-        self.lvl = 1
+        self.lvl = 18
         self.time_to_realise = True
         self.time_spended_to_realise = 0
         self.sword_time = 1
@@ -237,6 +237,15 @@ class Chest(pygame.sprite.Sprite):
         self.opened = False
         self.dropted = False
 
+################################ Класс 'красного' сундука ##################################
+class Red_Chest(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('resources\\objects\\red_chest.png')
+        self.rect = self.image.get_rect()
+        self.opened = False
+        self.dropted = False
+
 ############################# Класс right_left места для меча ##############################
 class Right_left_sword_barrier(pygame.sprite.Sprite):
     def __init__(self):
@@ -300,6 +309,14 @@ class Paper_1(pygame.sprite.Sprite):
         self.image = pygame.image.load('resources/Abilities/open_ability_1.png')
         self.rect = self.image.get_rect()
         self.name = 'paper_1'
+
+############################# Класс пергамента абилки_1 ##############################
+class Paper_2(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('resources/Abilities/open_ability_2.png')
+        self.rect = self.image.get_rect()
+        self.name = 'paper_2'
 
 ############################# Класс чёрного фона ##############################
 class Black(pygame.sprite.Sprite):
