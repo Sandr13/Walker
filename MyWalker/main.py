@@ -66,6 +66,7 @@ def run_game():   # Основная функция игры
     all_disappeared = pygame.sprite.Group()   # Группа исчезновения призраков
     all_blue_user_balls = pygame.sprite.Group()  # Группа розовых файерболлов игрока
     all_abilities_1 = pygame.sprite.Group()  # Группа абилки 1
+    all_abilities_2 = pygame.sprite.Group()  # Группа абилки 2
     imp_boss_run_left = pygame.sprite.Group()   ####### Бег босса импов
     imp_boss_run_right = pygame.sprite.Group()
     imp_boss_run_top = pygame.sprite.Group()
@@ -204,6 +205,11 @@ def run_game():   # Основная функция игры
             message.image = pygame.image.load('resources/messages/unlock_ability_1.png')
             sound = pygame.mixer.Sound('resources/sounds/unlock_ability_1.wav')
             sound.play()
+        elif type_of_message == 'unlock_ability_2':
+            message.image = pygame.image.load('resources/messages/unlock_ability_2.png')
+            sound = pygame.mixer.Sound('resources/sounds/unlock_ability_2.wav')
+            sound.play()
+
 
     def use_first_item():
         if user.time_to_realise:
@@ -257,7 +263,7 @@ def run_game():   # Основная функция игры
                             arrow.image = pygame.image.load('resources\\attacking\\arrow-bottom.png')
 
                         bullet_move(arrow, arrow.direction)
-                elif front  or back:
+                elif front or back:
                     for i in range(3):
                         count += 40
                         arrow = Objects.Bullet()
@@ -289,6 +295,13 @@ def run_game():   # Основная функция игры
                 delete()
                 ability_cell_1.image = pygame.image.load('resources/Abilities/1_8.png')
                 user.can_use_ability_1 = True
+
+            elif user.items[0].name == 'paper_2':
+                print_the_message('unlock_ability_2')
+                delete()
+                ability_cell_2.image = pygame.image.load('resources/Abilities/2_8.png')
+                user.can_use_ability_2 = True
+
 
 
             elif user.items[0].name == 'sword':
@@ -487,8 +500,11 @@ def run_game():   # Основная функция игры
     ############################# Ячейки абилок ##############################
     ability_cell_1 = Objects.Ability_cell_1()
     ability_cell_1.rect.top = display_height - 100
+    ability_cell_2 = Objects.Ability_cell_2()
+    ability_cell_2.rect.top = display_height - 150
 
     all_sprites.add(ability_cell_1)
+    all_sprites.add(ability_cell_2)
 
     ######################### Отрисовка уровня ############################
     def draw_level():
@@ -521,6 +537,8 @@ def run_game():   # Основная функция игры
             dropted = Objects.Sword()
         elif item == 'paper_1':
             dropted = Objects.Paper_1()
+        elif item == 'paper_2':
+            dropted = Objects.Paper_2()
 
         if right:
             dropted.rect.center = (user.rect.center[0] - 100, user.rect.center[1])
@@ -664,6 +682,11 @@ def run_game():   # Основная функция игры
                     if event.key == pygame.K_1:
                         if user.can_use_ability_1:
                             use_ability_1(ability_cell_1)
+                        else:
+                            pass
+                    if event.key == pygame.K_2:
+                        if user.can_use_ability_2:
+                            use_ability_2(ability_cell_2)
                         else:
                             pass
 
@@ -910,6 +933,8 @@ def run_game():   # Основная функция игры
                     sprite.kill()
                 for sprite in all_blue_user_balls:
                     sprite.kill()
+                for sprite in all_red_chests:
+                    sprite.kill()
                 remember = user
                 user.kill()
 
@@ -1151,6 +1176,10 @@ def run_game():   # Основная функция игры
                 all_abilities_1.add(ability_cell_1)
                 user.can_use_ability_1 = False
 
+            def use_ability_2(ability_cell_2):
+                all_abilities_2.add(ability_cell_2)
+                user.can_use_ability_2 = False
+
                 VisualEffects.upload_user_blue_balls_attack(user, all_sprites, all_blue_user_balls)
             ############################# Предметы и взаимодействие с ними ##############################
             def pick_up():
@@ -1192,17 +1221,13 @@ def run_game():   # Основная функция игры
                 if user.rect.center[0] >= chest.rect.center[0]:  # Если игрок стоит справа от сундука
                     item = functions.choose_the_drop_19()
                     distanse = -64
-                    if item == 'bow':
-                        item = Objects.Bow()
-                    elif item == 'heal_bottle':
-                        item = Objects.Heal_bottle()
+                    if item == 'paper_1':
+                        item = Objects.Paper_2()
                 elif user.rect.center[0] < chest.rect.center[0]:  # Если игрок стоит слева от сундука
                     item = functions.choose_the_drop_19()
                     distanse = 64
-                    if item == 'bow':
-                        item = Objects.Bow()
-                    elif item == 'heal_bottle':
-                        item = Objects.Heal_bottle()
+                    if item == 'paper_1':
+                        item = Objects.Paper_2()
 
                 all_sprites.add(item)
                 all_items_ont_the_ground.add(item)
@@ -1692,6 +1717,9 @@ def run_game():   # Основная функция игры
 
             for abil in all_abilities_1:
                 VisualEffects.update_ability_1(user, abil, all_abilities_1)
+
+            for abil in all_abilities_2:
+                VisualEffects.update_ability_2(user, abil, all_abilities_2)
 
             for ball in all_blue_user_balls:
                 VisualEffects.update_boss_blue_fireballs(ball)

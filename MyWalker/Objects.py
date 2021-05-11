@@ -19,6 +19,8 @@ class Player(pygame.sprite.Sprite):
         self.sword_time = 1
         self.bow_time = 1
         self.can_use_ability_1 = False
+        self.can_use_ability_2 = False
+
 
 ############################# Класс инвентаря ##############################
 class Inventory:
@@ -32,6 +34,15 @@ class Ability_cell_1(pygame.sprite.Sprite):
         self.image = pygame.image.load('resources/Abilities/1_blocked.png')
         self.rect = self.image.get_rect()
         self.condition = 1
+
+############################# Класс объекта-ячейки абилки ##############################
+class Ability_cell_2(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('resources/Abilities/2_blocked.png')
+        self.rect = self.image.get_rect()
+        self.condition = 1
+
 
 ############################# Класс объекта-бара прочности ##############################
 class Bar_DURABILITY(pygame.sprite.Sprite):

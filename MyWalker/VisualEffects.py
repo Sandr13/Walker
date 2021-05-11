@@ -961,6 +961,29 @@ def update_ability_1(user, abil, all_abilities_1):
 
     abil.condition += 1
 
+def update_ability_2(user, abil, all_abilities_2):
+    if abil.condition < 150:
+        abil.image = pygame.image.load('resources/Abilities/2_1.png')
+    elif abil.condition == 150:
+        abil.image = pygame.image.load('resources/Abilities/2_2.png')
+    elif abil.condition == 300:
+        abil.image = pygame.image.load('resources/Abilities/2_3.png')
+    elif abil.condition == 450:
+        abil.image = pygame.image.load('resources/Abilities/2_4.png')
+    elif abil.condition == 600:
+        abil.image = pygame.image.load('resources/Abilities/2_5.png')
+    elif abil.condition == 750:
+        abil.image = pygame.image.load('resources/Abilities/2_6.png')
+    elif abil.condition == 900:
+        abil.image = pygame.image.load('resources/Abilities/2_7.png')
+    elif abil.condition == 1150:
+        abil.image = pygame.image.load('resources/Abilities/2_8.png')
+        abil.condition = 1
+        user.can_use_ability_2 = True
+        all_abilities_2.remove(abil)
+
+    abil.condition += 1
+
 def upload_user_blue_balls_attack(user, all_sprites, all_blue_user_balls):
     sound = pygame.mixer.Sound('resources/sounds/blue_fireballs.wav')
     sound.play()

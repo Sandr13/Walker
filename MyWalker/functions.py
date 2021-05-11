@@ -6,7 +6,7 @@ def choose_the_drop_10():
     return random.choice(list)
 
 def choose_the_drop_19():
-    list = ['bow', 'heal_bottle']
+    list = ['paper_2']
     return random.choice(list)
 
 def random_place_to_teleportation_of_boss_ghost(display_width, display_height, user_x, user_y):
