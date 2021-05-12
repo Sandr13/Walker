@@ -247,15 +247,8 @@ class Chest(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.opened = False
         self.dropted = False
+        self.special_drop = False
 
-################################ Класс 'красного' сундука ##################################
-class Red_Chest(pygame.sprite.Sprite):
-    def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('resources\\objects\\red_chest.png')
-        self.rect = self.image.get_rect()
-        self.opened = False
-        self.dropted = False
 
 ############################# Класс right_left места для меча ##############################
 class Right_left_sword_barrier(pygame.sprite.Sprite):
@@ -321,7 +314,7 @@ class Paper_1(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.name = 'paper_1'
 
-############################# Класс пергамента абилки_1 ##############################
+############################# Класс пергамента абилки_2 ##############################
 class Paper_2(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)

@@ -57,17 +57,27 @@ def chanse_to_spawn_the_imps(lvl):   # Генерация рандомного �
             return 0
 
 
-def chanse_to_spawn_the_chest():   # Генерация рандомного числа сундуков
+def chanse_to_spawn_the_chest(user):   # Генерация рандомного числа сундуков
     choice = random.choice(range(100))
 
-    if choice <= 10:
-        return 3
-    elif choice <= 20:
-        return 2
-    elif choice <= 85:
-        return 1
+    if user.lvl == 19:
+        if choice <= 10:
+            return 3
+        elif choice <= 20:
+            return 2
+        elif choice <= 85:
+            return 1
+        else:
+            return 1
     else:
-        return 0
+        if choice <= 10:
+            return 3
+        elif choice <= 20:
+            return 2
+        elif choice <= 85:
+            return 1
+        else:
+            return 0
 
 def random_position_of_spawn(display_width, display_height):   # Генерация рандомного места генерации на карте
     x = random.choice(range(65, display_width - 65))

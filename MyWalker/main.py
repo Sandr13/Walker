@@ -47,7 +47,6 @@ def run_game():   # Основная функция игры
     all_opening_walls = pygame.sprite.Group()   # Группа временных стен
     all_black_elements = pygame.sprite.Group()   # Группа чёрных фонов
     all_chests = pygame.sprite.Group()   # Группа сундуков
-    all_red_chests = pygame.sprite.Group()  # Группа 'красных' сундуков
     all_messages = pygame.sprite.Group()   # Группа сообщений
     all_ghost_bosses = pygame.sprite.Group()   # Группа боссов
     all_ghost_boss_bars = pygame.sprite.Group()   # Группа баров боссов
@@ -404,19 +403,11 @@ def run_game():   # Основная функция игры
 
     ############################# ф-я генерации сундуков ##############################
     def generate_chests():
-        for i in range(functions.chanse_to_spawn_the_chest()):
+        for i in range(functions.chanse_to_spawn_the_chest(user)):
             chest = Objects.Chest()
             all_sprites.add(chest)
             all_chests.add(chest)
             chest.rect.center = functions.random_position_of_spawn_chest(display_width, display_height)
-
-    ############################# ф-я генерации 'красного' сундука ##############################
-    def generate_red_chest():
-        red_chest = Objects.Red_Chest()
-        all_sprites.add(red_chest)
-        all_red_chests.add(red_chest)
-        red_chest.rect.center = functions.random_position_of_spawn_chest(display_width, display_height)
-
 
 
     close_dors()
@@ -564,6 +555,13 @@ def run_game():   # Основная функция игры
         print_items()
         VisualEffects.upload_last_empty_slots(last_not_empty, empty_1, empty_2, empty_3, empty_4, empty_5)
 
+    def generate_red_chest():
+        for i in all_chests:
+            cur_chest = i
+            break
+        cur_chest.image = pygame.image.load('resources\\objects\\red_chest.png')
+        cur_chest.special_drop = True
+
 
     inventory = Objects.Inventory()
 
@@ -675,7 +673,6 @@ def run_game():   # Основная функция игры
                     if event.key == pygame.K_c:
                         try:
                             open_chest()
-                            open_red_chest()
                         except:
                             pass
                 if event.type == pygame.KEYDOWN:
@@ -933,8 +930,6 @@ def run_game():   # Основная функция игры
                     sprite.kill()
                 for sprite in all_blue_user_balls:
                     sprite.kill()
-                for sprite in all_red_chests:
-                    sprite.kill()
                 remember = user
                 user.kill()
 
@@ -1176,11 +1171,14 @@ def run_game():   # Основная функция игры
                 all_abilities_1.add(ability_cell_1)
                 user.can_use_ability_1 = False
 
+                VisualEffects.upload_user_blue_balls_attack(user, all_sprites, all_blue_user_balls)
+
             def use_ability_2(ability_cell_2):
                 all_abilities_2.add(ability_cell_2)
                 user.can_use_ability_2 = False
 
-                VisualEffects.upload_user_blue_balls_attack(user, all_sprites, all_blue_user_balls)
+                user.hp +=1
+
             ############################# Предметы и взаимодействие с ними ##############################
             def pick_up():
                 if len(user.items) < 5:
@@ -1221,12 +1219,12 @@ def run_game():   # Основная функция игры
                 if user.rect.center[0] >= chest.rect.center[0]:  # Если игрок стоит справа от сундука
                     item = functions.choose_the_drop_19()
                     distanse = -64
-                    if item == 'paper_1':
+                    if item == 'paper_2':
                         item = Objects.Paper_2()
                 elif user.rect.center[0] < chest.rect.center[0]:  # Если игрок стоит слева от сундука
                     item = functions.choose_the_drop_19()
                     distanse = 64
-                    if item == 'paper_1':
+                    if item == 'paper_2':
                         item = Objects.Paper_2()
 
                 all_sprites.add(item)
@@ -1245,23 +1243,11 @@ def run_game():   # Основная функция игры
                         chest.image = pygame.image.load('resources/objects/chest_opened.png')
                         chest.opened = True
                         if not chest.dropted:
-                            drop_items_from_chest(chest)
+                            if chest.special_drop:
+                                drop_items_from_red_chest(chest)
+                            else:
+                                drop_items_from_chest(chest)
                         chest.dropted = True
-
-            def open_red_chest():
-                list = pygame.sprite.spritecollide(user, all_red_chests, False)
-                for red_chest in list:
-                    sound = pygame.mixer.Sound('resources/sounds/chest_sound.wav')
-                    sound.play()
-                    if red_chest.opened:
-                        red_chest.image = pygame.image.load('resources/objects/red_chest.png')
-                        red_chest.opened = False
-                    else:
-                        red_chest.image = pygame.image.load('resources/objects/red_chest_opened.png')
-                        red_chest.opened = True
-                        if not red_chest.dropted:
-                            drop_items_from_red_chest(red_chest)
-                        red_chest.dropted = True
 
             ############################# Выдвижение стен ##############################
             for block in all_closing_walls:
@@ -1353,6 +1339,9 @@ def run_game():   # Основная функция игры
                         sound = pygame.mixer.Sound('resources/sounds/take_potion.wav')
                         sound.play()
                     elif user.items[0].name == 'paper_1':
+                        sound = pygame.mixer.Sound('resources/sounds/take_paper_1.wav')
+                        sound.play()
+                    elif user.items[0].name == 'paper_2':
                         sound = pygame.mixer.Sound('resources/sounds/take_paper_1.wav')
                         sound.play()
                 else:

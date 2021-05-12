@@ -193,6 +193,25 @@ def upload_current_item(item, inventory, empty_1, empty_2, empty_3, empty_4, emp
             empty_5.image = pygame.image.load(directory)
             inventory.items[4].is_empty = False
 
+    elif item.name == 'paper_2':
+        directory = 'resources\\inventory\\items\\open_1.png'
+
+        if inventory.items[0].is_empty:
+            empty_1.image = pygame.image.load(directory)
+            inventory.items[0].is_empty = False
+        elif inventory.items[1].is_empty:
+            empty_2.image = pygame.image.load(directory)
+            inventory.items[1].is_empty = False
+        elif inventory.items[2].is_empty:
+            empty_3.image = pygame.image.load(directory)
+            inventory.items[2].is_empty = False
+        elif inventory.items[3].is_empty:
+            empty_4.image = pygame.image.load(directory)
+            inventory.items[3].is_empty = False
+        elif inventory.items[4].is_empty:
+            empty_5.image = pygame.image.load(directory)
+            inventory.items[4].is_empty = False
+
 
 ############################# Призраки ##############################
 def animate_ghost(ghost):
