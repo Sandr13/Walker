@@ -211,6 +211,7 @@ class Zombie(pygame.sprite.Sprite):
         self.run_timer = 1
         self.direction = ''
 
+
 ############################# Класс объекта-снаряда Импа ##############################
 class Imp_Ball(pygame.sprite.Sprite):
     def __init__(self):
