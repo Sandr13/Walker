@@ -37,12 +37,14 @@ def run_game():   # Основная функция игры
     all_enemy = pygame.sprite.Group()  # Группа монстров
     all_ghosts = pygame.sprite.Group()   # Группа призраков
     all_imps = pygame.sprite.Group()   # Группа импов
+    all_zombs = pygame.sprite.Group()   # Группа зомби
     all_imp_fireballs = pygame.sprite.Group()   # Группа снарядов Импа
     all_items_ont_the_ground = pygame.sprite.Group()   # Группа предметов на земле
     all_bullets = pygame.sprite.Group()   # Группа снарядов
     all_enemy_bars = pygame.sprite.Group()   # Группа баров противников
     all_ghost_bars = pygame.sprite.Group()   # Группа баров призраков
     all_imp_bars = pygame.sprite.Group()  # Группа баров импов
+    all_zombs_bars = pygame.sprite.Group()   # Группа баров зомби
     all_closing_walls = pygame.sprite.Group()   # Группа временных стен
     all_opening_walls = pygame.sprite.Group()   # Группа временных стен
     all_black_elements = pygame.sprite.Group()   # Группа чёрных фонов
@@ -400,6 +402,23 @@ def run_game():   # Основная функция игры
             all_enemy_bars.add(imp_bar)
             all_imp_bars.add(imp_bar)
             imp_bar.rect.center = imp_bar.follow.rect.center
+
+    def generate_zombies():
+        number_of_enemy = functions.chanse_to_spawn_the_zombies(user.lvl)
+        for i in range(number_of_enemy):
+            zomb = Objects.Zombie()
+            all_sprites.add(zomb)
+            all_zombs.add(zomb)
+            all_enemy.add(zomb)
+            zomb.rect.center = functions.random_position_of_spawn(display_width, display_height)
+
+            zomb_bar = Objects.Enemy_Bar_HP(zomb)
+            zomb.bar = zomb_bar
+            all_sprites.add(zomb_bar)
+            all_enemy_bars.add(zomb_bar)
+            all_zombs_bars.add(zomb_bar)
+            zomb_bar.rect.center = zomb_bar.follow.rect.center
+
 
     ############################# ф-я генерации сундуков ##############################
     def generate_chests():
@@ -935,6 +954,7 @@ def run_game():   # Основная функция игры
 
                 user = Objects.Player()
                 user.can_use_ability_1 = remember.can_use_ability_1
+                user.can_use_ability_2 = remember.can_use_ability_2
                 user.items = remember.items
                 user.hp = remember.hp
                 user.rect.center = remember.rect.center
@@ -984,6 +1004,13 @@ def run_game():   # Основная функция игры
                     generate_red_chest()
                 if user.lvl == 20:
                     generate_boss_of_imps()
+                if 21 <= user.lvl <= 29:
+                    generate_ghosts()
+                    generate_imps()
+                    generate_zombies()
+                    generate_chests()
+                if user.lvl == 30:
+                    generate_boss_of_ghost()
 
                 pause()
 
@@ -1166,6 +1193,72 @@ def run_game():   # Основная функция игры
                 if imp.shoot_timming == 200:
                     imp_shoot(imp)
                     imp.shoot_timming = 1
+
+            ############################# Движение зомби ##############################
+            for zomb in all_zombs:
+                if not we_are_drawing:
+                    if math.fabs(user.rect.center[0] - zomb.rect.center[0]) >= 50 or math.fabs(
+                            user.rect.center[1] - zomb.rect.center[1]) >= 50:
+                        if user.rect.center[0] > zomb.rect.center[0]:
+                            zomb.rect.x = zomb.rect.x + zomb.speed
+                            zomb.direction = 'right'
+                        if user.rect.center[0] < zomb.rect.center[0]:
+                            zomb.direction = 'left'
+                            zomb.rect.x = zomb.rect.x - zomb.speed
+
+                        if user.rect.center[1] > zomb.rect.center[1]:
+                            zomb.direction = 'bottom'
+                            zomb.rect.y = zomb.rect.y + zomb.speed
+                        if user.rect.center[1] < zomb.rect.center[1]:
+                            zomb.direction = 'top'
+                            zomb.rect.y = zomb.rect.y - zomb.speed
+                    else:
+                        if pygame.sprite.spritecollide(user, all_zombs, False):
+                            zomb.kill()
+                            zomb.bar.kill()
+                            sound = pygame.mixer.Sound('resources/sounds/taking_damage_by_user.wav')
+                            sound.play()
+                            user.hp -= 3
+
+                for bars in all_zombs_bars:
+                    VisualEffects.update_zomb_bar(bars, user)
+
+                if zomb.rect.top < 50:
+                    if zomb.rect.left >= 700 and zomb.rect.right <= 1050:
+                        pass
+                    else:
+                        zomb.rect.top = 50
+                if zomb.rect.bottom > display_height - 50:
+                    if zomb.rect.left >= 350 and zomb.rect.right <= 775:
+                        pass
+                    else:
+                        zomb.rect.bottom = display_height - 50
+                if zomb.rect.right > display_width - 50:
+                    if zomb.rect.top >= 200 and zomb.rect.bottom <= 500:
+                        pass
+                    else:
+                        zomb.rect.right = display_width - 50
+                if zomb.rect.left < 50:
+                    if zomb.rect.top >= 200 and zomb.rect.bottom <= 500:
+                        pass
+                    else:
+                        zomb.rect.left = 50
+                ############################# Отрисовка зомби ##############################
+                VisualEffects.update_zomb(zomb)
+
+            for zomb in all_zombs:
+                zomb.run_timer += 1
+                if zomb.run_timer == 200:
+                    zomb.speed = 0
+                if zomb.run_timer == 250:
+                    zomb.speed = 2
+                    zomb.running = True
+                    zomb.condition = 1
+                if zomb.run_timer == 400:
+                    zomb.speed = 1
+                    zomb.running = False
+                    zomb.run_timer = 1
+
 
             def use_ability_1(ability_cell_1):
                 all_abilities_1.add(ability_cell_1)

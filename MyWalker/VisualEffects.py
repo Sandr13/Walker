@@ -1069,6 +1069,20 @@ def update_imp_bar(bars, user):
         bars.kill()
         user.scores += 3
 
+def update_zomb_bar(bars, user):
+    bars.rect.bottom = bars.follow.rect.top
+    bars.rect.x = bars.follow.rect.center[0] - 10
+    if bars.follow.hp <= 12:
+        bars.image = pygame.image.load('resources\\enemy health\\2.png')
+    if bars.follow.hp <= 6:
+        bars.image = pygame.image.load('resources\\enemy health\\1.png')
+    if bars.follow.hp <= 0:
+        sound = pygame.mixer.Sound('resources/sounds/imp_dying.wav')
+        sound.play()
+        bars.follow.kill()
+        bars.kill()
+        user.scores += 4
+
 def update_imp(imp):
     imp.condition += 1
     if imp.direction == 'right':
@@ -1103,6 +1117,75 @@ def update_imp(imp):
         if imp.condition == 40:
             imp.image = pygame.image.load('resources/enemy/imp_front_3.png')
             imp.condition = 1
+
+def update_zomb(zomb):
+    zomb.condition += 1
+    if zomb.running:
+        if zomb.direction == 'right':
+            if zomb.condition == 1:
+                zomb.image = pygame.image.load('resources/enemy/zombie_right_1.png')
+            if zomb.condition == 8:
+                zomb.image = pygame.image.load('resources/enemy/zombie_right_2.png')
+            if zomb.condition == 16:
+                zomb.image = pygame.image.load('resources/enemy/zombie_right_3.png')
+                zomb.condition = 1
+        if zomb.direction == 'left':
+            if zomb.condition == 1:
+                zomb.image = pygame.image.load('resources/enemy/zombie_left_1.png')
+            if zomb.condition == 8:
+                zomb.image = pygame.image.load('resources/enemy/zombie_left_2.png')
+            if zomb.condition == 16:
+                zomb.image = pygame.image.load('resources/enemy/zombie_left_3.png')
+                zomb.condition = 1
+        if zomb.direction == 'top':
+            if zomb.condition == 1:
+                zomb.image = pygame.image.load('resources/enemy/zombie_top_1.png')
+            if zomb.condition == 8:
+                zomb.image = pygame.image.load('resources/enemy/zombie_top_2.png')
+            if zomb.condition == 16:
+                zomb.image = pygame.image.load('resources/enemy/zombie_top_3.png')
+                zomb.condition = 1
+        if zomb.direction == 'bottom':
+            if zomb.condition == 1:
+                zomb.image = pygame.image.load('resources/enemy/zombie_bottom_1.png')
+            if zomb.condition == 8:
+                zomb.image = pygame.image.load('resources/enemy/zombie_bottom_2.png')
+            if zomb.condition == 16:
+                zomb.image = pygame.image.load('resources/enemy/zombie_bottom_3.png')
+                zomb.condition = 1
+    else:
+        if zomb.direction == 'right':
+            if zomb.condition == 1:
+                zomb.image = pygame.image.load('resources/enemy/zombie_right_1.png')
+            if zomb.condition == 20:
+                zomb.image = pygame.image.load('resources/enemy/zombie_right_2.png')
+            if zomb.condition == 40:
+                zomb.image = pygame.image.load('resources/enemy/zombie_right_3.png')
+                zomb.condition = 1
+        if zomb.direction == 'left':
+            if zomb.condition == 1:
+                zomb.image = pygame.image.load('resources/enemy/zombie_left_1.png')
+            if zomb.condition == 20:
+                zomb.image = pygame.image.load('resources/enemy/zombie_left_2.png')
+            if zomb.condition == 40:
+                zomb.image = pygame.image.load('resources/enemy/zombie_left_3.png')
+                zomb.condition = 1
+        if zomb.direction == 'top':
+            if zomb.condition == 1:
+                zomb.image = pygame.image.load('resources/enemy/zombie_top_1.png')
+            if zomb.condition == 20:
+                zomb.image = pygame.image.load('resources/enemy/zombie_top_2.png')
+            if zomb.condition == 40:
+                zomb.image = pygame.image.load('resources/enemy/zombie_top_3.png')
+                zomb.condition = 1
+        if zomb.direction == 'bottom':
+            if zomb.condition == 1:
+                zomb.image = pygame.image.load('resources/enemy/zombie_bottom_1.png')
+            if zomb.condition == 20:
+                zomb.image = pygame.image.load('resources/enemy/zombie_bottom_2.png')
+            if zomb.condition == 40:
+                zomb.image = pygame.image.load('resources/enemy/zombie_bottom_3.png')
+                zomb.condition = 1
 
 def update_imp_fireball(ball):
     ball.condition += 1

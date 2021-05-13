@@ -9,6 +9,11 @@ def choose_the_drop_19():
     list = ['paper_2']
     return random.choice(list)
 
+def choose_the_drop_29():
+    list = ['paper_3']
+    return random.choice(list)
+
+
 def random_place_to_teleportation_of_boss_ghost(display_width, display_height, user_x, user_y):
     while True:
         x = random.choice(range(100, display_width - 100))
@@ -44,6 +49,15 @@ def chanse_to_spawn_the_ghosts(lvl):   # Генерация рандомного
             return 3
         elif lvl == 20:
             return 0
+    elif lvl <= 30:
+        if lvl == 21:
+            return 1
+        elif 22 <= lvl <= 25:
+            return 2
+        elif 26 <= lvl <= 29:
+            return 3
+        elif lvl == 30:
+            return 0
 
 def chanse_to_spawn_the_imps(lvl):   # Генерация рандомного числа противников
     if lvl <= 20:
@@ -55,7 +69,26 @@ def chanse_to_spawn_the_imps(lvl):   # Генерация рандомного �
             return 3
         elif lvl == 20:
             return 0
+    if lvl <= 30:
+        if lvl == 21:
+            return 1
+        elif 22 <= lvl <= 25:
+            return 2
+        elif 26 <= lvl <= 29:
+            return 3
+        elif lvl == 30:
+            return 0
 
+def chanse_to_spawn_the_zombies(lvl):   # Генерация рандомного числа противников
+    if lvl <= 30:
+        if lvl == 21:
+            return 1
+        elif 22 <= lvl <= 25:
+            return 2
+        elif 26 <= lvl <= 29:
+            return 3
+        elif lvl == 30:
+            return 0
 
 def chanse_to_spawn_the_chest(user):   # Генерация рандомного числа сундуков
     choice = random.choice(range(100))

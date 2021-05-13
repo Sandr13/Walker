@@ -13,7 +13,7 @@ class Player(pygame.sprite.Sprite):
         self.speed = 2
         self.items = []
         self.scores = 0
-        self.lvl = 18
+        self.lvl = 21
         self.time_to_realise = True
         self.time_spended_to_realise = 0
         self.sword_time = 1
@@ -195,6 +195,20 @@ class Imp(pygame.sprite.Sprite):
         self.bar = object
         self.shoot_timming = 1
         self.condition = 1
+        self.direction = ''
+
+################################ Класс зомби ##################################
+class Zombie(pygame.sprite.Sprite):
+    def __init__(self, object=0):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('resources\\enemy\\zombie_bottom_2.png')
+        self.rect = self.image.get_rect()
+        self.speed = 1
+        self.hp = 15
+        self.bar = object
+        self.condition = 1
+        self.running = False
+        self.run_timer = 1
         self.direction = ''
 
 ############################# Класс объекта-снаряда Импа ##############################
