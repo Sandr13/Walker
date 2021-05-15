@@ -9,6 +9,10 @@ def choose_the_drop_19():
     list = ['paper_2']
     return random.choice(list)
 
+def choose_the_drop_21():
+    list = ['bow', 'crossbow', 'heal_bottle']
+    return random.choice(list)
+
 def choose_the_drop_29():
     list = ['paper_3']
     return random.choice(list)

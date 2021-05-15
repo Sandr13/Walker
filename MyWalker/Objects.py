@@ -18,6 +18,7 @@ class Player(pygame.sprite.Sprite):
         self.time_spended_to_realise = 0
         self.sword_time = 1
         self.bow_time = 1
+        self.crossbow_time = 1
         self.can_use_ability_1 = False
         self.can_use_ability_2 = False
 
@@ -147,6 +148,25 @@ class Imp_Boss(pygame.sprite.Sprite):
 
 ################################ Класс призрака-босса ##################################
 class Ghost_Boss(pygame.sprite.Sprite):
+    def __init__(self, object=0):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('resources\\enemy\\ghost_boss_left_1.png')
+        self.rect = self.image.get_rect()
+        self.bar = object
+        self.hp = 1
+        self.condition = 1
+        self.direction = 'left'
+        self.teleportation = 1
+        self.blue_ball_timer = 1
+        self.pink_ball_timer = 1
+        self.count_of_pink_balls = 0
+        self.portal_timer = 1
+        self.angry = False
+        self.created_portals = False
+        self.invisible = False
+
+################################ Класс призрака-босса ##################################
+class Zombie_Boss(pygame.sprite.Sprite):
     def __init__(self, object=0):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load('resources\\enemy\\ghost_boss_left_1.png')
@@ -351,6 +371,7 @@ class Crossbow(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load('resources/inventory/items/crossbow.png')
         self.rect = self.image.get_rect()
+        self.durability = 20
         self.name = 'crossbow'
 
 ############################# Класс меча ##############################

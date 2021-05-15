@@ -202,6 +202,11 @@ def run_game():   # Основная функция игры
             sound = pygame.mixer.Sound('resources/sounds/broke.wav')
             sound.play()
             delete()
+        elif type_of_message == 'crossbow_is_broken':
+            message.image = pygame.image.load('resources/messages/crossbow_is_broken.png')
+            sound = pygame.mixer.Sound('resources/sounds/broke.wav')
+            sound.play()
+            delete()
         elif type_of_message == 'unlock_ability_1':
             message.image = pygame.image.load('resources/messages/unlock_ability_1.png')
             sound = pygame.mixer.Sound('resources/sounds/unlock_ability_1.wav')
@@ -216,10 +221,6 @@ def run_game():   # Основная функция игры
         if user.time_to_realise:
             if user.items[0].name == 'bow':
                 if user.bow_time == 1:
-                    if user.items[0].durability == 0:
-                        user.time_to_realise = False
-                        user.time_spended_to_realise = 0
-                        print_the_message('bow_is_broken')
                     sound = pygame.mixer.Sound('resources/sounds/user_shooting_from_bow.wav')
                     sound.play()
                     user.items[0].durability -= 1
@@ -237,54 +238,68 @@ def run_game():   # Основная функция игры
                         arrow.direction = 'bottom'
                     VisualEffects.animate_arrow(arrow)
                     bullet_move(arrow, arrow.direction)
+                    if user.items[0].durability == 0:
+                        user.time_to_realise = False
+                        user.time_spended_to_realise = 0
+                        print_the_message('bow_is_broken')
                     user.bow_time = 12
 
             elif user.items[0].name == 'crossbow':
-                sound = pygame.mixer.Sound('resources/sounds/user_shooting_from_bow.wav')
-                sound.play()
-                count = -80
-                if left or right:
-                    for i in range(3):
-                        count += 40
-                        arrow = Objects.Bullet()
-                        all_sprites.add(arrow)
-                        all_bullets.add(arrow)
-                        arrow.rect.center = (user.rect.center[0], user.rect.center[1] + count)
-                        if right:
-                            arrow.direction = 'right'
-                            arrow.image = pygame.image.load('resources\\attacking\\arrow-right.png')
-                        elif left:
-                            arrow.direction = 'left'
-                            arrow.image = pygame.image.load('resources\\attacking\\arrow-left.png')
-                        elif back:
-                            arrow.direction = 'top'
-                            arrow.image = pygame.image.load('resources\\attacking\\arrow-top.png')
-                        elif front:
-                            arrow.direction = 'bottom'
-                            arrow.image = pygame.image.load('resources\\attacking\\arrow-bottom.png')
+                if user.bow_time == 1:
+                    sound = pygame.mixer.Sound('resources/sounds/user_shooting_from_bow.wav')
+                    sound.play()
+                    user.items[0].durability -= 1
+                    count = -80
+                    if left or right:
+                        for i in range(3):
+                            count += 40
+                            arrow = Objects.Bullet()
+                            all_sprites.add(arrow)
+                            all_bullets.add(arrow)
+                            arrow.rect.center = (user.rect.center[0], user.rect.center[1] + count)
+                            if right:
+                                arrow.direction = 'right'
+                                arrow.image = pygame.image.load('resources\\attacking\\arrow-right.png')
+                            elif left:
+                                arrow.direction = 'left'
+                                arrow.image = pygame.image.load('resources\\attacking\\arrow-left.png')
+                            elif back:
+                                arrow.direction = 'top'
+                                arrow.image = pygame.image.load('resources\\attacking\\arrow-top.png')
+                            elif front:
+                                arrow.direction = 'bottom'
+                                arrow.image = pygame.image.load('resources\\attacking\\arrow-bottom.png')
 
-                        bullet_move(arrow, arrow.direction)
-                elif front or back:
-                    for i in range(3):
-                        count += 40
-                        arrow = Objects.Bullet()
-                        all_sprites.add(arrow)
-                        all_bullets.add(arrow)
-                        arrow.rect.center = (user.rect.center[0] + count, user.rect.center[1])
-                        if right:
-                            arrow.direction = 'right'
-                            arrow.image = pygame.image.load('resources\\attacking\\arrow-right.png')
-                        elif left:
-                            arrow.direction = 'left'
-                            arrow.image = pygame.image.load('resources\\attacking\\arrow-left.png')
-                        elif back:
-                            arrow.direction = 'top'
-                            arrow.image = pygame.image.load('resources\\attacking\\arrow-top.png')
-                        elif front:
-                            arrow.direction = 'bottom'
-                            arrow.image = pygame.image.load('resources\\attacking\\arrow-bottom.png')
+                            VisualEffects.animate_arrow(arrow)
+                            bullet_move(arrow, arrow.direction)
+                            user.bow_time = 24
+                    elif front or back:
+                        for i in range(3):
+                            count += 40
+                            arrow = Objects.Bullet()
+                            all_sprites.add(arrow)
+                            all_bullets.add(arrow)
+                            arrow.rect.center = (user.rect.center[0] + count, user.rect.center[1])
+                            if right:
+                                arrow.direction = 'right'
+                                arrow.image = pygame.image.load('resources\\attacking\\arrow-right.png')
+                            elif left:
+                                arrow.direction = 'left'
+                                arrow.image = pygame.image.load('resources\\attacking\\arrow-left.png')
+                            elif back:
+                                arrow.direction = 'top'
+                                arrow.image = pygame.image.load('resources\\attacking\\arrow-top.png')
+                            elif front:
+                                arrow.direction = 'bottom'
+                                arrow.image = pygame.image.load('resources\\attacking\\arrow-bottom.png')
 
-                        bullet_move(arrow, arrow.direction)
+                            bullet_move(arrow, arrow.direction)
+
+                    if user.items[0].durability == 0:
+                        user.time_to_realise = False
+                        user.time_spended_to_realise = 0
+                        print_the_message('crossbow_is_broken')
+
             elif user.items[0].name == 'heal_bottle':
                 sound = pygame.mixer.Sound('resources/sounds/use_heal.wav')
                 sound.play()
@@ -302,8 +317,6 @@ def run_game():   # Основная функция игры
                 delete()
                 ability_cell_2.image = pygame.image.load('resources/Abilities/2_8.png')
                 user.can_use_ability_2 = True
-
-
 
             elif user.items[0].name == 'sword':
                 if user.sword_time == 1:
@@ -343,6 +356,7 @@ def run_game():   # Основная функция игры
                     user.sword_time = 12
         else:
             pass
+
     ############################# Противники ##############################
     def generate_boss_of_imps():
         boss = Objects.Imp_Boss()
@@ -543,6 +557,7 @@ def run_game():   # Основная функция игры
             dropted.durability = remember.durability
         elif item == 'crossbow':
             dropted = Objects.Crossbow()
+            dropted.durability = remember.durability
         elif item == 'sword':
             dropted = Objects.Sword()
         elif item == 'paper_1':
@@ -1289,17 +1304,27 @@ def run_game():   # Основная функция игры
             ############################# Сундуки и взаимодействие с ними ##############################
             def drop_items_from_chest(chest):
                 if user.rect.center[0] >= chest.rect.center[0]:   # Если игрок стоит справа от сундука
-                    item = functions.choose_the_drop_10()
+                    if user.lvl < 20:
+                        item = functions.choose_the_drop_10()
+                    else:
+                        item = functions.choose_the_drop_21()
                     distanse = -64
                     if item == 'bow':
                         item = Objects.Bow()
+                    elif item == 'crossbow':
+                        item = Objects.Crossbow()
                     elif item == 'heal_bottle':
                         item = Objects.Heal_bottle()
                 elif user.rect.center[0] < chest.rect.center[0]:   # Если игрок стоит слева от сундука
-                    item = functions.choose_the_drop_10()
+                    if user.lvl < 20:
+                        item = functions.choose_the_drop_10()
+                    else:
+                        item = functions.choose_the_drop_21()
                     distanse = 64
                     if item == 'bow':
                         item = Objects.Bow()
+                    elif item == 'crossbow':
+                        item = Objects.Crossbow()
                     elif item == 'heal_bottle':
                         item = Objects.Heal_bottle()
 
@@ -1816,6 +1841,8 @@ def run_game():   # Основная функция игры
             if user.sword_time != 1:
                 user.sword_time -= 1
             if user.bow_time != 1:
+                user.bow_time -= 1
+            if user.crossbow_time != 1:
                 user.bow_time -= 1
 
             if not all_enemy:

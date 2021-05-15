@@ -55,6 +55,20 @@ def upload_bar_of_duraility(user, bar_durability):
                 bar_durability.image = pygame.image.load('resources/durability/2.png')
             elif 1 <= item.durability <= 3:
                 bar_durability.image = pygame.image.load('resources/durability/1.png')
+
+        elif item.name == 'crossbow':
+            if 18 <= item.durability <= 20:
+                bar_durability.image = pygame.image.load('resources/durability/10.png')
+            elif 15 <= item.durability <= 17:
+                bar_durability.image = pygame.image.load('resources/durability/8.png')
+            elif 12 <= item.durability <= 14:
+                bar_durability.image = pygame.image.load('resources/durability/6.png')
+            elif 9 <= item.durability <= 11:
+                bar_durability.image = pygame.image.load('resources/durability/4.png')
+            elif 5 <= item.durability <= 8:
+                bar_durability.image = pygame.image.load('resources/durability/2.png')
+            elif 1 <= item.durability <= 4:
+                bar_durability.image = pygame.image.load('resources/durability/1.png')
         else:
             bar_durability.image = pygame.image.load('resources/inventory/items/empty_slot.png')
     else:
