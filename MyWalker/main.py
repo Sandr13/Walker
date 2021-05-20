@@ -443,6 +443,9 @@ def run_game():   # Основная функция игры
             all_chests.add(chest)
             chest.rect.center = functions.random_position_of_spawn_chest(display_width, display_height)
 
+    def clean_the_display():
+        display.fill((255, 255, 255))
+
 
     close_dors()
     ############################# Генерация сундуков ##############################
@@ -947,6 +950,7 @@ def run_game():   # Основная функция игры
                 count_of_room += 1
                 count_of_room %= 4
                 background.change_the_room(count_of_room)
+                clean_the_display()
                 for i in all_closing_walls:
                     if i in walls:
                         walls.remove(i)
