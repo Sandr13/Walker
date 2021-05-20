@@ -245,7 +245,7 @@ def run_game():   # Основная функция игры
                     user.bow_time = 12
 
             elif user.items[0].name == 'crossbow':
-                if user.bow_time == 1:
+                if user.crossbow_time == 1:
                     sound = pygame.mixer.Sound('resources/sounds/user_shooting_from_bow.wav')
                     sound.play()
                     user.items[0].durability -= 1
@@ -272,7 +272,6 @@ def run_game():   # Основная функция игры
 
                             VisualEffects.animate_arrow(arrow)
                             bullet_move(arrow, arrow.direction)
-                            user.bow_time = 24
                     elif front or back:
                         for i in range(3):
                             count += 40
@@ -299,6 +298,8 @@ def run_game():   # Основная функция игры
                         user.time_to_realise = False
                         user.time_spended_to_realise = 0
                         print_the_message('crossbow_is_broken')
+
+                    user.crossbow_time = 24
 
             elif user.items[0].name == 'heal_bottle':
                 sound = pygame.mixer.Sound('resources/sounds/use_heal.wav')
@@ -1009,19 +1010,19 @@ def run_game():   # Основная функция игры
                 if user.lvl == 10:
                     generate_boss_of_ghost()
                 if 11 <= user.lvl < 19:
-                    generate_ghosts()
+                    #generate_ghosts()
                     generate_imps()
                     generate_chests()
                 if user.lvl == 19:
-                    generate_ghosts()
+                    #generate_ghosts()
                     generate_imps()
                     generate_chests()
                     generate_red_chest()
                 if user.lvl == 20:
                     generate_boss_of_imps()
                 if 21 <= user.lvl <= 29:
-                    generate_ghosts()
-                    generate_imps()
+                    #generate_ghosts()
+                    #generate_imps()
                     generate_zombies()
                     generate_chests()
                 if user.lvl == 30:
@@ -1843,7 +1844,7 @@ def run_game():   # Основная функция игры
             if user.bow_time != 1:
                 user.bow_time -= 1
             if user.crossbow_time != 1:
-                user.bow_time -= 1
+                user.crossbow_time -= 1
 
             if not all_enemy:
                 blocked_left = False

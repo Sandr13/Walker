@@ -13,7 +13,7 @@ class Player(pygame.sprite.Sprite):
         self.speed = 2
         self.items = []
         self.scores = 0
-        self.lvl =  1
+        self.lvl =  21
         self.time_to_realise = True
         self.time_spended_to_realise = 0
         self.sword_time = 1
