@@ -54,6 +54,8 @@ def run_game():   # Основная функция игры
     all_ghost_boss_bars = pygame.sprite.Group()   # Группа баров боссов
     all_imp_bosses = pygame.sprite.Group()   # Группа боссов
     all_imp_boss_bars = pygame.sprite.Group()   # Группа баров боссов
+    all_zomb_bosses = pygame.sprite.Group()  # Группа боссов
+    all_zomb_boss_bars = pygame.sprite.Group()  # Группа баров боссов
     all_blue_boss_balls = pygame.sprite.Group()   # Группа синих файерболлов боссов
     all_pink_boss_balls = pygame.sprite.Group()   # Группа розовых файерболлов боссов
     right_top = pygame.sprite.Group()   ####### Стрельба розовыми файерболлами
@@ -78,6 +80,7 @@ def run_game():   # Основная функция игры
     all_imps_portals = pygame.sprite.Group()
     creating_imp_portals = pygame.sprite.Group()
     deleting_imp_portals = pygame.sprite.Group()
+
 
     ############################# Задний фон ##############################
     background = Objects.Background()
@@ -383,6 +386,18 @@ def run_game():   # Основная функция игры
         boss_bar.image.set_alpha(1)
         all_sprites.add(boss_bar)
         all_ghost_boss_bars.add(boss_bar)
+        boss.bar = boss_bar
+
+    def generate_boss_of_zombs():
+        boss = Objects.Zomb_Boss()
+        boss.rect.center = (display_width/2, display_height/2)
+        all_enemy.add(boss)
+        all_zomb_bosses.add(boss)
+        all_sprites.add(boss)
+
+        boss_bar = Objects.Boss_Bar_HP(boss)
+        all_sprites.add(boss_bar)
+        all_zomb_boss_bars.add(boss_bar)
         boss.bar = boss_bar
 
 
@@ -1030,7 +1045,7 @@ def run_game():   # Основная функция игры
                     generate_zombies()
                     generate_chests()
                 if user.lvl == 30:
-                    generate_boss_of_ghost()
+                    generate_boss_of_zombs()
 
                 pause()
 
@@ -1484,6 +1499,57 @@ def run_game():   # Основная функция игры
             VisualEffects.upload_bar_of_duraility(user, bar_durability)
 
             ############################# Работа с боссом ##############################
+            for boss in all_zomb_bosses:
+                if math.fabs(user.rect.center[0] - boss.rect.center[0]) >= 50 or math.fabs(
+                    user.rect.center[1] - boss.rect.center[1]) >= 50:
+                    if user.rect.center[0] > boss.rect.center[0]:
+                        boss.rect.x = boss.rect.x + boss.speed
+                        boss.direction = 'right'
+                    if user.rect.center[0] < boss.rect.center[0]:
+                        boss.direction = 'left'
+                        boss.rect.x = boss.rect.x - boss.speed
+
+                    if user.rect.center[1] > boss.rect.center[1]:
+                        boss.direction = 'bottom'
+                        boss.rect.y = boss.rect.y + boss.speed
+                    if user.rect.center[1] < boss.rect.center[1]:
+                        boss.direction = 'top'
+                        boss.rect.y = boss.rect.y - boss.speed
+
+                if boss.rect.top < 50:
+                    if boss.rect.left >= 700 and boss.rect.right <= 1050:
+                        pass
+                    else:
+                        boss.rect.top = 50
+                if boss.rect.bottom > display_height - 50:
+                    if boss.rect.left >= 350 and boss.rect.right <= 775:
+                        pass
+                    else:
+                        boss.rect.bottom = display_height - 50
+                if boss.rect.right > display_width - 50:
+                    if boss.rect.top >= 200 and boss.rect.bottom <= 500:
+                        pass
+                    else:
+                        boss.rect.right = display_width - 50
+                if boss.rect.left < 50:
+                    if boss.rect.top >= 200 and boss.rect.bottom <= 500:
+                        pass
+                    else:
+                        boss.rect.left = 50
+
+                VisualEffects.update_zomb_boss_running(boss)
+
+                if not boss.printed:
+                    if boss.hp != 110:
+                        boss.hp += 1
+                    else:
+                        boss.printed = True
+
+            for bars in all_zomb_boss_bars:
+                VisualEffects.update_zomb_boss_bar(bars, all_disappeared, all_enemy, all_zombs, all_zomb_bosses, all_sprites)
+
+
+            ############################# Работа с боссом ##############################
             boss_printed = False
 
             for i in all_ghost_boss_bars:
@@ -1610,7 +1676,7 @@ def run_game():   # Основная функция игры
 
             for boss in all_imp_bosses:
                 if not boss.printed:
-                    if boss.hp != 111:
+                    if boss.hp != 110:
                         boss.hp += 1
                     else:
                         boss.printed = True

@@ -516,7 +516,7 @@ def update_imp_boss_fireball(ball):
 
 
 def upload_boss_of_imps_bar(bars, all_dissapeared, all_imp_bosses, all_enemy):
-    if 110 <= bars.follow.hp <= 111:
+    if bars.follow.hp == 110:
         bars.image = pygame.image.load('resources/boss_bars/55.png')
     if 108 <= bars.follow.hp <= 109:
         bars.image = pygame.image.load('resources/boss_bars/54.png')
@@ -624,9 +624,9 @@ def upload_boss_of_imps_bar(bars, all_dissapeared, all_imp_bosses, all_enemy):
         bars.image = pygame.image.load('resources/boss_bars/3.png')
     elif 4 <= bars.follow.hp <= 5:
         bars.image = pygame.image.load('resources/boss_bars/2.png')
-    elif 2 <= bars.follow.hp <= 3:
+    elif 1 <= bars.follow.hp <= 3:
         bars.image = pygame.image.load('resources/boss_bars/1.png')
-    elif 0 <= bars.follow.hp <= 1:
+    elif bars.follow.hp <= 0:
         all_dissapeared.add(bars.follow)
         all_imp_bosses.remove(bars.follow)
         all_enemy.remove(bars.follow)
@@ -808,6 +808,129 @@ def upload_boss_of_ghosts_bar(bars, all_disappeared, all_enemy, all_ghosts, all_
         all_disappeared.add(bars.follow)
         bars.kill()
 
+
+def update_zomb_boss_bar(bars, all_disappeared, all_enemy, all_zombs, all_bosses, all_sprites):
+    bars.rect.center = (bars.follow.rect.center[0], bars.follow.rect.top - 20)
+    if 217 <= bars.follow.hp <= 220:
+        bars.image = pygame.image.load('resources/boss_bars/55.png')
+    elif 213 <= bars.follow.hp <= 216:
+        bars.image = pygame.image.load('resources/boss_bars/54.png')
+    elif 207 <= bars.follow.hp <= 212:
+        bars.image = pygame.image.load('resources/boss_bars/53.png')
+    elif 205 <= bars.follow.hp <= 208:
+        bars.image = pygame.image.load('resources/boss_bars/52.png')
+    elif 201 <= bars.follow.hp <= 204:
+        bars.image = pygame.image.load('resources/boss_bars/51.png')
+    elif 197 <= bars.follow.hp <= 200:
+        bars.image = pygame.image.load('resources/boss_bars/50.png')
+    elif 193 <= bars.follow.hp <= 196:
+        bars.image = pygame.image.load('resources/boss_bars/49.png')
+    elif 189 <= bars.follow.hp <= 192:
+        bars.image = pygame.image.load('resources/boss_bars/48.png')
+    elif 185 <= bars.follow.hp <= 188:
+        bars.image = pygame.image.load('resources/boss_bars/47.png')
+    elif 181 <= bars.follow.hp <= 184:
+        bars.image = pygame.image.load('resources/boss_bars/46.png')
+    elif 177 <= bars.follow.hp <= 180:
+        bars.image = pygame.image.load('resources/boss_bars/45.png')
+    elif 173 <= bars.follow.hp <= 176:
+        bars.image = pygame.image.load('resources/boss_bars/44.png')
+    elif 169 <= bars.follow.hp <= 172:
+        bars.image = pygame.image.load('resources/boss_bars/43.png')
+    elif 165 <= bars.follow.hp <= 168:
+        bars.image = pygame.image.load('resources/boss_bars/42.png')
+    elif 161 <= bars.follow.hp <= 164:
+        bars.image = pygame.image.load('resources/boss_bars/41.png')
+    elif 157 <= bars.follow.hp <= 160:
+        bars.image = pygame.image.load('resources/boss_bars/40.png')
+    elif 153 <= bars.follow.hp <= 156:
+        bars.image = pygame.image.load('resources/boss_bars/39.png')
+    elif 149 <= bars.follow.hp <= 152:
+        bars.image = pygame.image.load('resources/boss_bars/38.png')
+    elif 145 <= bars.follow.hp <= 148:
+        bars.image = pygame.image.load('resources/boss_bars/37.png')
+    elif 141 <= bars.follow.hp <= 144:
+        bars.image = pygame.image.load('resources/boss_bars/36.png')
+    elif 137 <= bars.follow.hp <= 140:
+        bars.image = pygame.image.load('resources/boss_bars/35.png')
+    elif 133 <= bars.follow.hp <= 136:
+        bars.image = pygame.image.load('resources/boss_bars/34.png')
+    elif 129 <= bars.follow.hp <= 132:
+        bars.image = pygame.image.load('resources/boss_bars/33.png')
+    elif 125 <= bars.follow.hp <= 128:
+        bars.image = pygame.image.load('resources/boss_bars/32.png')
+    elif 121 <= bars.follow.hp <= 124:
+        bars.image = pygame.image.load('resources/boss_bars/31.png')
+    elif 117 <= bars.follow.hp <= 120:
+        bars.image = pygame.image.load('resources/boss_bars/30.png')
+    elif 113 <= bars.follow.hp <= 116:
+        bars.image = pygame.image.load('resources/boss_bars/29.png')
+    elif 109 <= bars.follow.hp <= 112:
+        bars.image = pygame.image.load('resources/boss_bars/28.png')
+    elif 105 <= bars.follow.hp <= 108:
+        bars.image = pygame.image.load('resources/boss_bars/27.png')
+    elif 101 <= bars.follow.hp <= 104:
+        bars.image = pygame.image.load('resources/boss_bars/26.png')
+    elif 97 <= bars.follow.hp <= 100:
+        bars.image = pygame.image.load('resources/boss_bars/25.png')
+    elif 93 <= bars.follow.hp <= 96:
+        bars.image = pygame.image.load('resources/boss_bars/24.png')
+    elif 89 <= bars.follow.hp <= 92:
+        bars.image = pygame.image.load('resources/boss_bars/23.png')
+    elif 85 <= bars.follow.hp <= 88:
+        bars.image = pygame.image.load('resources/boss_bars/22.png')
+    elif 81 <= bars.follow.hp <= 84:
+        bars.image = pygame.image.load('resources/boss_bars/21.png')
+    elif 77 <= bars.follow.hp <= 80:
+        bars.image = pygame.image.load('resources/boss_bars/20.png')
+    elif 73 <= bars.follow.hp <= 76:
+        bars.image = pygame.image.load('resources/boss_bars/19.png')
+    elif 69 <= bars.follow.hp <= 72:
+        bars.image = pygame.image.load('resources/boss_bars/18.png')
+    elif 65 <= bars.follow.hp <= 68:
+        bars.image = pygame.image.load('resources/boss_bars/17.png')
+    elif 61 <= bars.follow.hp <= 64:
+        bars.image = pygame.image.load('resources/boss_bars/16.png')
+    elif 57 <= bars.follow.hp <= 60:
+        bars.image = pygame.image.load('resources/boss_bars/15.png')
+    elif 53 <= bars.follow.hp <= 56:
+        bars.image = pygame.image.load('resources/boss_bars/14.png')
+    elif 49 <= bars.follow.hp <= 52:
+        bars.image = pygame.image.load('resources/boss_bars/13.png')
+    elif 45 <= bars.follow.hp <= 48:
+        bars.image = pygame.image.load('resources/boss_bars/12.png')
+    elif 41 <= bars.follow.hp <= 44:
+        bars.image = pygame.image.load('resources/boss_bars/11.png')
+    elif 37 <= bars.follow.hp <= 40:
+        bars.image = pygame.image.load('resources/boss_bars/10.png')
+    elif 33 <= bars.follow.hp <= 36:
+        bars.image = pygame.image.load('resources/boss_bars/9.png')
+    elif 29 <= bars.follow.hp <= 32:
+        bars.image = pygame.image.load('resources/boss_bars/8.png')
+    elif 25 <= bars.follow.hp <= 28:
+        bars.image = pygame.image.load('resources/boss_bars/7.png')
+    elif 21 <= bars.follow.hp <= 24:
+        bars.image = pygame.image.load('resources/boss_bars/6.png')
+    elif 17 <= bars.follow.hp <= 20:
+        bars.image = pygame.image.load('resources/boss_bars/5.png')
+    elif 13 <= bars.follow.hp <= 16:
+        bars.image = pygame.image.load('resources/boss_bars/4.png')
+    elif 9 <= bars.follow.hp <= 12:
+        bars.image = pygame.image.load('resources/boss_bars/3.png')
+    elif 5 <= bars.follow.hp <= 8:
+        bars.image = pygame.image.load('resources/boss_bars/2.png')
+    elif 1 <= bars.follow.hp <= 4:
+        bars.image = pygame.image.load('resources/boss_bars/1.png')
+    elif bars.follow.hp <= 0:
+        all_disappeared.add(bars.follow)
+        all_bosses.remove(bars.follow)
+        all_enemy.remove(bars.follow)
+        bars.kill()
+
+        sound = pygame.mixer.Sound('resources/sounds/killing_boss_of_imps.wav')
+        sound.play()
+
+
 def update_imp_boss_running(boss):
     if boss.direction == 'left':
         if boss.condition == 1:
@@ -850,6 +973,42 @@ def update_imp_boss_running(boss):
             boss.image = pygame.image.load('resources/enemy/boss_imp_bottom_4.png')
             boss.condition = 1
 
+    boss.condition += 1
+
+
+def update_zomb_boss_running(boss):
+    if boss.direction == 'left':
+        if boss.condition == 1:
+            boss.image = pygame.image.load('resources/enemy/boss_zombie_left_1.png')
+        elif boss.condition == 24:
+            boss.image = pygame.image.load('resources/enemy/boss_zombie_left_2.png')
+        elif boss.condition == 48:
+            boss.image = pygame.image.load('resources/enemy/boss_zombie_left_3.png')
+            boss.condition = 1
+    elif boss.direction == 'right':
+        if boss.condition == 1:
+            boss.image = pygame.image.load('resources/enemy/boss_zombie_right_1.png')
+        elif boss.condition == 24:
+            boss.image = pygame.image.load('resources/enemy/boss_zombie_right_2.png')
+        elif boss.condition == 48:
+            boss.image = pygame.image.load('resources/enemy/boss_zombie_right_3.png')
+            boss.condition = 1
+    elif boss.direction == 'top':
+        if boss.condition == 1:
+            boss.image = pygame.image.load('resources/enemy/boss_zombie_top_1.png')
+        elif boss.condition == 24:
+            boss.image = pygame.image.load('resources/enemy/boss_zombie_top_2.png')
+        elif boss.condition == 48:
+            boss.image = pygame.image.load('resources/enemy/boss_zombie_top_3.png')
+            boss.condition = 1
+    elif boss.direction == 'bottom':
+        if boss.condition == 1:
+            boss.image = pygame.image.load('resources/enemy/boss_zombie_bottom_1.png')
+        elif boss.condition == 24:
+            boss.image = pygame.image.load('resources/enemy/boss_zombie_bottom_2.png')
+        elif boss.condition == 48:
+            boss.image = pygame.image.load('resources/enemy/boss_zombie_bottom_3.png')
+            boss.condition = 1
     boss.condition += 1
 
 

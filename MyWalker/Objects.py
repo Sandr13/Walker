@@ -13,7 +13,7 @@ class Player(pygame.sprite.Sprite):
         self.speed = 2
         self.items = []
         self.scores = 0
-        self.lvl = 1
+        self.lvl = 29
         self.time_to_realise = True
         self.time_spended_to_realise = 0
         self.sword_time = 1
@@ -179,15 +179,14 @@ class Ghost_Boss(pygame.sprite.Sprite):
 class Zomb_Boss(pygame.sprite.Sprite):
     def __init__(self, object=0):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('resources\\enemy\\boss_zomb_left_1.png')
+        self.image = pygame.image.load('resources\\enemy\\boss_zombie_left_1.png')
         self.rect = self.image.get_rect()
         self.bar = object
+        self.speed = 1
         self.hp = 1
         self.condition = 1
-        self.direction = 'left'
-        self.portal_timer = 1
-        self.created_portals = False
-        self.invisible = False
+        self.direction = 'bottom'
+        self.printed = False
 
 ############################# Класс объекта-верхнего файерболла босса импов ##############################
 class Boss_imp_fireball(pygame.sprite.Sprite):

@@ -5,28 +5,25 @@ import random
 
 
 def upload_zombs_into_the_portals(boss, portal, all_sprites, all_zombs, all_enemy, all_zombs_bars, all_enemy_bars):
-    boss.pink_ball_timer = 1
-    boss.blue_ball_timer = 1
-    boss.teleportation = 1
     boss.portal_timer = 1
     if portal.spawned_ghosts != 2:
         portal.spawn_timer += 1
         if portal.spawn_timer == 200:
-            portal.spawned_ghosts += 1
+            portal.spawned_zombs += 1
             portal.spawn_timer = 1
 
-            ghost = Objects.Ghost()
-            all_sprites.add(ghost)
-            all_ghosts.add(ghost)
-            all_enemy.add(ghost)
-            ghost.rect.center = portal.rect.center
+            zomb = Objects.Zombie()
+            all_sprites.add(zomb)
+            all_zombs.add(zomb)
+            all_enemy.add(zomb)
+            zomb.rect.center = portal.rect.center
 
-            ghost_bar = Objects.Enemy_Bar_HP(ghost)
-            ghost.bar = ghost_bar
-            all_sprites.add(ghost_bar)
-            all_ghost_bars.add(ghost_bar)
-            all_enemy_bars.add(ghost_bar)
-            ghost_bar.rect.center = ghost_bar.follow.rect.center
+            zomb_bar = Objects.Enemy_Bar_HP(zomb)
+            zomb.bar = zomb_bar
+            all_sprites.add(zomb_bar)
+            all_zombs_bars.add(zomb_bar)
+            all_enemy_bars.add(zomb_bar)
+            zomb_bar.rect.center = zomb_bar.follow.rect.center
 
     else:
         portal.kill()
