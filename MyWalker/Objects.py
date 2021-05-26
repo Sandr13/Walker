@@ -13,7 +13,7 @@ class Player(pygame.sprite.Sprite):
         self.speed = 2
         self.items = []
         self.scores = 0
-        self.lvl =  21
+        self.lvl = 1
         self.time_to_realise = True
         self.time_spended_to_realise = 0
         self.sword_time = 1
@@ -113,6 +113,16 @@ class Imp_portal(pygame.sprite.Sprite):
         self.destroyings = False
         self.spawn_timer = 1
 
+############################# Класс объекта-портала зомби ##############################
+class Zomb_portal(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('resources/objects/zomb_portal_right_1.png')
+        self.rect = self.image.get_rect()
+        self.condition = 1
+        self.direction = ''
+        self.spawned_zombs = 0
+        self.spawn_timer = 1
 
 ################################ Класс призрака ##################################
 class Ghost(pygame.sprite.Sprite):
@@ -165,22 +175,17 @@ class Ghost_Boss(pygame.sprite.Sprite):
         self.created_portals = False
         self.invisible = False
 
-################################ Класс призрака-босса ##################################
-class Zombie_Boss(pygame.sprite.Sprite):
+################################ Класс зомби-босса ##################################
+class Zomb_Boss(pygame.sprite.Sprite):
     def __init__(self, object=0):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('resources\\enemy\\ghost_boss_left_1.png')
+        self.image = pygame.image.load('resources\\enemy\\boss_zomb_left_1.png')
         self.rect = self.image.get_rect()
         self.bar = object
         self.hp = 1
         self.condition = 1
         self.direction = 'left'
-        self.teleportation = 1
-        self.blue_ball_timer = 1
-        self.pink_ball_timer = 1
-        self.count_of_pink_balls = 0
         self.portal_timer = 1
-        self.angry = False
         self.created_portals = False
         self.invisible = False
 
