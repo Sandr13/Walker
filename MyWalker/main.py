@@ -80,7 +80,9 @@ def run_game():   # Основная функция игры
     all_imps_portals = pygame.sprite.Group()
     creating_imp_portals = pygame.sprite.Group()
     deleting_imp_portals = pygame.sprite.Group()
-
+    all_zombs_portals = pygame.sprite.Group()
+    creating_imp_portals = pygame.sprite.Group()
+    deleting_imp_portals = pygame.sprite.Group()
 
     ############################# Задний фон ##############################
     background = Objects.Background()
@@ -1305,7 +1307,9 @@ def run_game():   # Основная функция игры
                 all_abilities_2.add(ability_cell_2)
                 user.can_use_ability_2 = False
 
-                user.hp +=1
+                sound = pygame.mixer.Sound('resources/sounds/use_heal.wav')
+
+                user.hp += 1
 
             ############################# Предметы и взаимодействие с ними ##############################
             def pick_up():
@@ -1958,5 +1962,6 @@ mytheme.title_bar_style = pygame_menu.widgets.MENUBAR_STYLE_TITLE_ONLY_DIAGONAL
 menu = pygame_menu.Menu('   Paul Waker   ', 1400, 700, theme=mytheme)
 menu.add.button('Play', run_game)
 menu.add.button('Quit', pygame_menu.events.EXIT)
+
 
 menu.mainloop(surface)
