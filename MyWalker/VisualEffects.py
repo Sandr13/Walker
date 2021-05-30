@@ -679,6 +679,51 @@ def update_imp_portals(portal):
 
     portal.condition += 1
 
+
+def update_zomb_portals(portal):
+    if portal.direction == 'left':
+        if portal.condition == 8:
+            portal.image = pygame.image.load('resources/objects/zomb_portal_left_1.png')
+        elif portal.condition == 16:
+            portal.image = pygame.image.load('resources/objects/zomb_portal_left_2.png')
+        elif portal.condition == 24:
+            portal.image = pygame.image.load('resources/objects/zomb_portal_left_3.png')
+        elif portal.condition == 32:
+            portal.image = pygame.image.load('resources/objects/zomb_portal_left_4.png')
+        elif portal.condition == 40:
+            portal.image = pygame.image.load('resources/objects/zomb_portal_left_5.png')
+        elif portal.condition == 48:
+            portal.image = pygame.image.load('resources/objects/zomb_portal_left_6.png')
+        elif portal.condition == 56:
+            portal.image = pygame.image.load('resources/objects/zomb_portal_left_7.png')
+        elif portal.condition == 64:
+            portal.image = pygame.image.load('resources/objects/zomb_portal_left_8.png')
+        elif portal.condition == 72:
+            portal.image = pygame.image.load('resources/objects/zomb_portal_left_9.png')
+            portal.condition = 1
+    elif portal.direction == 'right':
+        if portal.condition == 8:
+            portal.image = pygame.image.load('resources/objects/zomb_portal_right_1.png')
+        elif portal.condition == 16:
+            portal.image = pygame.image.load('resources/objects/zomb_portal_right_2.png')
+        elif portal.condition == 24:
+            portal.image = pygame.image.load('resources/objects/zomb_portal_right_3.png')
+        elif portal.condition == 32:
+            portal.image = pygame.image.load('resources/objects/zomb_portal_right_4.png')
+        elif portal.condition == 40:
+            portal.image = pygame.image.load('resources/objects/zomb_portal_right_5.png')
+        elif portal.condition == 48:
+            portal.image = pygame.image.load('resources/objects/zomb_portal_right_6.png')
+        elif portal.condition == 56:
+            portal.image = pygame.image.load('resources/objects/zomb_portal_right_7.png')
+        elif portal.condition == 64:
+            portal.image = pygame.image.load('resources/objects/zomb_portal_right_8.png')
+        elif portal.condition == 72:
+            portal.image = pygame.image.load('resources/objects/zomb_portal_right_9.png')
+            portal.condition = 1
+
+    portal.condition += 1
+
 def upload_boss_of_ghosts_bar(bars, all_disappeared, all_enemy, all_ghosts, all_bosses, all_sprites, all_items_ont_the_ground):
     bars.rect.center = (bars.follow.rect.center[0], bars.follow.rect.top - 20)
     if bars.follow.hp == 55:
@@ -1415,3 +1460,72 @@ def update_imp_fireball(ball):
             ball.image = pygame.image.load('resources/attacking/fireball_5_bottom.png')
             ball.condition = 1
         ball.rect.y += 5
+
+def update_slime_fireball(ball):
+    ball.condition += 1
+
+    if ball.direction == 'left':
+        if ball.condition == 1:
+            ball.image = pygame.image.load('resources/attacking/slime_fireball_1_left.png')
+        if ball.condition == 10:
+            ball.image = pygame.image.load('resources/attacking/slime_fireball_2_left.png')
+        if ball.condition == 20:
+            ball.image = pygame.image.load('resources/attacking/slime_fireball_3_left.png')
+        if ball.condition == 30:
+            ball.image = pygame.image.load('resources/attacking/slime_fireball_4_left.png')
+        if ball.condition == 40:
+            ball.image = pygame.image.load('resources/attacking/slime_fireball_5_left.png')
+            ball.condition = 1
+        ball.rect.x -= 5
+    if ball.direction == 'right':
+        if ball.condition == 1:
+            ball.image = pygame.image.load('resources/attacking/slime_fireball_1_right.png')
+        if ball.condition == 10:
+            ball.image = pygame.image.load('resources/attacking/slime_fireball_2_right.png')
+        if ball.condition == 20:
+            ball.image = pygame.image.load('resources/attacking/slime_fireball_3_right.png')
+        if ball.condition == 30:
+            ball.image = pygame.image.load('resources/attacking/slime_fireball_4_right.png')
+        if ball.condition == 40:
+            ball.image = pygame.image.load('resources/attacking/slime_fireball_5_right.png')
+            ball.condition = 1
+        ball.rect.x += 5
+    if ball.direction == 'top':
+        if ball.condition == 1:
+            ball.image = pygame.image.load('resources/attacking/slime_fireball_1_top.png')
+        if ball.condition == 10:
+            ball.image = pygame.image.load('resources/attacking/slime_fireball_2_top.png')
+        if ball.condition == 20:
+            ball.image = pygame.image.load('resources/attacking/slime_fireball_3_top.png')
+        if ball.condition == 30:
+            ball.image = pygame.image.load('resources/attacking/slime_fireball_4_top.png')
+        if ball.condition == 40:
+            ball.image = pygame.image.load('resources/attacking/slime_fireball_5_top.png')
+            ball.condition = 1
+        ball.rect.y -= 5
+    if ball.direction == 'bottom':
+        if ball.condition == 1:
+            ball.image = pygame.image.load('resources/attacking/slime_fireball_1_bottom.png')
+        if ball.condition == 10:
+            ball.image = pygame.image.load('resources/attacking/slime_fireball_2_bottom.png')
+        if ball.condition == 20:
+            ball.image = pygame.image.load('resources/attacking/slime_fireball_3_bottom.png')
+        if ball.condition == 30:
+            ball.image = pygame.image.load('resources/attacking/slime_fireball_4_bottom.png')
+        if ball.condition == 40:
+            ball.image = pygame.image.load('resources/attacking/slime_fireball_5_bottom.png')
+            ball.condition = 1
+        ball.rect.y += 5
+
+def update_puddle(puddle):
+    puddle.condition += 1
+
+    if puddle.condition == 10:
+        puddle.image = pygame.image.load('resources/attacking/puddle_1.png')
+    elif puddle.condition == 20:
+        puddle.image = pygame.image.load('resources/attacking/puddle_2.png')
+    elif puddle.condition == 30:
+        puddle.image = pygame.image.load('resources/attacking/puddle_3.png')
+    elif puddle.condition == 40:
+        puddle.image = pygame.image.load('resources/attacking/puddle_4.png')
+        puddle.condition = 1

@@ -6,6 +6,7 @@ import Imp_boss
 import Objects
 import Ghost_boss
 import VisualEffects
+import Zomb_boss
 import functions
 
 import pygame
@@ -83,6 +84,8 @@ def run_game():   # Основная функция игры
     all_zombs_portals = pygame.sprite.Group()
     creating_imp_portals = pygame.sprite.Group()
     deleting_imp_portals = pygame.sprite.Group()
+    all_slime_fireballs = pygame.sprite.Group()
+    all_puddles = pygame.sprite.Group()
 
     ############################# Задний фон ##############################
     background = Objects.Background()
@@ -1544,7 +1547,7 @@ def run_game():   # Основная функция игры
                 VisualEffects.update_zomb_boss_running(boss)
 
                 if not boss.printed:
-                    if boss.hp != 110:
+                    if boss.hp != 220:
                         boss.hp += 1
                     else:
                         boss.printed = True
@@ -1552,7 +1555,68 @@ def run_game():   # Основная функция игры
             for bars in all_zomb_boss_bars:
                 VisualEffects.update_zomb_boss_bar(bars, all_disappeared, all_enemy, all_zombs, all_zomb_bosses, all_sprites)
 
+            if pygame.sprite.spritecollide(user, all_zomb_bosses, False):
+                for boss in all_zomb_bosses:
+                    if not boss.attacked:
+                        sound = pygame.mixer.Sound('resources/sounds/taking_damage_by_user.wav')
+                        sound.play()
+                        user.hp -= 1
+                        boss.attacked = True
+                        boss.attack_cooldown = 50
 
+            for boss in all_zomb_bosses:
+                if boss.attack_cooldown != 1:
+                    boss.attack_cooldown -= 1
+                else:
+                    boss.attacked = False
+            ############################# Выстрелы слизи ##############################
+            for boss in all_zomb_bosses:
+                boss.slime_fireball_timer += 1
+
+                if boss.slime_fireball_timer == 400:
+                    boss.slime_fireball_timer = 1
+                    Zomb_boss.upload_slime_fireballs(all_slime_fireballs, all_sprites, boss)
+
+            for ball in all_slime_fireballs:
+                VisualEffects.update_slime_fireball(ball)
+                Zomb_boss.check_to_target(all_slime_fireballs, walls, user, ball, all_sprites, all_puddles)
+
+
+
+            for wall in walls:
+                pygame.sprite.spritecollide(wall, all_slime_fireballs, True)
+
+            for puddle in all_puddles:
+                VisualEffects.update_puddle(puddle)
+                puddle.timer_of_life += 1
+
+                if not puddle.printed:
+                    if puddle.image.get_alpha() != 251:
+                        puddle.image.set_alpha(puddle.image.get_alpha() + 5)
+                    else:
+                        puddle.printed = True
+
+                if puddle.timer_of_life == 300:
+                    all_disappeared.add(puddle)
+                    all_sprites.remove(puddle)
+                    all_puddles.remove(puddle)
+
+            list = pygame.sprite.spritecollide(user, all_puddles, False)
+            for puddle in list:
+                if not puddle.attacked:
+                    user.hp -= 1
+
+                    sound = pygame.mixer.Sound('resources/sounds/taking_damage_by_user.wav')
+                    sound.play()
+
+                    puddle.attacked = True
+                    puddle.cooldown = 100
+
+            for puddle in all_puddles:
+                if puddle.cooldown != 1:
+                    puddle.cooldown -= 1
+                else:
+                    puddle.attacked = False
             ############################# Работа с боссом ##############################
             boss_printed = False
 

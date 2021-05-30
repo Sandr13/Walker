@@ -187,6 +187,9 @@ class Zomb_Boss(pygame.sprite.Sprite):
         self.condition = 1
         self.direction = 'bottom'
         self.printed = False
+        self.attacked = False
+        self.attack_cooldown = 1
+        self.slime_fireball_timer = 1
 
 ############################# Класс объекта-верхнего файерболла босса импов ##############################
 class Boss_imp_fireball(pygame.sprite.Sprite):
@@ -207,6 +210,19 @@ class Pentagramm(pygame.sprite.Sprite):
         self.spawned = False
         self.condition = 1
         self.killing = False
+
+############################# Класс пентаграммы ##############################
+class Puddle(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('resources/attacking/puddle_1.png')
+        self.image.set_alpha(1)
+        self.rect = self.image.get_rect()
+        self.condition = 1
+        self.printed = False
+        self.attacked = False
+        self.cooldown = 1
+        self.timer_of_life = 1
 
 ################################ Класс импа ##################################
 class Imp(pygame.sprite.Sprite):
@@ -244,6 +260,16 @@ class Imp_Ball(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.condition = 1
         self.direction = ''
+
+############################# Класс объекта-снаряда зобми-босса ##############################
+class Slime_fireBall(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('resources/inventory/items/empty_slot.png')
+        self.rect = self.image.get_rect()
+        self.condition = 1
+        self.direction = ''
+        self.target_point = ''
 
 ############################# Класс объекта-синего файерболла ##############################
 class Ghost_boss_blue_ball(pygame.sprite.Sprite):
