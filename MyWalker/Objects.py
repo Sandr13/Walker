@@ -13,7 +13,7 @@ class Player(pygame.sprite.Sprite):
         self.speed = 2
         self.items = []
         self.scores = 0
-        self.lvl = 29
+        self.lvl = 1
         self.time_to_realise = True
         self.time_spended_to_realise = 0
         self.sword_time = 1
@@ -21,7 +21,7 @@ class Player(pygame.sprite.Sprite):
         self.crossbow_time = 1
         self.can_use_ability_1 = False
         self.can_use_ability_2 = False
-
+        self.soud_timer = 1
 
 ############################# Класс инвентаря ##############################
 class Inventory:
@@ -93,7 +93,7 @@ class Enemy_Bar_HP(pygame.sprite.Sprite):
 class Ghost_portal(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('resources/objects/portal_right_1.png')
+        self.image = pygame.image.load('resources/inventory/items/empty_slot.png')
         self.rect = self.image.get_rect()
         self.condition = 1
         self.direction = ''
@@ -117,7 +117,7 @@ class Imp_portal(pygame.sprite.Sprite):
 class Zomb_portal(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('resources/objects/zomb_portal_right_1.png')
+        self.image = pygame.image.load('resources/inventory/items/empty_slot.png')
         self.rect = self.image.get_rect()
         self.condition = 1
         self.direction = ''
@@ -190,6 +190,7 @@ class Zomb_Boss(pygame.sprite.Sprite):
         self.attacked = False
         self.attack_cooldown = 1
         self.slime_fireball_timer = 1
+        self.portal_timer = 1
 
 ############################# Класс объекта-верхнего файерболла босса импов ##############################
 class Boss_imp_fireball(pygame.sprite.Sprite):
@@ -211,7 +212,7 @@ class Pentagramm(pygame.sprite.Sprite):
         self.condition = 1
         self.killing = False
 
-############################# Класс пентаграммы ##############################
+############################# Класс лужи ##############################
 class Puddle(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
@@ -223,6 +224,15 @@ class Puddle(pygame.sprite.Sprite):
         self.attacked = False
         self.cooldown = 1
         self.timer_of_life = 1
+
+############################# Класс congrats ##############################
+class Congrats(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('resources/objects/congrats.png')
+        self.image.set_alpha(1)
+        self.rect = self.image.get_rect()
+        self.printed = False
 
 ################################ Класс импа ##################################
 class Imp(pygame.sprite.Sprite):

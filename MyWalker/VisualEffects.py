@@ -516,115 +516,116 @@ def update_imp_boss_fireball(ball):
 
 
 def upload_boss_of_imps_bar(bars, all_dissapeared, all_imp_bosses, all_enemy):
-    if bars.follow.hp == 110:
+    bars.rect.center = (bars.follow.rect.center[0], bars.follow.rect.top - 20)
+    if bars.follow.hp == 55:
         bars.image = pygame.image.load('resources/boss_bars/55.png')
-    if 108 <= bars.follow.hp <= 109:
+    if bars.follow.hp == 54:
         bars.image = pygame.image.load('resources/boss_bars/54.png')
-    elif 106 <= bars.follow.hp <= 107:
+    elif bars.follow.hp == 53:
         bars.image = pygame.image.load('resources/boss_bars/53.png')
-    elif 104 <= bars.follow.hp <= 105:
+    elif bars.follow.hp == 52:
         bars.image = pygame.image.load('resources/boss_bars/52.png')
-    elif 102 <= bars.follow.hp <= 103:
+    elif bars.follow.hp == 51:
         bars.image = pygame.image.load('resources/boss_bars/51.png')
-    elif 100 <= bars.follow.hp <= 101:
+    elif bars.follow.hp == 50:
         bars.image = pygame.image.load('resources/boss_bars/50.png')
-    elif 98 <= bars.follow.hp <= 99:
+    elif bars.follow.hp == 49:
         bars.image = pygame.image.load('resources/boss_bars/49.png')
-    elif 96 <= bars.follow.hp <= 97:
+    elif bars.follow.hp == 48:
         bars.image = pygame.image.load('resources/boss_bars/48.png')
-    elif 94 <= bars.follow.hp <= 95:
+    elif bars.follow.hp == 47:
         bars.image = pygame.image.load('resources/boss_bars/47.png')
-    elif 92 <= bars.follow.hp <= 93:
+    elif bars.follow.hp == 46:
         bars.image = pygame.image.load('resources/boss_bars/46.png')
-    elif 90 <= bars.follow.hp <= 91:
+    elif bars.follow.hp == 45:
         bars.image = pygame.image.load('resources/boss_bars/45.png')
-    elif 88 <= bars.follow.hp <= 89:
+    elif bars.follow.hp == 44:
         bars.image = pygame.image.load('resources/boss_bars/44.png')
-    elif 86 <= bars.follow.hp <= 87:
+    elif bars.follow.hp == 43:
         bars.image = pygame.image.load('resources/boss_bars/43.png')
-    elif 84 <= bars.follow.hp <= 85:
+    elif bars.follow.hp == 42:
         bars.image = pygame.image.load('resources/boss_bars/42.png')
-    elif 82 <= bars.follow.hp <= 83:
+    elif bars.follow.hp == 41:
         bars.image = pygame.image.load('resources/boss_bars/41.png')
-    elif 80 <= bars.follow.hp <= 81:
+    elif bars.follow.hp == 40:
         bars.image = pygame.image.load('resources/boss_bars/40.png')
-    elif 78 <= bars.follow.hp <= 79:
+    elif bars.follow.hp == 39:
         bars.image = pygame.image.load('resources/boss_bars/39.png')
-    elif 76 <= bars.follow.hp <= 77:
+    elif bars.follow.hp == 38:
         bars.image = pygame.image.load('resources/boss_bars/38.png')
-    elif 74 <= bars.follow.hp <= 75:
+    elif bars.follow.hp == 37:
         bars.image = pygame.image.load('resources/boss_bars/37.png')
-    elif 72 <= bars.follow.hp <= 73:
+    elif bars.follow.hp == 36:
         bars.image = pygame.image.load('resources/boss_bars/36.png')
-    elif 70 <= bars.follow.hp <= 71:
+    elif bars.follow.hp == 35:
         bars.image = pygame.image.load('resources/boss_bars/35.png')
-    elif 68 <= bars.follow.hp <= 69:
+    elif bars.follow.hp == 34:
         bars.image = pygame.image.load('resources/boss_bars/34.png')
-    elif 66 <= bars.follow.hp <= 67:
+    elif bars.follow.hp == 33:
         bars.image = pygame.image.load('resources/boss_bars/33.png')
-    elif 64 <= bars.follow.hp <= 65:
+    elif bars.follow.hp == 32:
         bars.image = pygame.image.load('resources/boss_bars/32.png')
-    elif 62 <= bars.follow.hp <= 63:
+    elif bars.follow.hp == 31:
         bars.image = pygame.image.load('resources/boss_bars/31.png')
-    elif 60 <= bars.follow.hp <= 61:
+    elif bars.follow.hp == 30:
         bars.image = pygame.image.load('resources/boss_bars/30.png')
-    elif 58 <= bars.follow.hp <= 59:
+    elif bars.follow.hp == 29:
         bars.image = pygame.image.load('resources/boss_bars/29.png')
-    elif 56 <= bars.follow.hp <= 57:
+    elif bars.follow.hp == 28:
         bars.image = pygame.image.load('resources/boss_bars/28.png')
-    elif 54 <= bars.follow.hp <= 55:
+    elif bars.follow.hp == 27:
         bars.image = pygame.image.load('resources/boss_bars/27.png')
-    elif 52 <= bars.follow.hp <= 53:
+    elif bars.follow.hp == 26:
         bars.image = pygame.image.load('resources/boss_bars/26.png')
-    elif 50 <= bars.follow.hp <= 51:
+    elif bars.follow.hp == 25:
         bars.image = pygame.image.load('resources/boss_bars/25.png')
-    elif 48 <= bars.follow.hp <= 49:
+    elif bars.follow.hp == 24:
         bars.image = pygame.image.load('resources/boss_bars/24.png')
-    elif 46 <= bars.follow.hp <= 47:
+    elif bars.follow.hp == 23:
         bars.image = pygame.image.load('resources/boss_bars/23.png')
-    elif 44 <= bars.follow.hp <= 45:
+    elif bars.follow.hp == 22:
         bars.image = pygame.image.load('resources/boss_bars/22.png')
-    elif 42 <= bars.follow.hp <= 43:
+    elif bars.follow.hp == 21:
         bars.image = pygame.image.load('resources/boss_bars/21.png')
-    elif 40 <= bars.follow.hp <= 41:
+    elif bars.follow.hp == 20:
         bars.image = pygame.image.load('resources/boss_bars/20.png')
-    elif 38 <= bars.follow.hp <= 39:
+    elif bars.follow.hp == 19:
         bars.image = pygame.image.load('resources/boss_bars/19.png')
-    elif 36 <= bars.follow.hp <= 37:
+    elif bars.follow.hp == 18:
         bars.image = pygame.image.load('resources/boss_bars/18.png')
-    elif 34 <= bars.follow.hp <= 35:
+    elif bars.follow.hp == 17:
         bars.image = pygame.image.load('resources/boss_bars/17.png')
-    elif 32 <= bars.follow.hp <= 33:
+    elif bars.follow.hp == 16:
         bars.image = pygame.image.load('resources/boss_bars/16.png')
-    elif 30 <= bars.follow.hp <= 31:
+    elif bars.follow.hp == 15:
         bars.image = pygame.image.load('resources/boss_bars/15.png')
-    elif 28 <= bars.follow.hp <= 29:
+    elif bars.follow.hp == 14:
         bars.image = pygame.image.load('resources/boss_bars/14.png')
-    elif 26 <= bars.follow.hp <= 27:
+    elif bars.follow.hp == 13:
         bars.image = pygame.image.load('resources/boss_bars/13.png')
-    elif 24 <= bars.follow.hp <= 25:
+    elif bars.follow.hp == 12:
         bars.image = pygame.image.load('resources/boss_bars/12.png')
-    elif 22 <= bars.follow.hp <= 23:
+    elif bars.follow.hp == 11:
         bars.image = pygame.image.load('resources/boss_bars/11.png')
-    elif 20 <= bars.follow.hp <= 21:
+    elif bars.follow.hp == 10:
         bars.image = pygame.image.load('resources/boss_bars/10.png')
-    elif 18 <= bars.follow.hp <= 19:
+    elif bars.follow.hp == 9:
         bars.image = pygame.image.load('resources/boss_bars/9.png')
-    elif 16 <= bars.follow.hp <= 17:
+    elif bars.follow.hp == 8:
         bars.image = pygame.image.load('resources/boss_bars/8.png')
-    elif 14 <= bars.follow.hp <= 15:
+    elif bars.follow.hp == 7:
         bars.image = pygame.image.load('resources/boss_bars/7.png')
-    elif 12 <= bars.follow.hp <= 13:
+    elif bars.follow.hp == 6:
         bars.image = pygame.image.load('resources/boss_bars/6.png')
-    elif 10 <= bars.follow.hp <= 11:
+    elif bars.follow.hp == 5:
         bars.image = pygame.image.load('resources/boss_bars/5.png')
-    elif 8 <= bars.follow.hp <= 9:
+    elif bars.follow.hp == 4:
         bars.image = pygame.image.load('resources/boss_bars/4.png')
-    elif 6 <= bars.follow.hp <= 7:
+    elif bars.follow.hp == 3:
         bars.image = pygame.image.load('resources/boss_bars/3.png')
-    elif 4 <= bars.follow.hp <= 5:
+    elif bars.follow.hp == 2:
         bars.image = pygame.image.load('resources/boss_bars/2.png')
-    elif 1 <= bars.follow.hp <= 3:
+    elif bars.follow.hp == 1:
         bars.image = pygame.image.load('resources/boss_bars/1.png')
     elif bars.follow.hp <= 0:
         all_dissapeared.add(bars.follow)
@@ -675,51 +676,6 @@ def update_imp_portals(portal):
             portal.image = pygame.image.load('resources/objects/imp_portal_right_8.png')
         elif portal.condition == 72:
             portal.image = pygame.image.load('resources/objects/imp_portal_right_9.png')
-            portal.condition = 1
-
-    portal.condition += 1
-
-
-def update_zomb_portals(portal):
-    if portal.direction == 'left':
-        if portal.condition == 8:
-            portal.image = pygame.image.load('resources/objects/zomb_portal_left_1.png')
-        elif portal.condition == 16:
-            portal.image = pygame.image.load('resources/objects/zomb_portal_left_2.png')
-        elif portal.condition == 24:
-            portal.image = pygame.image.load('resources/objects/zomb_portal_left_3.png')
-        elif portal.condition == 32:
-            portal.image = pygame.image.load('resources/objects/zomb_portal_left_4.png')
-        elif portal.condition == 40:
-            portal.image = pygame.image.load('resources/objects/zomb_portal_left_5.png')
-        elif portal.condition == 48:
-            portal.image = pygame.image.load('resources/objects/zomb_portal_left_6.png')
-        elif portal.condition == 56:
-            portal.image = pygame.image.load('resources/objects/zomb_portal_left_7.png')
-        elif portal.condition == 64:
-            portal.image = pygame.image.load('resources/objects/zomb_portal_left_8.png')
-        elif portal.condition == 72:
-            portal.image = pygame.image.load('resources/objects/zomb_portal_left_9.png')
-            portal.condition = 1
-    elif portal.direction == 'right':
-        if portal.condition == 8:
-            portal.image = pygame.image.load('resources/objects/zomb_portal_right_1.png')
-        elif portal.condition == 16:
-            portal.image = pygame.image.load('resources/objects/zomb_portal_right_2.png')
-        elif portal.condition == 24:
-            portal.image = pygame.image.load('resources/objects/zomb_portal_right_3.png')
-        elif portal.condition == 32:
-            portal.image = pygame.image.load('resources/objects/zomb_portal_right_4.png')
-        elif portal.condition == 40:
-            portal.image = pygame.image.load('resources/objects/zomb_portal_right_5.png')
-        elif portal.condition == 48:
-            portal.image = pygame.image.load('resources/objects/zomb_portal_right_6.png')
-        elif portal.condition == 56:
-            portal.image = pygame.image.load('resources/objects/zomb_portal_right_7.png')
-        elif portal.condition == 64:
-            portal.image = pygame.image.load('resources/objects/zomb_portal_right_8.png')
-        elif portal.condition == 72:
-            portal.image = pygame.image.load('resources/objects/zomb_portal_right_9.png')
             portal.condition = 1
 
     portal.condition += 1
@@ -854,117 +810,118 @@ def upload_boss_of_ghosts_bar(bars, all_disappeared, all_enemy, all_ghosts, all_
         bars.kill()
 
 
-def update_zomb_boss_bar(bars, all_disappeared, all_enemy, all_zombs, all_bosses, all_sprites):
+def upload_boss_of_zombs_bar(bars, all_disappeared, all_enemy, all_zombs, all_bosses, all_sprites):
     bars.rect.center = (bars.follow.rect.center[0], bars.follow.rect.top - 20)
-    if 217 <= bars.follow.hp <= 220:
+    bars.rect.center = (bars.follow.rect.center[0], bars.follow.rect.top - 20)
+    if bars.follow.hp == 55:
         bars.image = pygame.image.load('resources/boss_bars/55.png')
-    elif 213 <= bars.follow.hp <= 216:
+    if bars.follow.hp == 54:
         bars.image = pygame.image.load('resources/boss_bars/54.png')
-    elif 207 <= bars.follow.hp <= 212:
+    elif bars.follow.hp == 53:
         bars.image = pygame.image.load('resources/boss_bars/53.png')
-    elif 205 <= bars.follow.hp <= 208:
+    elif bars.follow.hp == 52:
         bars.image = pygame.image.load('resources/boss_bars/52.png')
-    elif 201 <= bars.follow.hp <= 204:
+    elif bars.follow.hp == 51:
         bars.image = pygame.image.load('resources/boss_bars/51.png')
-    elif 197 <= bars.follow.hp <= 200:
+    elif bars.follow.hp == 50:
         bars.image = pygame.image.load('resources/boss_bars/50.png')
-    elif 193 <= bars.follow.hp <= 196:
+    elif bars.follow.hp == 49:
         bars.image = pygame.image.load('resources/boss_bars/49.png')
-    elif 189 <= bars.follow.hp <= 192:
+    elif bars.follow.hp == 48:
         bars.image = pygame.image.load('resources/boss_bars/48.png')
-    elif 185 <= bars.follow.hp <= 188:
+    elif bars.follow.hp == 47:
         bars.image = pygame.image.load('resources/boss_bars/47.png')
-    elif 181 <= bars.follow.hp <= 184:
+    elif bars.follow.hp == 46:
         bars.image = pygame.image.load('resources/boss_bars/46.png')
-    elif 177 <= bars.follow.hp <= 180:
+    elif bars.follow.hp == 45:
         bars.image = pygame.image.load('resources/boss_bars/45.png')
-    elif 173 <= bars.follow.hp <= 176:
+    elif bars.follow.hp == 44:
         bars.image = pygame.image.load('resources/boss_bars/44.png')
-    elif 169 <= bars.follow.hp <= 172:
+    elif bars.follow.hp == 43:
         bars.image = pygame.image.load('resources/boss_bars/43.png')
-    elif 165 <= bars.follow.hp <= 168:
+    elif bars.follow.hp == 42:
         bars.image = pygame.image.load('resources/boss_bars/42.png')
-    elif 161 <= bars.follow.hp <= 164:
+    elif bars.follow.hp == 41:
         bars.image = pygame.image.load('resources/boss_bars/41.png')
-    elif 157 <= bars.follow.hp <= 160:
+    elif bars.follow.hp == 40:
         bars.image = pygame.image.load('resources/boss_bars/40.png')
-    elif 153 <= bars.follow.hp <= 156:
+    elif bars.follow.hp == 39:
         bars.image = pygame.image.load('resources/boss_bars/39.png')
-    elif 149 <= bars.follow.hp <= 152:
+    elif bars.follow.hp == 38:
         bars.image = pygame.image.load('resources/boss_bars/38.png')
-    elif 145 <= bars.follow.hp <= 148:
+    elif bars.follow.hp == 37:
         bars.image = pygame.image.load('resources/boss_bars/37.png')
-    elif 141 <= bars.follow.hp <= 144:
+    elif bars.follow.hp == 36:
         bars.image = pygame.image.load('resources/boss_bars/36.png')
-    elif 137 <= bars.follow.hp <= 140:
+    elif bars.follow.hp == 35:
         bars.image = pygame.image.load('resources/boss_bars/35.png')
-    elif 133 <= bars.follow.hp <= 136:
+    elif bars.follow.hp == 34:
         bars.image = pygame.image.load('resources/boss_bars/34.png')
-    elif 129 <= bars.follow.hp <= 132:
+    elif bars.follow.hp == 33:
         bars.image = pygame.image.load('resources/boss_bars/33.png')
-    elif 125 <= bars.follow.hp <= 128:
+    elif bars.follow.hp == 32:
         bars.image = pygame.image.load('resources/boss_bars/32.png')
-    elif 121 <= bars.follow.hp <= 124:
+    elif bars.follow.hp == 31:
         bars.image = pygame.image.load('resources/boss_bars/31.png')
-    elif 117 <= bars.follow.hp <= 120:
+    elif bars.follow.hp == 30:
         bars.image = pygame.image.load('resources/boss_bars/30.png')
-    elif 113 <= bars.follow.hp <= 116:
+    elif bars.follow.hp == 29:
         bars.image = pygame.image.load('resources/boss_bars/29.png')
-    elif 109 <= bars.follow.hp <= 112:
+    elif bars.follow.hp == 28:
         bars.image = pygame.image.load('resources/boss_bars/28.png')
-    elif 105 <= bars.follow.hp <= 108:
+    elif bars.follow.hp == 27:
         bars.image = pygame.image.load('resources/boss_bars/27.png')
-    elif 101 <= bars.follow.hp <= 104:
+    elif bars.follow.hp == 26:
         bars.image = pygame.image.load('resources/boss_bars/26.png')
-    elif 97 <= bars.follow.hp <= 100:
+    elif bars.follow.hp == 25:
         bars.image = pygame.image.load('resources/boss_bars/25.png')
-    elif 93 <= bars.follow.hp <= 96:
+    elif bars.follow.hp == 24:
         bars.image = pygame.image.load('resources/boss_bars/24.png')
-    elif 89 <= bars.follow.hp <= 92:
+    elif bars.follow.hp == 23:
         bars.image = pygame.image.load('resources/boss_bars/23.png')
-    elif 85 <= bars.follow.hp <= 88:
+    elif bars.follow.hp == 22:
         bars.image = pygame.image.load('resources/boss_bars/22.png')
-    elif 81 <= bars.follow.hp <= 84:
+    elif bars.follow.hp == 21:
         bars.image = pygame.image.load('resources/boss_bars/21.png')
-    elif 77 <= bars.follow.hp <= 80:
+    elif bars.follow.hp == 20:
         bars.image = pygame.image.load('resources/boss_bars/20.png')
-    elif 73 <= bars.follow.hp <= 76:
+    elif bars.follow.hp == 19:
         bars.image = pygame.image.load('resources/boss_bars/19.png')
-    elif 69 <= bars.follow.hp <= 72:
+    elif bars.follow.hp == 18:
         bars.image = pygame.image.load('resources/boss_bars/18.png')
-    elif 65 <= bars.follow.hp <= 68:
+    elif bars.follow.hp == 17:
         bars.image = pygame.image.load('resources/boss_bars/17.png')
-    elif 61 <= bars.follow.hp <= 64:
+    elif bars.follow.hp == 16:
         bars.image = pygame.image.load('resources/boss_bars/16.png')
-    elif 57 <= bars.follow.hp <= 60:
+    elif bars.follow.hp == 15:
         bars.image = pygame.image.load('resources/boss_bars/15.png')
-    elif 53 <= bars.follow.hp <= 56:
+    elif bars.follow.hp == 14:
         bars.image = pygame.image.load('resources/boss_bars/14.png')
-    elif 49 <= bars.follow.hp <= 52:
+    elif bars.follow.hp == 13:
         bars.image = pygame.image.load('resources/boss_bars/13.png')
-    elif 45 <= bars.follow.hp <= 48:
+    elif bars.follow.hp == 12:
         bars.image = pygame.image.load('resources/boss_bars/12.png')
-    elif 41 <= bars.follow.hp <= 44:
+    elif bars.follow.hp == 11:
         bars.image = pygame.image.load('resources/boss_bars/11.png')
-    elif 37 <= bars.follow.hp <= 40:
+    elif bars.follow.hp == 10:
         bars.image = pygame.image.load('resources/boss_bars/10.png')
-    elif 33 <= bars.follow.hp <= 36:
+    elif bars.follow.hp == 9:
         bars.image = pygame.image.load('resources/boss_bars/9.png')
-    elif 29 <= bars.follow.hp <= 32:
+    elif bars.follow.hp == 8:
         bars.image = pygame.image.load('resources/boss_bars/8.png')
-    elif 25 <= bars.follow.hp <= 28:
+    elif bars.follow.hp == 7:
         bars.image = pygame.image.load('resources/boss_bars/7.png')
-    elif 21 <= bars.follow.hp <= 24:
+    elif bars.follow.hp == 6:
         bars.image = pygame.image.load('resources/boss_bars/6.png')
-    elif 17 <= bars.follow.hp <= 20:
+    elif bars.follow.hp == 5:
         bars.image = pygame.image.load('resources/boss_bars/5.png')
-    elif 13 <= bars.follow.hp <= 16:
+    elif bars.follow.hp == 4:
         bars.image = pygame.image.load('resources/boss_bars/4.png')
-    elif 9 <= bars.follow.hp <= 12:
+    elif bars.follow.hp == 3:
         bars.image = pygame.image.load('resources/boss_bars/3.png')
-    elif 5 <= bars.follow.hp <= 8:
+    elif bars.follow.hp == 2:
         bars.image = pygame.image.load('resources/boss_bars/2.png')
-    elif 1 <= bars.follow.hp <= 4:
+    elif bars.follow.hp == 1:
         bars.image = pygame.image.load('resources/boss_bars/1.png')
     elif bars.follow.hp <= 0:
         all_disappeared.add(bars.follow)
@@ -972,7 +929,7 @@ def update_zomb_boss_bar(bars, all_disappeared, all_enemy, all_zombs, all_bosses
         all_enemy.remove(bars.follow)
         bars.kill()
 
-        sound = pygame.mixer.Sound('resources/sounds/killing_boss_of_imps.wav')
+        sound = pygame.mixer.Sound('resources/sounds/zomb_boss_death.wav')
         sound.play()
 
 
@@ -1295,7 +1252,7 @@ def update_zomb_bar(bars, user):
     if bars.follow.hp <= 6:
         bars.image = pygame.image.load('resources\\enemy health\\1.png')
     if bars.follow.hp <= 0:
-        sound = pygame.mixer.Sound('resources/sounds/imp_dying.wav')
+        sound = pygame.mixer.Sound('resources/sounds/zombie_death.wav')
         sound.play()
         bars.follow.kill()
         bars.kill()
@@ -1529,3 +1486,47 @@ def update_puddle(puddle):
     elif puddle.condition == 40:
         puddle.image = pygame.image.load('resources/attacking/puddle_4.png')
         puddle.condition = 1
+
+def update_zomb_portals(portal):
+    if portal.direction == 'left':
+        if portal.condition == 8:
+            portal.image = pygame.image.load('resources/objects/zomb_portal_left_1.png')
+        elif portal.condition == 16:
+            portal.image = pygame.image.load('resources/objects/zomb_portal_left_2.png')
+        elif portal.condition == 24:
+            portal.image = pygame.image.load('resources/objects/zomb_portal_left_3.png')
+        elif portal.condition == 32:
+            portal.image = pygame.image.load('resources/objects/zomb_portal_left_4.png')
+        elif portal.condition == 40:
+            portal.image = pygame.image.load('resources/objects/zomb_portal_left_5.png')
+        elif portal.condition == 48:
+            portal.image = pygame.image.load('resources/objects/zomb_portal_left_6.png')
+        elif portal.condition == 56:
+            portal.image = pygame.image.load('resources/objects/zomb_portal_left_7.png')
+        elif portal.condition == 64:
+            portal.image = pygame.image.load('resources/objects/zomb_portal_left_8.png')
+        elif portal.condition == 72:
+            portal.image = pygame.image.load('resources/objects/zomb_portal_left_9.png')
+            portal.condition = 1
+    elif portal.direction == 'right':
+        if portal.condition == 8:
+            portal.image = pygame.image.load('resources/objects/zomb_portal_right_1.png')
+        elif portal.condition == 16:
+            portal.image = pygame.image.load('resources/objects/zomb_portal_right_2.png')
+        elif portal.condition == 24:
+            portal.image = pygame.image.load('resources/objects/zomb_portal_right_3.png')
+        elif portal.condition == 32:
+            portal.image = pygame.image.load('resources/objects/zomb_portal_right_4.png')
+        elif portal.condition == 40:
+            portal.image = pygame.image.load('resources/objects/zomb_portal_right_5.png')
+        elif portal.condition == 48:
+            portal.image = pygame.image.load('resources/objects/zomb_portal_right_6.png')
+        elif portal.condition == 56:
+            portal.image = pygame.image.load('resources/objects/zomb_portal_right_7.png')
+        elif portal.condition == 64:
+            portal.image = pygame.image.load('resources/objects/zomb_portal_right_8.png')
+        elif portal.condition == 72:
+            portal.image = pygame.image.load('resources/objects/zomb_portal_right_9.png')
+            portal.condition = 1
+
+    portal.condition += 1

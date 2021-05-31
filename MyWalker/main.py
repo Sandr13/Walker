@@ -3,10 +3,11 @@ import math
 import random
 
 import Imp_boss
-import Objects
-import Ghost_boss
-import VisualEffects
 import Zomb_boss
+import Ghost_boss
+
+import Objects
+import VisualEffects
 import functions
 
 import pygame
@@ -45,7 +46,7 @@ def run_game():   # Основная функция игры
     all_enemy_bars = pygame.sprite.Group()   # Группа баров противников
     all_ghost_bars = pygame.sprite.Group()   # Группа баров призраков
     all_imp_bars = pygame.sprite.Group()  # Группа баров импов
-    all_zombs_bars = pygame.sprite.Group()   # Группа баров зомби
+    all_zomb_bars = pygame.sprite.Group()   # Группа баров зомби
     all_closing_walls = pygame.sprite.Group()   # Группа временных стен
     all_opening_walls = pygame.sprite.Group()   # Группа временных стен
     all_black_elements = pygame.sprite.Group()   # Группа чёрных фонов
@@ -86,6 +87,10 @@ def run_game():   # Основная функция игры
     deleting_imp_portals = pygame.sprite.Group()
     all_slime_fireballs = pygame.sprite.Group()
     all_puddles = pygame.sprite.Group()
+    creating_zomb_portals = pygame.sprite.Group()
+    deleting_zomb_portals = pygame.sprite.Group()
+    all_zomb_portals = pygame.sprite.Group()
+    all_win_bars = pygame.sprite.Group()
 
     ############################# Задний фон ##############################
     background = Objects.Background()
@@ -451,7 +456,7 @@ def run_game():   # Основная функция игры
             zomb.bar = zomb_bar
             all_sprites.add(zomb_bar)
             all_enemy_bars.add(zomb_bar)
-            all_zombs_bars.add(zomb_bar)
+            all_zomb_bars.add(zomb_bar)
             zomb_bar.rect.center = zomb_bar.follow.rect.center
 
 
@@ -1076,10 +1081,8 @@ def run_game():   # Основная функция игры
 
                 list = pygame.sprite.spritecollide(bullet, all_enemy, False)
                 if list:
-                    for i in range(len(list)):
-                        list[i].hp -= 1
+                    list[0].hp -= 1
                     bullet.kill()
-
                 for wall in walls:
                     pygame.sprite.spritecollide(wall, all_bullets, True)
             ############################# Движение Призрака ##############################
@@ -1260,7 +1263,7 @@ def run_game():   # Основная функция игры
                             sound.play()
                             user.hp -= 3
 
-                for bars in all_zombs_bars:
+                for bars in all_zomb_bars:
                     VisualEffects.update_zomb_bar(bars, user)
 
                 if zomb.rect.top < 50:
@@ -1311,6 +1314,7 @@ def run_game():   # Основная функция игры
                 user.can_use_ability_2 = False
 
                 sound = pygame.mixer.Sound('resources/sounds/use_heal.wav')
+                sound.play()
 
                 user.hp += 1
 
@@ -1547,13 +1551,13 @@ def run_game():   # Основная функция игры
                 VisualEffects.update_zomb_boss_running(boss)
 
                 if not boss.printed:
-                    if boss.hp != 220:
+                    if boss.hp != 55:
                         boss.hp += 1
                     else:
                         boss.printed = True
 
             for bars in all_zomb_boss_bars:
-                VisualEffects.update_zomb_boss_bar(bars, all_disappeared, all_enemy, all_zombs, all_zomb_bosses, all_sprites)
+                VisualEffects.upload_boss_of_zombs_bar(bars, all_disappeared, all_enemy, all_zombs, all_zomb_bosses, all_sprites)
 
             if pygame.sprite.spritecollide(user, all_zomb_bosses, False):
                 for boss in all_zomb_bosses:
@@ -1573,7 +1577,7 @@ def run_game():   # Основная функция игры
             for boss in all_zomb_bosses:
                 boss.slime_fireball_timer += 1
 
-                if boss.slime_fireball_timer == 400:
+                if boss.slime_fireball_timer == 500:
                     boss.slime_fireball_timer = 1
                     Zomb_boss.upload_slime_fireballs(all_slime_fireballs, all_sprites, boss)
 
@@ -1596,7 +1600,7 @@ def run_game():   # Основная функция игры
                     else:
                         puddle.printed = True
 
-                if puddle.timer_of_life == 300:
+                if puddle.timer_of_life == 200:
                     all_disappeared.add(puddle)
                     all_sprites.remove(puddle)
                     all_puddles.remove(puddle)
@@ -1617,6 +1621,34 @@ def run_game():   # Основная функция игры
                     puddle.cooldown -= 1
                 else:
                     puddle.attacked = False
+
+            for boss in all_zomb_bosses:
+                Zomb_boss.upload_zomb_portals(boss, all_sprites, display_width, display_height, creating_zomb_portals)
+
+            for portal in creating_zomb_portals:
+                if portal.image.get_alpha() != 251:
+                    portal.image.set_alpha(portal.image.get_alpha() + 10)
+                else:
+                    creating_zomb_portals.remove(portal)
+                    all_zomb_portals.add(portal)
+
+            for portal in all_zomb_portals:
+                VisualEffects.update_zomb_portals(portal)
+                Zomb_boss.upload_zombs_in_portal(boss, portal, all_zomb_portals, all_sprites, all_zombs, all_enemy,
+                                       all_enemy_bars, all_zomb_bars, deleting_zomb_portals)
+
+            if all_zomb_portals or creating_zomb_portals:
+                for boss in all_zomb_bosses:
+                    boss.speed = 0
+            else:
+                for boss in all_zomb_bosses:
+                    boss.speed = 1
+
+            for portal in deleting_zomb_portals:
+                if portal.image.get_alpha() != 1:
+                    portal.image.set_alpha(portal.image.get_alpha() - 10)
+                else:
+                    portal.kill()
             ############################# Работа с боссом ##############################
             boss_printed = False
 
@@ -1744,7 +1776,7 @@ def run_game():   # Основная функция игры
 
             for boss in all_imp_bosses:
                 if not boss.printed:
-                    if boss.hp != 110:
+                    if boss.hp != 55:
                         boss.hp += 1
                     else:
                         boss.printed = True
@@ -1972,6 +2004,15 @@ def run_game():   # Основная функция игры
                 if ball.rect.x <= -100 or ball.rect.x >= display_width + 100 or ball.rect.y <= -100 or ball.rect.y >= display_height + 100:
                     ball.kill()
 
+            for win_bar in all_win_bars:
+                if not win_bar.printed:
+                    if win_bar.image.get_alpha() != 251:
+                        win_bar.image.set_alpha(win_bar.image.get_alpha() + 5)
+                    else:
+                        win_bar.printed = True
+
+                win_bar.rect.center = (user.rect.center[0] + 120, user.rect.center[1] - 45)
+
             # Коллизия синих файерболлов и противников
             for enemy in all_enemy:
                 list = pygame.sprite.spritecollide(enemy, all_blue_user_balls, True)
@@ -1984,7 +2025,7 @@ def run_game():   # Основная функция игры
             if user.crossbow_time != 1:
                 user.crossbow_time -= 1
 
-            if not all_enemy:
+            if not all_enemy and not user.lvl == 30:
                 blocked_left = False
                 blocked_right = False
                 blocked_top = False
@@ -1999,8 +2040,45 @@ def run_game():   # Основная функция игры
                 elif index_of_room == 4:
                     blocked_top = True
 
-
                 open_walls(index_of_room)
+
+
+            if user.lvl == 30:
+                if not all_zomb_bosses:
+                    for i in all_zombs:
+                        i.bar.kill()
+                        all_sprites.remove(i)
+                        all_zombs.remove(i)
+                        all_enemy.remove(i)
+                        all_disappeared.add(i)
+
+            if user.lvl == 20:
+                if not all_imp_bosses:
+                    for i in all_imps:
+                        i.bar.kill()
+                        all_sprites.remove(i)
+                        all_imps.remove(i)
+                        all_enemy.remove(i)
+                        all_disappeared.add(i)
+
+            if user.lvl == 10:
+                if not all_ghost_bosses:
+                    for i in all_ghosts:
+                        i.bar.kill()
+                        all_sprites.remove(i)
+                        all_ghosts.remove(i)
+                        all_enemy.remove(i)
+                        all_disappeared.add(i)
+
+            if user.lvl == 30 and (not all_enemy):
+                user.soud_timer += 1
+                if user.soud_timer == 50:
+                    sound = pygame.mixer.Sound('resources/sounds/win.wav')
+                    sound.play()
+                    win_bar = Objects.Congrats()
+                    all_sprites.add(win_bar)
+                    all_win_bars.add(win_bar)
+
 
             draw_level()
             draw_scores()
