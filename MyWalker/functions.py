@@ -143,7 +143,7 @@ def endgame():
         display = pygame.display.set_mode((display_width, display_height))
         pygame.display.set_caption('Game Over')
 
-        background_image = pygame.image.load('resources\\endgame\\background.png')
+        background_image = pygame.image.load('resources\\menu_resources\\end_game_background.png')
 
         clock = pygame.time.Clock()  # Переменная для подсчёта тиков
         while True:
@@ -152,7 +152,7 @@ def endgame():
                     pygame.quit()  # Завершаем pygame
                     quit()
 
-            display.blit(background_image, (700, 350))
+            display.blit(background_image, (0, 0))
 
             keys = pygame.key.get_pressed()  # Инициализируем клавиатуру
             if keys[pygame.K_SPACE]:
@@ -160,4 +160,4 @@ def endgame():
 
             pygame.display.update()  # обновляем наш дисплей
 
-        clock.tick(60)  # FPS
+        clock.tick(75)  # FPS

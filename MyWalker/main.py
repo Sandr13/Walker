@@ -22,7 +22,7 @@ surface = pygame.display.set_mode((1400, 700))
 display_width = 1400
 display_height = 700
 display = pygame.display.set_mode((display_width, display_height))
-pygame.display.set_caption("My Walker")
+pygame.display.set_caption("Dungeon slider")
 clock = pygame.time.Clock()
 
 def run_game():   # Основная функция игры
@@ -559,18 +559,6 @@ def run_game():   # Основная функция игры
     all_sprites.add(ability_cell_1)
     all_sprites.add(ability_cell_2)
 
-    ######################### Отрисовка уровня ############################
-    def draw_level():
-        font = pygame.font.Font(None, 72)
-        text_level = font.render(str(user.lvl), True, (192, 192, 192))
-        display.blit(text_level, (display_width-70, 7))
-
-    ######################### Отрисовка очков ############################
-    def draw_scores():
-        font = pygame.font.Font(None, 72)
-        text_scores = font.render(str(user.scores), True, (192, 192, 192))
-        display.blit(text_scores, (display_width - 210, 7))
-
     def drop(number, item):
         last_not_empty = len(user.items) - 1
         remember = user.items[number-1]
@@ -761,7 +749,7 @@ def run_game():   # Основная функция игры
                 first = False
 
             if keys[pygame.K_w] and keys[pygame.K_a]:
-                if user.rect.x <= 50 and 200 <= user.rect.y <= 205:
+                if user.rect.x < 50 and 200 <= user.rect.bottom <= 205:
                     pass
                 elif user.rect.right >= display_width - 50 and 300 <= user.rect.bottom <= 500:
                     pass
@@ -777,7 +765,7 @@ def run_game():   # Основная функция игры
                     user.rect.y -= user.speed / 2
                     user.rect.x -= user.speed / 2
             elif keys[pygame.K_w]:
-                if user.rect.x <= 50 and 200 <= user.rect.y <= 205:
+                if user.rect.x < 50 and 200 <= user.rect.y <= 205:
                     pass
                 elif user.rect.right > display_width - 50 and 200 <= user.rect.y <= 205:
                     pass
@@ -820,7 +808,7 @@ def run_game():   # Основная функция игры
                     user.rect.y -= user.speed / 2
                     user.rect.x += user.speed / 2
             elif keys[pygame.K_w]:
-                if user.rect.x <= 50 and 200 <= user.rect.y <= 205:
+                if user.rect.x < 50 and 200 <= user.rect.y <= 205:
                     pass
                 elif user.rect.right > display_width - 50 and 200 <= user.rect.y <= 205:
                     pass
@@ -849,7 +837,7 @@ def run_game():   # Основная функция игры
             if keys[pygame.K_d] and keys[pygame.K_s]:
                 if user.rect.x <= 50 and 495 <= user.rect.bottom <= 500:
                     pass
-                elif user.rect.right > display_width - 50 and 500 <= user.rect.bottom <= 505:
+                elif user.rect.right > display_width - 50 and 200 <= user.rect.y <= 205:
                     pass
                 elif 669 <= user.rect.x <= 675 and user.rect.bottom > 650:
                     pass
@@ -876,7 +864,7 @@ def run_game():   # Основная функция игры
                     right = True
                     left = False
             elif keys[pygame.K_s]:
-                if user.rect.x <= 50 and 495 <= user.rect.bottom <= 500:
+                if user.rect.x < 50 and 495 <= user.rect.bottom <= 500:
                     pass
                 elif user.rect.right > display_width - 50 and 500 <= user.rect.bottom <= 505:
                     pass
@@ -889,7 +877,7 @@ def run_game():   # Основная функция игры
                     right = False
                     left = False
             if keys[pygame.K_s] and keys[pygame.K_a]:
-                if user.rect.x <= 50 and 495 <= user.rect.bottom <= 500:
+                if user.rect.x <= 50 and 200 <= user.rect.y <= 205:
                     pass
                 elif user.rect.right >= display_width - 50 and 495 <= user.rect.bottom <= 501:
                     pass
@@ -905,7 +893,7 @@ def run_game():   # Основная функция игры
                     user.rect.y += user.speed / 2
                     user.rect.x -= user.speed / 2
             elif keys[pygame.K_s]:
-                if user.rect.x <= 50 and 490 <= user.rect.bottom <= 500:
+                if user.rect.x < 50 and 490 <= user.rect.bottom <= 500:
                     pass
                 elif user.rect.right > display_width - 50 and 500 <= user.rect.bottom <= 505:
                     pass
@@ -997,16 +985,6 @@ def run_game():   # Основная функция игры
                 remember = user
                 user.kill()
 
-                user = Objects.Player()
-                user.can_use_ability_1 = remember.can_use_ability_1
-                user.can_use_ability_2 = remember.can_use_ability_2
-                user.items = remember.items
-                user.hp = remember.hp
-                user.rect.center = remember.rect.center
-                user.scores = remember.scores
-                user.lvl = remember.lvl
-                all_sprites.add(user)
-
                 if user.rect.right >= display_width + 150:
                     user.lvl += 1
                     user.rect.left = -100
@@ -1056,6 +1034,16 @@ def run_game():   # Основная функция игры
                     generate_chests()
                 if user.lvl == 30:
                     generate_boss_of_zombs()
+
+                user = Objects.Player()
+                user.can_use_ability_1 = remember.can_use_ability_1
+                user.can_use_ability_2 = remember.can_use_ability_2
+                user.items = remember.items
+                user.hp = remember.hp
+                user.rect.center = remember.rect.center
+                user.scores = remember.scores
+                user.lvl = remember.lvl
+                all_sprites.add(user)
 
                 pause()
 
@@ -1321,12 +1309,13 @@ def run_game():   # Основная функция игры
             ############################# Предметы и взаимодействие с ними ##############################
             def pick_up():
                 if len(user.items) < 5:
-                    list = pygame.sprite.spritecollide(user, all_items_ont_the_ground, True)
+                    list = pygame.sprite.spritecollide(user, all_items_ont_the_ground, False)
                     sound = pygame.mixer.Sound('resources/sounds/pick_items_up.wav')
                     sound.play()
                     for i in range(len(list)):
                         if len(user.items) < 5:
                             user.items.append(list[i])
+                            list[i].kill()
                     print_items()
 
             if pygame.sprite.spritecollide(user, all_items_ont_the_ground, False):
@@ -2080,8 +2069,6 @@ def run_game():   # Основная функция игры
                     all_win_bars.add(win_bar)
 
 
-            draw_level()
-            draw_scores()
             pygame.display.update()
             all_sprites.update()   # Обновление спрайтов
             all_sprites.draw(display)  # Прорисовка всех спрайтов
@@ -2101,9 +2088,8 @@ mytheme.widget_font_size = 50
 mytheme.background_color = myimage
 mytheme.title_bar_style = pygame_menu.widgets.MENUBAR_STYLE_TITLE_ONLY_DIAGONAL
 
-menu = pygame_menu.Menu('   Paul Waker   ', 1400, 700, theme=mytheme)
+menu = pygame_menu.Menu('   Dungeon Slider   ', 1400, 700, theme=mytheme)
 menu.add.button('Play', run_game)
 menu.add.button('Quit', pygame_menu.events.EXIT)
-
 
 menu.mainloop(surface)

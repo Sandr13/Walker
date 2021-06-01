@@ -51,7 +51,7 @@ class Bar_DURABILITY(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load('resources\\inventory\\items\\empty_slot.png')
         self.rect = self.image.get_rect()
-        self.rect.left = 350
+        self.rect.right = display_width - 300
         self.rect.top = 5
 
 ############################# Класс эффекта следа меча ##############################
