@@ -1,6 +1,9 @@
 import random
 import pygame
 
+import Objects
+
+
 def choose_the_drop_10():
     list = ['bow', 'heal_bottle']
     return random.choice(list)
@@ -142,22 +145,38 @@ def endgame():
 
         display = pygame.display.set_mode((display_width, display_height))
         pygame.display.set_caption('Game Over')
-
-        background_image = pygame.image.load('resources\\menu_resources\\end_game_background.png')
-
         clock = pygame.time.Clock()  # Переменная для подсчёта тиков
+
+        all_sprites = pygame.sprite.Group()
+
+        background = Objects.You_died_background()
+        all_sprites.add(background)
+
+        text = Objects.You_died_text()
+        text.rect.center = (display_width/2, display_height/2)
+        all_sprites.add(text)
+
         while True:
             for event in pygame.event.get():  # Считываем все события
                 if event.type == pygame.QUIT:  # Считываем нажатие на крестик
                     pygame.quit()  # Завершаем pygame
                     quit()
 
-            display.blit(background_image, (0, 0))
-
             keys = pygame.key.get_pressed()  # Инициализируем клавиатуру
-            if keys[pygame.K_SPACE]:
+            if keys[pygame.K_ESCAPE]:
                 exit()
 
+            if not text.printed:
+                text.condition += 1
+                if text.image.get_alpha() != 255:
+                    if text.condition % 5 == 0:
+                        text.image.set_alpha(text.image.get_alpha() + 1)
+                else:
+                    text.printed = True
+
             pygame.display.update()  # обновляем наш дисплей
+            all_sprites.update()  # Обновление спрайтов
+            all_sprites.draw(display)  # Прорисовка всех спрайтов
+            pygame.display.flip()   # Переворчиваем экран
 
         clock.tick(75)  # FPS

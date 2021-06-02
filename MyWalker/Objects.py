@@ -36,6 +36,23 @@ class Ability_cell_1(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.condition = 1
 
+############################# Класс окончания игры ##############################
+class You_died_text(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('resources/menu_resources/text_you_died.png')
+        self.rect = self.image.get_rect()
+        self.printed = False
+        self.image.set_alpha(1)
+        self.condition = 1
+
+############################# Класс окончания игры ##############################
+class You_died_background(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('resources/menu_resources/background.png')
+        self.rect = self.image.get_rect()
+
 ############################# Класс объекта-ячейки абилки ##############################
 class Ability_cell_2(pygame.sprite.Sprite):
     def __init__(self):
